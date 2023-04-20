@@ -10,27 +10,7 @@
          <center>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <content>
-                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;">
-                     <children>
-                        <Pane prefHeight="30.0" prefWidth="185.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="45.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="44.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="78.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="36.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="62.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                        <Pane layoutX="10.0" layoutY="88.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
-                     </children></VBox>
+                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;"/>
               </content>
             </ScrollPane>
          </center>
