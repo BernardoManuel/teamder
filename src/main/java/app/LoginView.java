@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 public class LoginView extends Application {
 
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
