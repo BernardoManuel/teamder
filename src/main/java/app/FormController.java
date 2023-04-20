@@ -109,13 +109,11 @@ public class FormController {
 //            stage.setResizable(true);//Permitimos la redimension de la ventana
 //            stage.setScene(homeScene);
 
-
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
-
             stage.show();
 
         } catch (Exception e) {
