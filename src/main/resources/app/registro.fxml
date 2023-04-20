@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RegistroController">
+
+   <children>
+      <BorderPane prefHeight="600" prefWidth="800">
+
+         <left>
+            <AnchorPane prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #f8efad; -fx-border-width: 2px 0px 2px 2px; -fx-border-color: #142222;" BorderPane.alignment="CENTER">
+                  <ImageView fx:id="imageViewLeftPane" fitHeight="600" fitWidth="400.0" />
+            </AnchorPane>
+         </left>
+
+         <right>
+            <AnchorPane prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #125665; -fx-border-width: 2px 2px 2px 2px; -fx-border-color: #142222;" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutX="109.0" layoutY="89.0" text="Regístrate" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font size="41.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="usernameField" layoutX="120.0" layoutY="200.0" promptText="Usuario" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </TextField>
+                  <TextField fx:id="correoField" layoutX="120.0" layoutY="250.0" promptText="Correo" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </TextField>
+                  <PasswordField fx:id="passwordField" layoutX="120.0" layoutY="300.0" promptText="Contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </PasswordField>
+                  <PasswordField fx:id="confirmPasswordField" layoutX="120.0" layoutY="350.0" promptText="Repetir contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </PasswordField>
+                  <Button fx:id="buttonRegistro" layoutX="142.0" layoutY="459.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="118.0" style="-fx-background-color: #e75334;" text="Regístrate" textFill="WHITE" textOverrun="CLIP">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font></Button>
+                  <Hyperlink fx:id="hyperlinkIniciarSesion" layoutX="217.0" layoutY="513.0" text="Inicia tu sesión." />
+                  <Label layoutX="93.0" layoutY="516.0" text="¿Ya eres miembro?" textAlignment="CENTER" textFill="WHITE" />
+                  <Button fx:id="buttonVolver" layoutX="29.0" layoutY="30.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="66.0" style="-fx-background-color: #e75334;" text="volver" textFill="WHITE" textOverrun="CLIP">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Pane fx:id="errorPane" layoutX="84.0" layoutY="395.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.6); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false">
+                     <children>
+                        <Label fx:id="errorMessage" alignment="CENTER" layoutX="2.0" layoutY="6.0" prefHeight="20.0" prefWidth="227.0" text="MENSAJE ERROR DEFAULT" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+               </children></AnchorPane>
+         </right>
+
+      </BorderPane>
+   </children>
+
+</AnchorPane>
