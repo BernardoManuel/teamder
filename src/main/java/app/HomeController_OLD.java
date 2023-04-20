@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.MenuButton;
 import javafx.stage.Modality;
@@ -15,7 +14,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HomeController {
+public class HomeController_OLD {
 
     @FXML private ImageView imageViewLogo;
     @FXML private ImageView imageViewFlecha;
@@ -23,7 +22,7 @@ public class HomeController {
     @FXML private Button cancelButton;
 
 
-    public HomeController() {
+    public HomeController_OLD() {
     }
 
     public void initialize() {
