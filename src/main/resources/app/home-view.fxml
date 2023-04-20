@@ -2,19 +2,17 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <BorderPane fx:id="homeView" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.HomeController">
    <left>
       <BorderPane fx:id="sideMenu" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <top>
-            <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: red;" BorderPane.alignment="CENTER" />
-         </top>
          <center>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <content>
                 <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;">
                      <children>
-                        <Pane prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
+                        <Pane prefHeight="30.0" prefWidth="185.0" style="-fx-background-color: blue;" />
                         <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
                         <Pane layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
                         <Pane layoutX="10.0" layoutY="45.0" prefHeight="30.0" prefWidth="198.0" style="-fx-background-color: blue;" />
@@ -36,18 +34,11 @@
               </content>
             </ScrollPane>
          </center>
+         <top>
+            <Pane prefHeight="50" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <Text fx:id="usernameLogged" layoutX="30.0" layoutY="30.0" text="User" />
+            </Pane>
+         </top>
       </BorderPane>
    </left>
-   <center>
-      <BorderPane fx:id="chatView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <top>
-            <Pane fx:id="chatHeader" prefHeight="30.0" prefWidth="400.0" style="-fx-background-color: green;" BorderPane.alignment="CENTER" />
-         </top>
-         <center>
-            <VBox fx:id="chatMessages" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
-         </center>
-         <bottom>
-            <Pane fx:id="chatControls" prefHeight="35.0" prefWidth="400.0" style="-fx-background-color: yellow;" BorderPane.alignment="CENTER" />
-         </bottom></BorderPane>
-   </center>
 </BorderPane>
