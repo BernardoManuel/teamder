@@ -3,10 +3,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<HBox onMouseClicked="#onClick" spacing="5" prefHeight="30.0" prefWidth="185.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatItemController">
+<HBox prefHeight="30.0" prefWidth="185.0" spacing="5" style="-fx-background-color: yellow;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatItemController">
    <children>
       <Pane prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: red;" />
-       <Pane prefHeight="30.0" prefWidth="30.0">
+      <Pane prefHeight="30.0" prefWidth="150.0">
            <Text layoutX="10.0" layoutY="20.0" text="Título del chat" />
        </Pane>
    </children>

@@ -16,19 +16,14 @@
        <HBox alignment="CENTER" prefHeight="80.0" prefWidth="320.0" spacing="5.0" BorderPane.alignment="CENTER">
            <children>
                <TextField fx:id="inputMessage" prefHeight="45.0" prefWidth="260.0" />
-               <Button mnemonicParsing="false" text="Enviar" />
+               <Button mnemonicParsing="false" text="Enviar" onMouseClicked="#onButtonClick"/>
            </children>
        </HBox>
    </bottom>
    <center>
       <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
         <content>
-          <VBox minHeight="0.0" minWidth="0.0">
-               <children>
-                  <Pane prefHeight="50">
-                     <Text layoutX="30.0" layoutY="30.0" text="Tú: Hola" />
-                  </Pane>
-               </children>
+          <VBox fx:id="messageContainer" minHeight="0.0" minWidth="0.0">
           </VBox>
         </content>
       </ScrollPane>
