@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class HomeController extends Scene {
+public class HomeController {
 
     @FXML private BorderPane homeView;
     @FXML private VBox chatsList;
@@ -25,19 +25,9 @@ public class HomeController extends Scene {
     private String username;
     private HBox itemClicked;
     private ChatController currentChatController;
-    private UsuariosRepository usuariosRepository;
-    private Connection connection;
-
-    public HomeController(Parent parent) {
-        super(parent);
-    }
-
     @FXML
     public void initialize() throws IOException, SQLException {
         FXMLLoader loader;
-
-        System.out.println(username);
-
         loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
 

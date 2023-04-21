@@ -99,7 +99,7 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(String username) {
+    private void iniciarSesion() {
         try {
 //            //Cargamos la vista home
 //            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
@@ -116,7 +116,6 @@ public class FormController {
             stage.setScene(scene);
             stage.setResizable(true);
             stage.show();
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,7 +148,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion(username);
+                iniciarSesion();
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
