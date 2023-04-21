@@ -16,12 +16,12 @@
        <HBox alignment="CENTER" prefHeight="80.0" prefWidth="320.0" spacing="5.0" BorderPane.alignment="CENTER">
            <children>
                <TextField fx:id="inputMessage" prefHeight="45.0" prefWidth="260.0" />
-               <Button mnemonicParsing="false" text="Enviar" onMouseClicked="#onButtonClick"/>
+               <Button mnemonicParsing="false" onMouseClicked="#onButtonClick" text="Enviar" />
            </children>
        </HBox>
    </bottom>
    <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fitToWidth="true" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" BorderPane.alignment="CENTER">
         <content>
           <VBox fx:id="messageContainer" minHeight="0.0" minWidth="0.0">
           </VBox>

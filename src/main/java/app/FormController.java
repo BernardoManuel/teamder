@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -98,7 +99,7 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion() {
+    private void iniciarSesion(String username) {
         try {
 //            //Cargamos la vista home
 //            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
@@ -115,6 +116,7 @@ public class FormController {
             stage.setScene(scene);
             stage.setResizable(true);
             stage.show();
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,7 +149,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion();
+                iniciarSesion(username);
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
