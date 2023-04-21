@@ -4,23 +4,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import repository.UsuariosRepository;
-import utils.ConnectionUtil;
+import javafx.scene.text.Text;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class HomeController {
 
     @FXML private BorderPane homeView;
     @FXML private VBox chatsList;
+    @FXML private Text usernameLogged;
 
     private String username;
     private HBox itemClicked;
@@ -28,6 +24,7 @@ public class HomeController {
     @FXML
     public void initialize() throws IOException, SQLException {
         FXMLLoader loader;
+
         loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
 
@@ -47,6 +44,7 @@ public class HomeController {
 
             itemClicked = item;
         }
+
     }
 
     public void placePlaceholder() throws IOException {
@@ -59,6 +57,7 @@ public class HomeController {
     }
 
     private Parent getChatView() throws IOException {
+        username = usernameLogged.getText();
         if (currentChatController != null) {
             currentChatController.closeEverything();
         }
@@ -66,12 +65,17 @@ public class HomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
         currentChatController = loader.getController();
+        currentChatController.setUsername(username);
 
         return root;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }
 

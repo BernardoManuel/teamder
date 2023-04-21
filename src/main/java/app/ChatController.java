@@ -11,8 +11,6 @@ import java.io.*;
 import java.net.Socket;
 
 public class ChatController extends BorderPane {
-
-
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
@@ -21,15 +19,13 @@ public class ChatController extends BorderPane {
 
     @FXML
     private VBox messageContainer;
-
     @FXML
     private TextField inputMessage;
 
-    public void initialize() {
-        // System.out.println("Chat incrustado.");
 
+    public void initialize() {
         try {
-            socket = new Socket("localhost", 1234);
+            socket = new Socket("localhost", 50000);
             socket.setSoLinger(true, 0);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -41,6 +37,7 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
+
     }
 
     private void printMessage(String message) {
@@ -133,5 +130,9 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
