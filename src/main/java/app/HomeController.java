@@ -14,13 +14,17 @@ public class HomeController {
 
     @FXML
     public void initialize() throws IOException {
+        FXMLLoader loader;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
-        homeView.setCenter(loader.load());
-        /*
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
-        homeView.setCenter(loader.load());
-         */
+        boolean debugChatView = false;
+
+        if (debugChatView) {
+            loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
+            homeView.setCenter(loader.load());
+        } else {
+            loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
+            homeView.setCenter(loader.load());
+        }
 
         for (int i = 0; i < 25; i++) {
             loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
