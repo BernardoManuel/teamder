@@ -11,6 +11,6 @@ public class ChatItemController extends HBox {
     }
 
     public void onClick() throws IOException {
-        System.out.println("test");
+        // System.out.println("test");
     }
 }

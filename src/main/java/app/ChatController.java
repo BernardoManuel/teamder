@@ -7,7 +7,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -27,10 +26,11 @@ public class ChatController extends BorderPane {
     private TextField inputMessage;
 
     public void initialize() {
-        System.out.println("Chat incrustado.");
+        // System.out.println("Chat incrustado.");
 
         try {
             socket = new Socket("localhost", 1234);
+            socket.setSoLinger(true, 0);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
@@ -41,7 +41,6 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
-
     }
 
     private void printMessage(String message) {
@@ -98,7 +97,7 @@ public class ChatController extends BorderPane {
             @Override
             public void run() {
                 String msgFromRoom;
-                while (socket.isConnected()) {
+                while (socket != null && socket.isConnected()) {
                     try {
                         msgFromRoom = bufferedReader.readLine();
                         printMessage(msgFromRoom);
@@ -118,6 +117,16 @@ public class ChatController extends BorderPane {
             if (bufferedWriter != null) {
                 bufferedWriter.close();
             }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeEverything() {
+        try {
             if (socket != null) {
                 socket.close();
             }
