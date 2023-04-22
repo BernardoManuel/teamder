@@ -16,7 +16,7 @@
          </center>
          <top>
             <Pane onMouseClicked="#placePlaceholder" prefHeight="50" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <Text fx:id="usernameLogged" layoutX="30.0" layoutY="30.0" text="User" />
+               <Text fx:id="userLogged" layoutX="30.0" layoutY="30.0" text="User" />
             </Pane>
          </top>
       </BorderPane>

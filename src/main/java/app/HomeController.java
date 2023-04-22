@@ -1,5 +1,6 @@
 package app;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -8,42 +9,50 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
+import model.Usuario;
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class HomeController {
 
     @FXML private BorderPane homeView;
     @FXML private VBox chatsList;
-    @FXML private Text usernameLogged;
+    @FXML private Text userLogged;
 
-    private String username;
+    private Usuario user;
     private HBox itemClicked;
     private ChatController currentChatController;
+
     @FXML
-    public void initialize() throws IOException, SQLException {
-        FXMLLoader loader;
+    public void initialize() {
 
-        loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
-        homeView.setCenter(loader.load());
+        Platform.runLater(() -> {
+            try {
+                userLogged.setText(user.getNombreUsuario());
+                FXMLLoader loader;
 
-        for (int i = 0; i < 25; i++) {
-            loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-            HBox item = loader.load();
-            chatsList.getChildren().add(item);
+                loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
+                    homeView.setCenter(loader.load());
 
-            Node view = item.getChildren().get(0).getParent();
-            view.setOnMouseClicked(event -> {
-                try {
-                    homeView.setCenter(getChatView());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                for (int i = 0; i < 25; i++) {
+                    loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+                    HBox item = loader.load();
+                    chatsList.getChildren().add(item);
+
+                    Node view = item.getChildren().get(0).getParent();
+                    view.setOnMouseClicked(event -> {
+                        try {
+                            homeView.setCenter(getChatView());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                    itemClicked = item;
                 }
-            });
-
-            itemClicked = item;
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
@@ -57,7 +66,6 @@ public class HomeController {
     }
 
     private Parent getChatView() throws IOException {
-        username = usernameLogged.getText();
         if (currentChatController != null) {
             currentChatController.closeEverything();
         }
@@ -65,17 +73,12 @@ public class HomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
         currentChatController = loader.getController();
-        currentChatController.setUsername(username);
 
         return root;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return this.username;
+    public void setUsername(Usuario user) {
+        this.user = user;
     }
 }
 

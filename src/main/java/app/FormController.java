@@ -101,7 +101,7 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(String username) {
+    private void iniciarSesion(Usuario usuario) {
         try {
 //            //Cargamos la vista home
 //            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
@@ -114,7 +114,7 @@ public class FormController {
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
-            sendUsernameToHomeView(root, username);
+            ((HomeController)fxmlLoader.getController()).setUsername(usuario);
             Scene scene = new Scene(root, 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
@@ -152,7 +152,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion(username);
+                iniciarSesion(usuario);
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
@@ -190,10 +190,8 @@ public class FormController {
     }
 
     private void sendUsernameToHomeView(Parent root, String username) {
-        BorderPane homeView = (BorderPane) ((BorderPane)root).getChildren().get(0).getParent();
-        Pane usernamePane = (Pane) ((BorderPane)homeView.getChildren().get(0)).getChildren().get(1);
-        Text usernameText = ((Text)usernamePane.getChildren().get(0));
-        usernameText.setText(username);
+        Text usernameField = (Text) root.lookup("#usernameLogged");
+        usernameField.setText(username);
     }
 
 }
