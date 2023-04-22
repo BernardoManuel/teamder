@@ -10,14 +10,19 @@
          <center>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <content>
-                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;"/>
+                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
               </content>
             </ScrollPane>
          </center>
          <top>
-            <Pane onMouseClicked="#placePlaceholder" prefHeight="50" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <Text fx:id="userLogged" layoutX="30.0" layoutY="30.0" text="User" />
-            </Pane>
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" style="-fx-spacing: 5;" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane onMouseClicked="#placePlaceholder" prefHeight="40.0" prefWidth="80.0">
+                     <Text fx:id="userLogged" layoutX="20.0" layoutY="25.0" text="User" />
+                  </Pane>
+                  <Button mnemonicParsing="false" prefWidth="60.0" text="+ Sala" />
+                  <Button mnemonicParsing="false" prefWidth="60.0" text="+ Amigo" />
+               </children></HBox>
          </top>
       </BorderPane>
    </left>

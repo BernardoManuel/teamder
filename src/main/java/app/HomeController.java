@@ -1,6 +1,7 @@
 package app;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -9,8 +10,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import model.Room;
 import model.Usuario;
+import repository.RoomRepository;
+import utils.ConnectionUtil;
+
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class HomeController {
 
@@ -19,37 +28,27 @@ public class HomeController {
     @FXML private Text userLogged;
 
     private Usuario user;
-    private HBox itemClicked;
     private ChatController currentChatController;
 
+    private RoomRepository roomRepository;
+    private Connection connection;
+
     @FXML
-    public void initialize() {
+    public void initialize() throws SQLException {
+
+        //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
+        connection = ConnectionUtil.getConnection();
+        roomRepository = new RoomRepository(connection);
 
         Platform.runLater(() -> {
+            homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
-                userLogged.setText(user.getNombreUsuario());
-                FXMLLoader loader;
+                generateHome();
+                generateChatsList();
 
-                loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
-                    homeView.setCenter(loader.load());
-
-                for (int i = 0; i < 25; i++) {
-                    loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-                    HBox item = loader.load();
-                    chatsList.getChildren().add(item);
-
-                    Node view = item.getChildren().get(0).getParent();
-                    view.setOnMouseClicked(event -> {
-                        try {
-                            homeView.setCenter(getChatView());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-                    itemClicked = item;
-                }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
@@ -65,20 +64,56 @@ public class HomeController {
         homeView.setCenter(loader.load());
     }
 
-    private Parent getChatView() throws IOException {
+    private Parent getChatView(String title) throws IOException {
         if (currentChatController != null) {
             currentChatController.closeEverything();
         }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
+        ((ChatController) loader.getController()).setUsername(user.getNombreUsuario());
+        ((ChatController) loader.getController()).setTitle(title);
         currentChatController = loader.getController();
+
 
         return root;
     }
 
+    private void generateHome() throws IOException {
+        userLogged.setText(user.getNombreUsuario());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
+        homeView.setCenter(loader.load());
+
+    }
+
+    private void generateChatsList() throws SQLException, IOException {
+        ObservableList<Room> rooms = roomRepository.findUserRooms(user.getId());
+        for (Room room : rooms) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+            HBox item = loader.load();
+
+            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+
+            chatsList.getChildren().add(item);
+            Node view = item.getChildren().get(0).getParent();
+            view.setOnMouseClicked(event -> {
+                try {
+                    homeView.setCenter(getChatView(room.getNombre()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
     public void setUsername(Usuario user) {
         this.user = user;
+    }
+
+    private void closeWindowEvent(WindowEvent event) {
+        if (currentChatController != null) {
+            currentChatController.closeEverything();
+        }
     }
 }
 

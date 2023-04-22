@@ -16,7 +16,10 @@ public class ChatController extends BorderPane {
     private BufferedReader bufferedReader;
     private String username;
     private String inputMessageText;
+    private String title;
 
+    @FXML
+    private Text chatTitle;
     @FXML
     private VBox messageContainer;
     @FXML
@@ -24,20 +27,20 @@ public class ChatController extends BorderPane {
 
 
     public void initialize() {
-        try {
-            socket = new Socket("localhost", 50000);
-            socket.setSoLinger(true, 0);
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        Platform.runLater(() -> {
+            chatTitle.setText(title);
+            try {
+                socket = new Socket("localhost", 50000);
+                socket.setSoLinger(true, 0);
+                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            username = "diego";
-
-            listenForMessage();
-            sendMessage();
-        } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
-        }
-
+                listenForMessage();
+                sendMessage();
+            } catch (IOException e) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
+            }
+        });
     }
 
     private void printMessage(String message) {
@@ -116,6 +119,7 @@ public class ChatController extends BorderPane {
             }
             if (socket != null) {
                 socket.close();
+                socket = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,8 +128,12 @@ public class ChatController extends BorderPane {
 
     public void closeEverything() {
         try {
+            if (bufferedReader != null) {
+                bufferedReader = null;
+            }
             if (socket != null) {
                 socket.close();
+                socket = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,5 +142,9 @@ public class ChatController extends BorderPane {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

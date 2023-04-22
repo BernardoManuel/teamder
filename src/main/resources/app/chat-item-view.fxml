@@ -7,7 +7,7 @@
    <children>
       <Pane prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: red;" />
       <Pane prefHeight="30.0" prefWidth="150.0">
-           <Text layoutX="10.0" layoutY="20.0" text="Título del chat" />
+           <Text fx:id="roomTitle" layoutX="10.0" layoutY="20.0" text="Título del chat" />
        </Pane>
    </children>
 </HBox>
