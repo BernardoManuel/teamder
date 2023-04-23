@@ -1,2 +1,4 @@
-package app;public class RoomCreatorController {
+package app;
+
+public class RoomCreatorController {
 }

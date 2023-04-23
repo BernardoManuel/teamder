@@ -1,2 +1,4 @@
-package app;public class FriendsController {
+package app;
+
+public class FriendsController {
 }

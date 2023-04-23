@@ -20,8 +20,8 @@
                   <Pane onMouseClicked="#placePlaceholder" prefHeight="40.0" prefWidth="80.0">
                      <Text fx:id="userLogged" layoutX="20.0" layoutY="25.0" text="User" />
                   </Pane>
-                  <Button mnemonicParsing="false" prefWidth="60.0" text="+ Sala" />
-                  <Button mnemonicParsing="false" prefWidth="60.0" text="+ Amigo" />
+                  <Button onMouseClicked="#openRoomCreator"  mnemonicParsing="false" prefWidth="60.0" text="+ Sala" />
+                  <Button onMouseClicked="#openFriendsView" mnemonicParsing="false" prefWidth="60.0" text="+ Amigo" />
                </children></HBox>
          </top>
       </BorderPane>

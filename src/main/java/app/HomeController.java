@@ -56,18 +56,13 @@ public class HomeController {
     }
 
     public void placePlaceholder() throws IOException {
-        if (currentChatController != null) {
-            currentChatController.closeEverything();
-            currentChatController = null;
-        }
+        closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
     }
 
     private Parent getChatView(String title) throws IOException {
-        if (currentChatController != null) {
-            currentChatController.closeEverything();
-        }
+        closeCurrentChat();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
@@ -83,7 +78,6 @@ public class HomeController {
         userLogged.setText(user.getNombreUsuario());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
-
     }
 
     private void generateChatsList() throws SQLException, IOException {
@@ -106,13 +100,33 @@ public class HomeController {
         }
     }
 
+
+
     public void setUsername(Usuario user) {
         this.user = user;
     }
 
     private void closeWindowEvent(WindowEvent event) {
+        closeCurrentChat();
+    }
+
+    @FXML
+    private void openRoomCreator() throws IOException {
+        closeCurrentChat();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("room-creator-view.fxml"));
+        homeView.setCenter(loader.load());
+    }
+
+    @FXML
+    private void openFriendsView() throws IOException {
+        closeCurrentChat();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("friend-view.fxml"));
+        homeView.setCenter(loader.load());
+    }
+    private void closeCurrentChat() {
         if (currentChatController != null) {
             currentChatController.closeEverything();
+            currentChatController = null;
         }
     }
 }
