@@ -3,8 +3,6 @@ package repository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Room;
-import model.Usuario;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

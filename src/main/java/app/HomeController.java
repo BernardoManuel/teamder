@@ -10,7 +10,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Room;
 import model.Usuario;
@@ -61,15 +60,14 @@ public class HomeController {
         homeView.setCenter(loader.load());
     }
 
-    private Parent getChatView(String title) throws IOException {
+    private Parent getChatView(Room room) throws IOException {
         closeCurrentChat();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
-        ((ChatController) loader.getController()).setUsername(user.getNombreUsuario());
-        ((ChatController) loader.getController()).setTitle(title);
+        ((ChatController) loader.getController()).setUser(user);
+        ((ChatController) loader.getController()).setRoom(room);
         currentChatController = loader.getController();
-
 
         return root;
     }
@@ -92,7 +90,7 @@ public class HomeController {
             Node view = item.getChildren().get(0).getParent();
             view.setOnMouseClicked(event -> {
                 try {
-                    homeView.setCenter(getChatView(room.getNombre()));
+                    homeView.setCenter(getChatView(room));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
