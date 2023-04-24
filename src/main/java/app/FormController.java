@@ -7,13 +7,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Usuario;
@@ -98,7 +101,7 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion() {
+    private void iniciarSesion(Usuario usuario) {
         try {
 //            //Cargamos la vista home
 //            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
@@ -109,9 +112,10 @@ public class FormController {
 //            stage.setResizable(true);//Permitimos la redimension de la ventana
 //            stage.setScene(homeScene);
 
-
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 905, 621);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
+            Parent root = fxmlLoader.load();
+            ((HomeController)fxmlLoader.getController()).setUsername(usuario);
+            Scene scene = new Scene(root, 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
@@ -149,7 +153,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion();
+                iniciarSesion(usuario);
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
@@ -185,4 +189,10 @@ public class FormController {
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
+
+    private void sendUsernameToHomeView(Parent root, String username) {
+        Text usernameField = (Text) root.lookup("#usernameLogged");
+        usernameField.setText(username);
+    }
+
 }

@@ -98,5 +98,22 @@ public class UsuariosRepository {
         return usuario;
     }
 
+    public String getUsernameById(int id_user) throws SQLException {
+        String query = "select nom_user from usuarios where cod_user = ?;";
+
+        Usuario usuario = null;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id_user);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    usuario = new Usuario();
+                    usuario.setNombreUsuario(resultSet.getString("nom_user"));
+                }
+            }
+        }
+
+        return usuario.getNombreUsuario();
+    }
+
 
 }
