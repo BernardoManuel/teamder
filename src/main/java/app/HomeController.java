@@ -79,9 +79,6 @@ public class HomeController {
     }
 
     public void generateChatsList() throws SQLException, IOException {
-        if (chatsList.getChildren().size() >= 1) {
-            chatsList.getChildren().remove(0, chatsList.getChildren().size());
-        }
         ObservableList<Room> rooms = roomRepository.findUserRooms(user.getId());
         for (Room room : rooms) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
@@ -101,7 +98,22 @@ public class HomeController {
         }
     }
 
+    public void addNewRoomToChatsList(Room room) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+        HBox item = loader.load();
 
+        ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+
+        chatsList.getChildren().add(item);
+        Node view = item.getChildren().get(0).getParent();
+        view.setOnMouseClicked(event -> {
+            try {
+                homeView.setCenter(getChatView(room));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void setUsername(Usuario user) {
         this.user = user;

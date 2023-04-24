@@ -19,7 +19,7 @@ public class RoomRepository {
 
     public ObservableList<Room> findUserRooms(Integer id_user) throws SQLException {
         ObservableList<Room> rooms = FXCollections.observableArrayList();
-        String query = "SELECT * FROM `salas` WHERE id_salas = (SELECT id_salas from relacion_user_salas where " +
+        String query = "SELECT * FROM `salas` WHERE id_salas IN (SELECT id_sala from relacion_user_salas where " +
                 "id_user = ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id_user);
@@ -41,8 +41,9 @@ public class RoomRepository {
     }
 
     public void save(Room room) throws SQLException {
+        String generatedColumns[] = { "id_salas" };
         String query = "INSERT INTO salas (id_juego, nombre, max_jugadores, creador) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = connection.prepareStatement(query, generatedColumns)) {
 
             statement.setInt(1, room.getId_juego());
             statement.setString(2, room.getNombre());
@@ -50,6 +51,24 @@ public class RoomRepository {
             statement.setInt(4, room.getId_creador());
 
             // Configura más parámetros del statement según tu base de datos y entidad Room
+            statement.executeUpdate();
+
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    room.setId(rs.getInt(1));
+                    createRelationRoomToUser(room);
+                }
+            }
+        }
+    }
+
+    public void createRelationRoomToUser(Room room) throws SQLException {
+        String query = "INSERT INTO relacion_user_salas (id_user, id_sala) VALUES (?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, room.getId_creador());
+            statement.setInt(2, room.getId());
+
             statement.executeUpdate();
         }
     }

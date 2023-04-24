@@ -70,7 +70,7 @@ public class RoomCreatorController {
             room.setId_creador(user.getId());
 
             roomRepository.save(room);
-            homeController.generateChatsList();
+            homeController.addNewRoomToChatsList(room);
             cleanInputs();
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
