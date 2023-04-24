@@ -78,7 +78,10 @@ public class HomeController {
         homeView.setCenter(loader.load());
     }
 
-    private void generateChatsList() throws SQLException, IOException {
+    public void generateChatsList() throws SQLException, IOException {
+        if (chatsList.getChildren().size() >= 1) {
+            chatsList.getChildren().remove(0, chatsList.getChildren().size());
+        }
         ObservableList<Room> rooms = roomRepository.findUserRooms(user.getId());
         for (Room room : rooms) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
@@ -112,7 +115,10 @@ public class HomeController {
     private void openRoomCreator() throws IOException {
         closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("room-creator-view.fxml"));
-        homeView.setCenter(loader.load());
+        Parent root = loader.load();
+        ((RoomCreatorController) loader.getController()).setUser(user);
+        ((RoomCreatorController) loader.getController()).setHomeController(this);
+        homeView.setCenter(root);
     }
 
     @FXML

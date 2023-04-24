@@ -2,6 +2,7 @@ package repository;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Message;
 import model.Room;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,5 +38,19 @@ public class RoomRepository {
             }
         }
         return rooms;
+    }
+
+    public void save(Room room) throws SQLException {
+        String query = "INSERT INTO salas (id_juego, nombre, max_jugadores, creador) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, room.getId_juego());
+            statement.setString(2, room.getNombre());
+            statement.setInt(3, room.getMax_jugadores());
+            statement.setInt(4, room.getId_creador());
+
+            // Configura más parámetros del statement según tu base de datos y entidad Room
+            statement.executeUpdate();
+        }
     }
 }

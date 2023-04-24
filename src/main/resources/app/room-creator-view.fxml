@@ -10,25 +10,25 @@
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="10.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="102.0" text="Nombre de la sala:" />
-                  <TextField />
+                  <TextField fx:id="inputRoomName" />
                </children>
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="125.0" prefHeight="50.0" prefWidth="600.0" spacing="10.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="108.0" text="Seleccionar juego:" />
-                  <TextField prefHeight="25.0" prefWidth="140.0" />
+                  <ChoiceBox fx:id="gameSelector" prefWidth="150.0"/>
                </children>
             </HBox>
 
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="10.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="127.0" text="Máximo de jugadores:" />
-                  <TextField prefHeight="25.0" prefWidth="122.0" />
+                  <TextField fx:id="inputMaxPlayers" prefHeight="25.0" prefWidth="122.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" text="Crear" />
+                  <Button fx:id="createBtn" onMouseClicked="#createRoom" mnemonicParsing="false" text="Crear" />
                </children>
             </HBox>
          </children>
