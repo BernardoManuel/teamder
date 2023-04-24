@@ -119,6 +119,7 @@ public class FormController {
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
+
             stage.show();
 
         } catch (Exception e) {
