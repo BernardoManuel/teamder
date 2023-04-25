@@ -19,16 +19,16 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Usuario;
+import model.Calificacion;
+import repository.CalificacionRepository;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
 import utils.PasswordUtil;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
+import java.util.Date;
 
 public class RegistroController {
 
@@ -43,6 +43,7 @@ public class RegistroController {
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
     private UsuariosRepository usuariosRepository;
+    private CalificacionRepository calificacionRepository;
     private Connection connection;
 
 
@@ -155,6 +156,15 @@ public class RegistroController {
         }else{
             //Guardamos el nuevo usuario
             usuariosRepository.save(nuevoUsuario);
+
+            //Valoracion por defecto
+            Calificacion calificacionDefault = new Calificacion();
+            calificacionDefault.setIdUser(nuevoUsuario.getId());
+            calificacionDefault.setComentario("Nuevo usuario registrado");
+            calificacionDefault.setFechaCalif(new Date());
+            calificacionDefault.setValoracion(8.0);//valoracion por defecto
+
+            calificacionRepository.guardarCalificacion(calificacionDefault);
 
             //Volver al login
             formIniciarSesion();
