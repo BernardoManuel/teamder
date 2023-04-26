@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
    <top>
        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <children>
@@ -13,6 +13,12 @@
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin></Text>
+            <AnchorPane prefHeight="50.0" prefWidth="518.0">
+               <children>
+                  <Button fx:id="invitarAmigoBtn" onMouseClicked="#onInvitarAmigoClick" contentDisplay="RIGHT" layoutX="414.0" layoutY="13.0" mnemonicParsing="false" styleClass="btn btn-primary" text="Invitar Amigo" />
+                  <Button fx:id="buscarJugadoresBtn" onMouseClicked="#onBuscarJugadoresClick" layoutX="295.0" layoutY="13.0" mnemonicParsing="false" prefWidth="108.0" text="Buscar Jugadores" />
+               </children>
+            </AnchorPane>
            </children>
          <opaqueInsets>
             <Insets />

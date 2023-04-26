@@ -3,6 +3,7 @@ package app;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -38,6 +39,8 @@ public class ChatController extends BorderPane {
     private VBox messageContainer;
     @FXML
     private TextField inputMessage;
+    @FXML private Button buscarJugadoresBtn;
+    @FXML private Button invitarAmigoBtn;
 
 
     public void initialize() throws SQLException {
@@ -100,6 +103,16 @@ public class ChatController extends BorderPane {
         printMessage(user.getNombreUsuario() + ": " + inputMessageText);
         sendMessage(inputMessageText);
         inputMessage.setText("");
+    }
+
+    @FXML
+    private void onBuscarJugadoresClick() {
+        //Buscar jugadores segun calificaciones.
+    }
+
+    @FXML
+    private void onInvitarAmigoClick() {
+        //Invitar amigo por username.
     }
 
 
