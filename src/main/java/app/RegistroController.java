@@ -27,8 +27,8 @@ import utils.PasswordUtil;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
-import java.util.Date;
 
 public class RegistroController {
 
@@ -51,6 +51,7 @@ public class RegistroController {
         //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
         connection = ConnectionUtil.getConnection();
         usuariosRepository = new UsuariosRepository(connection);
+        calificacionRepository = new CalificacionRepository(connection);
 
         //insertamos el fondo del left pane
         Image imagenFondo = new Image("file:src/main/resources/backgrounds/fondo_left_pane.png");
@@ -159,9 +160,11 @@ public class RegistroController {
 
             //Valoracion por defecto
             Calificacion calificacionDefault = new Calificacion();
-            calificacionDefault.setIdUser(nuevoUsuario.getId());
+            calificacionDefault.setIdUser(usuariosRepository.findUsuarioByNombreUsuario(nombreUsuario).getId());
+            calificacionDefault.setIdJuego(1);
+            calificacionDefault.setIdEvaluador(8);
             calificacionDefault.setComentario("Nuevo usuario registrado");
-            calificacionDefault.setFechaCalif(new Date());
+            calificacionDefault.setFechaCalif(new Date(2000,01,01));
             calificacionDefault.setValoracion(8.0);//valoracion por defecto
 
             calificacionRepository.guardarCalificacion(calificacionDefault);
