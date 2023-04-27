@@ -15,7 +15,6 @@ public class RoomServer {
         try {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Nuevo cliente conectado.");
                 ClientHandler clientHandler = new ClientHandler(socket);
 
                 Thread thread = new Thread(clientHandler);
@@ -30,7 +29,7 @@ public class RoomServer {
     public void closeServerSocket() {
         try {
             if (serverSocket != null) {
-                serverSocket.close();;
+                serverSocket.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

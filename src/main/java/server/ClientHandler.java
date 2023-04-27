@@ -48,7 +48,6 @@ public class ClientHandler implements Runnable {
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
-
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
@@ -67,12 +66,10 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         String msgFromClient;
-
         while (socket.isConnected()) {
             try {
                 msgFromClient = bufferedReader.readLine();
                 broadcastMessage(msgFromClient);
-
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
