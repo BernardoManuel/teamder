@@ -1,0 +1,7 @@
+.message {
+    -fx-padding:10;
+}
+
+.own-message {
+    -fx-alignment:center-right;
+}
