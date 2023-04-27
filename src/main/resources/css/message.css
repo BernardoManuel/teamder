@@ -1,5 +1,8 @@
 .message {
     -fx-padding:10;
+    -fx-background-radius: 10 10 10 10;
+    -fx-border-radius: 10 10 10 10;
+    -fx-background-color: #176e82;
 }
 
 .own-message {

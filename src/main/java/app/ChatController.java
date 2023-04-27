@@ -3,10 +3,10 @@ package app;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Message;
 import model.Room;
@@ -65,31 +65,41 @@ public class ChatController extends BorderPane {
 
     private void printMessage(String message) {
         Platform.runLater(() -> {
-            Pane msgPane = new Pane();
-            msgPane.setPrefHeight(50.0);
-            msgPane.setPrefWidth(320.0);
+            VBox msgPane = new VBox();
+            msgPane.setMinHeight(50.0);
+            msgPane.setAlignment(Pos.CENTER_LEFT);
+            msgPane.setFillWidth(false);
 
             Text msgText = new Text(message);
-            msgText.setLayoutX(20.0);
-            msgText.setLayoutY(30.0);
+            msgText.setFill(Color.WHITE);
 
             msgPane.getChildren().add(msgText);
+            msgPane.getStyleClass().add("message");
+
             messageContainer.getChildren().add(msgPane);
+            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
         });
     }
 
     private void printMessage(String username, String message) {
         Platform.runLater(() -> {
-            Pane msgPane = new Pane();
-            msgPane.setPrefHeight(50.0);
-            msgPane.setPrefWidth(320.0);
+            VBox msgPane = new VBox();
+            msgPane.setMinHeight(50.0);
+            msgPane.setAlignment(Pos.CENTER_LEFT);
+            msgPane.setFillWidth(false);
 
             Text msgText = new Text(username + ": " + message);
-            msgText.setLayoutX(20.0);
-            msgText.setLayoutY(30.0);
+            msgText.setFill(Color.WHITE);
 
             msgPane.getChildren().add(msgText);
+            msgPane.getStyleClass().add("message");
+
+            if (username.equals(user.getNombreUsuario())) {
+                msgPane.getStyleClass().add("own-message");
+            }
+
             messageContainer.getChildren().add(msgPane);
+            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
         });
     }
 
@@ -97,7 +107,7 @@ public class ChatController extends BorderPane {
     @FXML
     private void onButtonClick() {
         inputMessageText = inputMessage.getText();
-        printMessage(user.getNombreUsuario() + ": " + inputMessageText);
+        printMessage(user.getNombreUsuario(), inputMessageText);
         sendMessage(inputMessageText);
         inputMessage.setText("");
     }
