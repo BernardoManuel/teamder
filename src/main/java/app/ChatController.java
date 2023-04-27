@@ -118,10 +118,9 @@ public class ChatController extends BorderPane {
     // Mensaje de conexión al servidor.
     public void sendMessage() {
         try {
-            bufferedWriter.write(user.getNombreUsuario());
+            bufferedWriter.write(user.getNombreUsuario() + "-" + room.getId());
             bufferedWriter.newLine();
             bufferedWriter.flush();
-            System.out.println("Mensaje enviado");
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
