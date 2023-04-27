@@ -57,7 +57,7 @@ public class ChatController extends BorderPane {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                socket = new Socket("83.36.212.133", 50000);
+                socket = new Socket("localhost", 50000);
                 socket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -185,8 +185,11 @@ public class ChatController extends BorderPane {
             while (socket != null && socket.isConnected()) {
                 try {
                     // Configurar la línea de entrada de audio (micrófono)
-                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.0f, 16, 1, true, false);
+                    AudioFormat formatoAudioEntrada = new AudioFormat(8000.0f, 16, 1, true, true);
+                    AudioFormat formatoAudioEntradaG711 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000.0f, 16, 1, 2, 8000.0f, true);
                     TargetDataLine lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudioEntrada);
+                    lineaEntradaAudio.open(formatoAudioEntradaG711);
+                    lineaEntradaAudio.start();
 
                     // Buffer para los datos de audio
                     byte[] buffer = new byte[1024];
@@ -223,9 +226,10 @@ public class ChatController extends BorderPane {
                 while (socket != null && socket.isConnected()) {
                     try {
                         // Configurar la línea de salida de audio (altavoces)
-                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, false);
+                        AudioFormat formatoAudioSalida = new AudioFormat(8000.0f, 16, 1, true, true);
+                        AudioFormat formatoAudioSalidaG711 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000.0f, 16, 1, 2, 8000.0f, true);
                         SourceDataLine lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudioSalida);
-                        lineaSalidaAudio.open(formatoAudioSalida);
+                        lineaSalidaAudio.open(formatoAudioSalidaG711);
                         lineaSalidaAudio.start();
 
                         // Buffer para los datos de audio
