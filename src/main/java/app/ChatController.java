@@ -16,6 +16,7 @@ import repository.MessageRepository;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
 
+import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
 import java.sql.Connection;
@@ -26,6 +27,9 @@ public class ChatController extends BorderPane {
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
+
+    private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
     private Usuario user;
     private Room room;
     private String inputMessageText;
@@ -57,11 +61,15 @@ public class ChatController extends BorderPane {
                 socket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                this.dataInputStream = new DataInputStream(socket.getInputStream());
+                this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
                 listenForMessage();
                 sendMessage();
+                listenForVoice();
+                sendVoice();
             } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
             }
         });
     }
@@ -136,7 +144,7 @@ public class ChatController extends BorderPane {
             bufferedWriter.flush();
             System.out.println("Mensaje enviado");
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
         }
     }
 
@@ -150,7 +158,7 @@ public class ChatController extends BorderPane {
                 System.out.println("Mensaje enviado");
             }
         } catch (IOException | SQLException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
         }
     }
 
@@ -164,20 +172,87 @@ public class ChatController extends BorderPane {
                         msgFromRoom = bufferedReader.readLine();
                         printMessage(msgFromRoom);
                     } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter);
+                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
                     }
                 }
             }
         }).start();
     }
 
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+    // Bucle para el envio de datos de audio al servidor
+    public void sendVoice() {
+        new Thread(() -> {
+            while (socket != null && socket.isConnected()) {
+                try {
+                    // Configurar la línea de entrada de audio (micrófono)
+                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.0f, 16, 1, true, true);
+                    TargetDataLine lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudioEntrada);
+                    lineaEntradaAudio.open(formatoAudioEntrada);
+                    lineaEntradaAudio.start();
+
+                    // Buffer para los datos de audio
+                    byte[] buffer = new byte[1024];
+
+                    int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
+
+                    // Enviar datos de audio al servidor
+                    dataOutputStream.write(buffer, 0, numBytesLeidos);
+                    dataOutputStream.flush();
+                } catch (IOException e) {
+                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                } catch (LineUnavailableException e) {
+                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+
+
+    // Bucle para la reproducción de audio recibido del servidor
+    public void listenForVoice() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (socket != null && socket.isConnected()) {
+                    try {
+                        // Configurar la línea de salida de audio (altavoces)
+                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, true);
+                        SourceDataLine lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudioSalida);
+                        lineaSalidaAudio.open(formatoAudioSalida);
+                        lineaSalidaAudio.start();
+
+                        // Buffer para los datos de audio
+                        byte[] buffer = new byte[1024];
+
+                        int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
+
+                        // Reproducir datos de audio en los altavoces
+                        lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                    } catch (IOException e) {
+                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                    } catch (LineUnavailableException e) {
+                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
             if (bufferedWriter != null) {
                 bufferedWriter.close();
+            }
+            if (dataInputStream != null) {
+                dataInputStream.close();
+            }
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
             }
             if (socket != null) {
                 socket.close();

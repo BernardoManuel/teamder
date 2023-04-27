@@ -30,6 +30,5 @@ public class LoginView extends Application {
         launch();
     }
 
-
     }
 
