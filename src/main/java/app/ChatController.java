@@ -133,7 +133,6 @@ public class ChatController extends BorderPane {
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
                 saveMessage(msg);
-                System.out.println("Mensaje enviado");
             }
         } catch (IOException | SQLException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);

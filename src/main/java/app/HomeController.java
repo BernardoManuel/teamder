@@ -44,7 +44,6 @@ public class HomeController {
             try {
                 generateHome();
                 generateChatsList();
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SQLException e) {

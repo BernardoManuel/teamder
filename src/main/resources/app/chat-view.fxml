@@ -9,7 +9,7 @@
    <top>
        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <children>
-               <Text fx:id="chatTitle" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Título del chat">
+               <Text fx:id="chatTitle" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin></Text>
