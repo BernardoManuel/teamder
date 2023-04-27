@@ -57,7 +57,7 @@ public class ChatController extends BorderPane {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                socket = new Socket("localhost", 50000);
+                socket = new Socket("83.36.212.133", 50000);
                 socket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -185,24 +185,30 @@ public class ChatController extends BorderPane {
             while (socket != null && socket.isConnected()) {
                 try {
                     // Configurar la línea de entrada de audio (micrófono)
-                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.0f, 16, 1, true, true);
+                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.0f, 16, 1, true, false);
                     TargetDataLine lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudioEntrada);
-                    lineaEntradaAudio.open(formatoAudioEntrada);
-                    lineaEntradaAudio.start();
 
                     // Buffer para los datos de audio
                     byte[] buffer = new byte[1024];
+                    // Calcular el tamaño de un fotograma en bytes
+                    int frameSize = formatoAudioEntrada.getFrameSize();
+                    // Calcular el número de fotogramas en el búfer
+                    int numFrames = buffer.length / frameSize;
+                    // Ajustar el tamaño del búfer para asegurarse de que se estén escribiendo un número entero de fotogramas
+                    byte[] adjustedBuffer = new byte[numFrames * frameSize];
 
-                    int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
+                    // Leer datos de audio del micrófono en el búfer ajustado
+                    int numBytesLeidos = lineaEntradaAudio.read(adjustedBuffer, 0, adjustedBuffer.length);
 
-                    // Enviar datos de audio al servidor
-                    dataOutputStream.write(buffer, 0, numBytesLeidos);
+                    // Enviar los datos ajustados al servidor
+                    dataOutputStream.write(adjustedBuffer, 0, numBytesLeidos);
                     dataOutputStream.flush();
+
                 } catch (IOException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
                 } catch (LineUnavailableException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             }
         }).start();
@@ -217,23 +223,33 @@ public class ChatController extends BorderPane {
                 while (socket != null && socket.isConnected()) {
                     try {
                         // Configurar la línea de salida de audio (altavoces)
-                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, true);
+                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, false);
                         SourceDataLine lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudioSalida);
                         lineaSalidaAudio.open(formatoAudioSalida);
                         lineaSalidaAudio.start();
 
                         // Buffer para los datos de audio
                         byte[] buffer = new byte[1024];
+                        // Calcular el tamaño de un fotograma en bytes
+                        int frameSize = formatoAudioSalida.getFrameSize();
 
                         int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
 
+                        // Calcular el número de fotogramas en el búfer
+                        int numFrames = numBytesRecibidos / frameSize;
+
+                        // Ajustar el tamaño del búfer para asegurarse de que se estén escribiendo un número entero de fotogramas
+                        byte[] adjustedBuffer = new byte[numFrames * frameSize];
+                        System.arraycopy(buffer, 0, adjustedBuffer, 0, numBytesRecibidos);
+
                         // Reproducir datos de audio en los altavoces
-                        lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                        lineaSalidaAudio.write(adjustedBuffer, 0, adjustedBuffer.length);
+
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
                     } catch (LineUnavailableException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
                 }
             }
