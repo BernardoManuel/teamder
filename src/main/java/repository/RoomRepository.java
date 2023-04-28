@@ -28,12 +28,10 @@ public class RoomRepository {
 
     public Set<Room> findUserRooms(User user) {
         Set<Room> rooms = null;
-        
         try {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
-            User tmpUser = session.get(User.class, user.getId());
-            rooms = tmpUser.getRooms();
+            rooms = user.getRooms();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         } finally {
@@ -45,7 +43,13 @@ public class RoomRepository {
     }
 
     public void save(Room room) throws SQLException {
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        session.persist(room);
+        session.getTransaction().commit();
+        session.close();
 
+        /*
         String generatedColumns[] = { "id_salas" };
         String query = "INSERT INTO salas (id_juego, nombre, max_jugadores, creador) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query, generatedColumns)) {
@@ -65,6 +69,8 @@ public class RoomRepository {
                 }
             }
         }
+
+         */
     }
 
     public void createRelationRoomToUser(Room room) throws SQLException {

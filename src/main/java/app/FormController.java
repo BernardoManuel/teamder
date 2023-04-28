@@ -36,7 +36,7 @@ public class FormController {
     @FXML private Label errorMessage;
     private UsuariosRepository usuariosRepository;
 
-    public void initialize() throws SQLException {
+    public void initialize() {
         usuariosRepository = new UsuariosRepository();
 
         //insertamos el logo del login

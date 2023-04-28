@@ -8,6 +8,7 @@ import java.util.*;
 public class Room {
     @Id
     @Column(name = "id_salas")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
     private Integer id_juego;

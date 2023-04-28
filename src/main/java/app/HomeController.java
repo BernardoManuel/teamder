@@ -63,21 +63,24 @@ public class HomeController {
 
     public void generateChatsList() throws IOException {
         Set<Room> rooms = roomRepository.findUserRooms(user);
-        for (Room room : rooms) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-            HBox item = loader.load();
+        System.out.println(rooms);
+        if (rooms != null) {
+            for (Room room : rooms) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+                HBox item = loader.load();
 
-            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
 
-            chatsList.getChildren().add(item);
-            Node view = item.getChildren().get(0).getParent();
-            view.setOnMouseClicked(event -> {
-                try {
-                    homeView.setCenter(getChatView(room));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                chatsList.getChildren().add(item);
+                Node view = item.getChildren().get(0).getParent();
+                view.setOnMouseClicked(event -> {
+                    try {
+                        homeView.setCenter(getChatView(room));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
         }
     }
 

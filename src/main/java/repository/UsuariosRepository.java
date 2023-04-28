@@ -5,8 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.User;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,27 +45,13 @@ public class UsuariosRepository {
         return usuario;
     }
 
-    public ObservableList<User> findAll() throws SQLException {
-        ObservableList<User> usuarios = FXCollections.observableArrayList();
-        String query = "SELECT * FROM usuarios";
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                User usuario = new User();
-                usuario.setId(resultSet.getInt("cod_user"));
-                usuario.setNombreUsuario(resultSet.getString("nom_user"));
-                usuario.setContraseña(resultSet.getString("contraseña"));
-                usuario.setSalt(resultSet.getString("salt"));
-                usuario.setCorreo(resultSet.getString("correo"));
-                usuario.setDescripcion(resultSet.getString("descripcion"));
-                // Agrega más atributos de la entidad Usuario según tu base de datos
-                usuarios.add(usuario);
-            }
-        }
-        return usuarios;
-    }
-
     public void save(User usuario) throws SQLException {
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        session.persist(usuario);
+        session.getTransaction().commit();
+        session.close();
+        /*
         String query = "INSERT INTO usuarios (nom_user, contraseña, salt, correo, descripcion) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, usuario.getNombreUsuario());
@@ -78,6 +62,8 @@ public class UsuariosRepository {
             // Configura más parámetros del statement según tu base de datos y entidad Usuario
             statement.executeUpdate();
         }
+
+         */
     }
 
     public boolean isNombreUsuarioExists(String nombreUsuario) throws SQLException {
