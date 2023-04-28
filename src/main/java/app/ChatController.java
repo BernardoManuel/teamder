@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Message;
 import model.Room;
-import model.Usuario;
+import model.User;
 import repository.MessageRepository;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
@@ -25,7 +25,7 @@ public class ChatController extends BorderPane {
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-    private Usuario user;
+    private User user;
     private Room room;
     private String inputMessageText;
     private MessageRepository messageRepository;
@@ -197,7 +197,7 @@ public class ChatController extends BorderPane {
         }
     }
 
-    public void setUser(Usuario user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

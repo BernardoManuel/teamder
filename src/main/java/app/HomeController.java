@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
 import model.Room;
-import model.Usuario;
+import model.User;
 import repository.RoomRepository;
 import utils.ConnectionUtil;
 
@@ -26,7 +26,7 @@ public class HomeController {
     @FXML private VBox chatsList;
     @FXML private Text userLogged;
 
-    private Usuario user;
+    private User user;
     private ChatController currentChatController;
 
     private RoomRepository roomRepository;
@@ -114,7 +114,7 @@ public class HomeController {
         });
     }
 
-    public void setUsername(Usuario user) {
+    public void setUsername(User user) {
         this.user = user;
     }
 

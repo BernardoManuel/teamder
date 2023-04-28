@@ -13,13 +13,11 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.Usuario;
+import model.User;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
 import utils.PasswordUtil;
@@ -27,7 +25,6 @@ import utils.PasswordUtil;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class FormController {
@@ -45,12 +42,14 @@ public class FormController {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
     private UsuariosRepository usuariosRepository;
+    private UsuariosRepository usuariosRepository2;
     private Connection connection;
 
     public void initialize() throws SQLException {
         //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
         connection = ConnectionUtil.getConnection();
-        usuariosRepository = new UsuariosRepository(connection);
+        usuariosRepository = new UsuariosRepository();
+        usuariosRepository2 = new UsuariosRepository(connection);
 
         //insertamos el logo del login
         Image logoFormulario = new Image("file:src/main/resources/logo/logo_sin_fondo.png");
@@ -101,17 +100,8 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(Usuario usuario) {
+    private void iniciarSesion(User usuario) {
         try {
-//            //Cargamos la vista home
-//            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
-//            AnchorPane home = formLoader.load();
-//            Scene homeScene = new Scene(home);
-//            //Recuperamos y mostramos la vista home
-//            Stage stage = (Stage) buttonLogin.getScene().getWindow();
-//            stage.setResizable(true);//Permitimos la redimension de la ventana
-//            stage.setScene(homeScene);
-
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
             ((HomeController)fxmlLoader.getController()).setUsername(usuario);
@@ -133,7 +123,7 @@ public class FormController {
         String password = passwordField.getText();
 
         // Validar usuario
-        Usuario usuario = usuariosRepository.findUsuarioByNombreUsuario(username);
+        User usuario = usuariosRepository.findUserByUsername(username);
 
         if(usuario!=null) {
             // Obtener el salt del usuario encontrado

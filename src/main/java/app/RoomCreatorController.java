@@ -8,7 +8,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.Game;
 import model.Room;
-import model.Usuario;
+import model.User;
 import repository.GamesRepository;
 import repository.RoomRepository;
 import utils.ConnectionUtil;
@@ -23,7 +23,7 @@ public class RoomCreatorController {
     private GamesRepository gamesRepository;
     private RoomRepository roomRepository;
     private Connection connection;
-    private Usuario user;
+    private User user;
 
     @FXML
     private ChoiceBox gameSelector;
@@ -78,7 +78,7 @@ public class RoomCreatorController {
 
     }
 
-    public void setUser(Usuario user) {
+    public void setUser(User user) {
         this.user = user;
     }
     public void setHomeController(HomeController homeController) {

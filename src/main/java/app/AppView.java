@@ -7,7 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
-public class LoginView extends Application {
+public class AppView extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
