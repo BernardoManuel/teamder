@@ -196,7 +196,7 @@ public class ChatController extends BorderPane {
                     // Leer datos de audio del micrófono en el búfer ajustado
                     int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
 
-                    // Enviar los datos ajustados al servidor
+                    // Enviar los datos al servidor
                     dataOutputStream.write(buffer, 0, numBytesLeidos);
                     dataOutputStream.flush();
 
