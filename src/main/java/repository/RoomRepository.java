@@ -28,6 +28,7 @@ public class RoomRepository {
 
     public Set<Room> findUserRooms(User user) {
         Set<Room> rooms = null;
+        
         try {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
