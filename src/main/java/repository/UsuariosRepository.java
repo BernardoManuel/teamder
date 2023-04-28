@@ -35,6 +35,8 @@ public class UsuariosRepository {
                     .setParameter("pusername", username)
                     .list();
             usuario = users.get(0);
+            session.getTransaction().commit();
+            session.close();
         } catch (IndexOutOfBoundsException e) {
             session.getTransaction().commit();
             session.close();

@@ -13,12 +13,14 @@ import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
 import model.Room;
 import model.User;
+import org.hibernate.Session;
 import repository.RoomRepository;
 import utils.ConnectionUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class HomeController {
 
@@ -31,12 +33,15 @@ public class HomeController {
     private RoomRepository roomRepository;
     private Connection connection;
 
+    private RoomRepository roomRepository2;
+
     @FXML
     public void initialize() throws SQLException {
 
         //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
         connection = ConnectionUtil.getConnection();
         roomRepository = new RoomRepository(connection);
+        roomRepository2 = new RoomRepository();
 
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
@@ -49,7 +54,32 @@ public class HomeController {
                 e.printStackTrace();
             }
         });
+    }
 
+    private void generateHome() throws IOException {
+        userLogged.setText(user.getNombreUsuario());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
+        homeView.setCenter(loader.load());
+    }
+
+    public void generateChatsList() throws SQLException, IOException {
+        List<Room> rooms = roomRepository.findUserRooms(user);
+        for (Room room : rooms) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+            HBox item = loader.load();
+
+            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+
+            chatsList.getChildren().add(item);
+            Node view = item.getChildren().get(0).getParent();
+            view.setOnMouseClicked(event -> {
+                try {
+                    homeView.setCenter(getChatView(room));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     public void placePlaceholder() throws IOException {
@@ -68,32 +98,6 @@ public class HomeController {
         currentChatController = loader.getController();
 
         return root;
-    }
-
-    private void generateHome() throws IOException {
-        userLogged.setText(user.getNombreUsuario());
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
-        homeView.setCenter(loader.load());
-    }
-
-    public void generateChatsList() throws SQLException, IOException {
-        ObservableList<Room> rooms = roomRepository.findUserRooms(user.getId());
-        for (Room room : rooms) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-            HBox item = loader.load();
-
-            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
-
-            chatsList.getChildren().add(item);
-            Node view = item.getChildren().get(0).getParent();
-            view.setOnMouseClicked(event -> {
-                try {
-                    homeView.setCenter(getChatView(room));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
     }
 
     public void addNewRoomToChatsList(Room room) throws IOException {
@@ -117,9 +121,6 @@ public class HomeController {
         this.user = user;
     }
 
-    private void closeWindowEvent(WindowEvent event) {
-        closeCurrentChat();
-    }
 
     @FXML
     private void openRoomCreator() throws IOException {
@@ -137,6 +138,11 @@ public class HomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("friend-view.fxml"));
         homeView.setCenter(loader.load());
     }
+
+    private void closeWindowEvent(WindowEvent event) {
+        closeCurrentChat();
+    }
+
     private void closeCurrentChat() {
         if (currentChatController != null) {
             currentChatController.closeEverything();

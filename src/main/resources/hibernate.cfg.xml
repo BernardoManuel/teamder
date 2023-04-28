@@ -8,5 +8,8 @@
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.transform_hbm_xml.enabled">true</property>
         <mapping class="model.User"/>
+        <mapping class="model.Room"/>
+        <mapping class="model.Game"/>
+        <mapping class="model.Message"/>
     </session-factory>
 </hibernate-configuration>

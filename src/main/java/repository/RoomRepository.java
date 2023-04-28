@@ -1,20 +1,48 @@
 package repository;
 
+import database.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Message;
 import model.Room;
+import model.User;
+import org.hibernate.Session;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class RoomRepository {
-
     private Connection connection;
+    private Session session;
+
+    public RoomRepository() {
+    }
 
     public RoomRepository(Connection connection) {
         this.connection = connection;
+    }
+
+    public List<Room> findUserRooms(User user) {
+        List<Room> rooms = null;
+        try {
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+
+            rooms = session.createNativeQuery("SELECT * FROM salas WHERE id_salas IN (SELECT id_sala from relacion_user_salas where " +
+                    "id_user = :pid_user);", Room.class)
+                    .setParameter("pid_user", user.getId())
+                    .list();
+            session.getTransaction().commit();
+            session.close();
+        } catch (IndexOutOfBoundsException e) {
+            session.getTransaction().commit();
+            session.close();
+        }
+
+        return rooms;
     }
 
     public ObservableList<Room> findUserRooms(Integer id_user) throws SQLException {
