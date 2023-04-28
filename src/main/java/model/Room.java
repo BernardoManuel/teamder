@@ -1,7 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "salas")
@@ -17,8 +17,21 @@ public class Room {
     private Integer max_jugadores;
     @Column(name = "creador")
     private Integer id_creador;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "sala_usuario",
+            joinColumns = @JoinColumn(name = "id_salas"),
+            inverseJoinColumns = @JoinColumn(name = "cod_user"))
+    private Set<User> users = new HashSet<>();
 
-    public Room() {
+    public Room() {}
+
+    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, HashSet<User> users) {
+        this.id = id;
+        this.id_juego = id_juego;
+        this.nombre = nombre;
+        this.max_jugadores = max_jugadores;
+        this.id_creador = id_creador;
+        this.users = users;
     }
 
     public Integer getId() {
@@ -61,27 +74,11 @@ public class Room {
         this.id_creador = id_creador;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Room room = (Room) o;
-        return Objects.equals(id, room.id) && Objects.equals(id_juego, room.id_juego) && Objects.equals(nombre, room.nombre) && Objects.equals(max_jugadores, room.max_jugadores) && Objects.equals(id_creador, room.id_creador);
+    public Set<User> getUsers() {
+        return users;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, id_juego, nombre, max_jugadores, id_creador);
-    }
-
-    @Override
-    public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", id_juego='" + id_juego + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", max_jugadores=" + max_jugadores +
-                ", id_creador=" + id_creador +
-                '}';
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

@@ -34,10 +34,12 @@ public class UsuariosRepository {
             List<User> users = session.createNativeQuery("SELECT * FROM usuarios WHERE nom_user = :pusername", User.class)
                     .setParameter("pusername", username)
                     .list();
-            usuario = users.get(0);
-            session.getTransaction().commit();
-            session.close();
+            if (users.size() > 0) {
+                usuario = users.get(0);
+            }
         } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } finally {
             session.getTransaction().commit();
             session.close();
         }

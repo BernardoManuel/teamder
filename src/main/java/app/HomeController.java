@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 public class HomeController {
 
@@ -50,8 +51,6 @@ public class HomeController {
                 generateChatsList();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         });
     }
@@ -62,8 +61,8 @@ public class HomeController {
         homeView.setCenter(loader.load());
     }
 
-    public void generateChatsList() throws SQLException, IOException {
-        List<Room> rooms = roomRepository.findUserRooms(user);
+    public void generateChatsList() throws IOException {
+        Set<Room> rooms = roomRepository.findUserRooms(user);
         for (Room room : rooms) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
             HBox item = loader.load();

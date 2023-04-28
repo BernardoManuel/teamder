@@ -2,6 +2,11 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "usuarios")
 public class User {
@@ -17,6 +22,21 @@ public class User {
     private String salt;
     private String correo;
     private String descripcion;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    public Set<Room> rooms = new HashSet<>();
+
+    public User() {
+    }
+
+    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms) {
+        this.id = id;
+        this.nombreUsuario = nombreUsuario;
+        this.contraseña = contraseña;
+        this.salt = salt;
+        this.correo = correo;
+        this.descripcion = descripcion;
+        this.rooms = rooms;
+    }
 
     public Integer getId() {
         return id;
@@ -64,5 +84,13 @@ public class User {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Set<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(HashSet<Room> rooms) {
+        this.rooms = rooms;
     }
 }
