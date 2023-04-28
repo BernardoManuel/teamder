@@ -19,12 +19,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
 import repository.UsuariosRepository;
-import utils.ConnectionUtil;
 import utils.PasswordUtil;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class FormController {
@@ -37,19 +34,10 @@ public class FormController {
     @FXML private Hyperlink hyperlinkCrearCuenta;
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
-
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/teamder";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
     private UsuariosRepository usuariosRepository;
-    private UsuariosRepository usuariosRepository2;
-    private Connection connection;
 
     public void initialize() throws SQLException {
-        //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
-        connection = ConnectionUtil.getConnection();
         usuariosRepository = new UsuariosRepository();
-        usuariosRepository2 = new UsuariosRepository(connection);
 
         //insertamos el logo del login
         Image logoFormulario = new Image("file:src/main/resources/logo/logo_sin_fondo.png");
@@ -61,23 +49,15 @@ public class FormController {
 
         //Colocamos el focus en el boton
         Platform.runLater(() -> buttonLogin.requestFocus());
-
-
-        buttonLogin.setOnAction(actionEvent ->
-                {
+        buttonLogin.setOnAction(actionEvent -> {
                     try {
                         handleLogin();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
                     } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
-                }
-        );
+        });
 
-        hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent ->
-                    formRegistro()
-                );
+        hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent -> formRegistro());
     }
 
     private void formRegistro() {
@@ -95,7 +75,6 @@ public class FormController {
         }
     }
 
-
     /**
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
@@ -105,20 +84,19 @@ public class FormController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
             ((HomeController)fxmlLoader.getController()).setUsername(usuario);
+
             Scene scene = new Scene(root, 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
-
             stage.show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleLogin() throws SQLException, NoSuchAlgorithmException {
+    private void handleLogin() throws NoSuchAlgorithmException {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -147,12 +125,10 @@ public class FormController {
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
-                return;
             }
         } else {
             //Lanzar error de inicio de sesión.
             mostrarMensajeError("Usuario o contraseña no coinciden");
-            return;
         }
     }
 
@@ -179,10 +155,4 @@ public class FormController {
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
-
-    private void sendUsernameToHomeView(Parent root, String username) {
-        Text usernameField = (Text) root.lookup("#usernameLogged");
-        usernameField.setText(username);
-    }
-
 }

@@ -28,7 +28,6 @@ public class HomeController {
 
     private User user;
     private ChatController currentChatController;
-
     private RoomRepository roomRepository;
     private Connection connection;
 
