@@ -185,26 +185,19 @@ public class ChatController extends BorderPane {
             while (socket != null && socket.isConnected()) {
                 try {
                     // Configurar la línea de entrada de audio (micrófono)
-                    AudioFormat formatoAudioEntrada = new AudioFormat(8000.0f, 16, 1, true, true);
-                    AudioFormat formatoAudioEntradaG711 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000.0f, 16, 1, 2, 8000.0f, true);
+                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.f, 16, 1, true, true);
                     TargetDataLine lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudioEntrada);
-                    lineaEntradaAudio.open(formatoAudioEntradaG711);
+                    lineaEntradaAudio.open(formatoAudioEntrada);
                     lineaEntradaAudio.start();
 
                     // Buffer para los datos de audio
                     byte[] buffer = new byte[1024];
-                    // Calcular el tamaño de un fotograma en bytes
-                    int frameSize = formatoAudioEntrada.getFrameSize();
-                    // Calcular el número de fotogramas en el búfer
-                    int numFrames = buffer.length / frameSize;
-                    // Ajustar el tamaño del búfer para asegurarse de que se estén escribiendo un número entero de fotogramas
-                    byte[] adjustedBuffer = new byte[numFrames * frameSize];
 
                     // Leer datos de audio del micrófono en el búfer ajustado
-                    int numBytesLeidos = lineaEntradaAudio.read(adjustedBuffer, 0, adjustedBuffer.length);
+                    int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
 
                     // Enviar los datos ajustados al servidor
-                    dataOutputStream.write(adjustedBuffer, 0, numBytesLeidos);
+                    dataOutputStream.write(buffer, 0, numBytesLeidos);
                     dataOutputStream.flush();
 
                 } catch (IOException e) {
@@ -226,28 +219,18 @@ public class ChatController extends BorderPane {
                 while (socket != null && socket.isConnected()) {
                     try {
                         // Configurar la línea de salida de audio (altavoces)
-                        AudioFormat formatoAudioSalida = new AudioFormat(8000.0f, 16, 1, true, true);
-                        AudioFormat formatoAudioSalidaG711 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000.0f, 16, 1, 2, 8000.0f, true);
+                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, true);
                         SourceDataLine lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudioSalida);
-                        lineaSalidaAudio.open(formatoAudioSalidaG711);
+                        lineaSalidaAudio.open(formatoAudioSalida);
                         lineaSalidaAudio.start();
 
                         // Buffer para los datos de audio
                         byte[] buffer = new byte[1024];
-                        // Calcular el tamaño de un fotograma en bytes
-                        int frameSize = formatoAudioSalida.getFrameSize();
 
                         int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
 
-                        // Calcular el número de fotogramas en el búfer
-                        int numFrames = numBytesRecibidos / frameSize;
-
-                        // Ajustar el tamaño del búfer para asegurarse de que se estén escribiendo un número entero de fotogramas
-                        byte[] adjustedBuffer = new byte[numFrames * frameSize];
-                        System.arraycopy(buffer, 0, adjustedBuffer, 0, numBytesRecibidos);
-
                         // Reproducir datos de audio en los altavoces
-                        lineaSalidaAudio.write(adjustedBuffer, 0, adjustedBuffer.length);
+                        lineaSalidaAudio.write(buffer, 0, buffer.length);
 
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
