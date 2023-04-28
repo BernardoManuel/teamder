@@ -62,6 +62,13 @@ public class ChatController extends BorderPane {
             }
         });
     }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 
     private void printMessage(String message) {
         Platform.runLater(() -> {
@@ -149,6 +156,17 @@ public class ChatController extends BorderPane {
         }
     }
 
+    private void saveMessage(String msg) throws SQLException {
+        Message message = new Message();
+
+        message.setId_sala(room.getId());
+        message.setId_user(user.getId());
+        message.setMensaje(msg);
+        message.setFecha(Instant.now().getEpochSecond());
+
+        messageRepository.save(message);
+    }
+
     public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
@@ -166,6 +184,20 @@ public class ChatController extends BorderPane {
         }).start();
     }
 
+    public void closeEverything() {
+        try {
+            if (bufferedReader != null) {
+                bufferedReader = null;
+            }
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) {
@@ -181,38 +213,5 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void closeEverything() {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader = null;
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    private void saveMessage(String msg) throws SQLException {
-        Message message = new Message();
-
-        message.setId_sala(room.getId());
-        message.setId_user(user.getId());
-        message.setMensaje(msg);
-        message.setFecha(Instant.now().getEpochSecond());
-
-        messageRepository.save(message);
     }
 }
