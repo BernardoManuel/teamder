@@ -20,6 +20,8 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
 public class ChatController extends BorderPane {
     private Socket socket;
@@ -120,7 +122,7 @@ public class ChatController extends BorderPane {
 
     public void loadMessages() {
         try {
-            ObservableList<Message> messages = messageRepository.findRoomMessages(room.getId());
+            List<Message> messages = messageRepository.findRoomMessages(room);
             for (Message message : messages) {
                 String username = usuariosRepository.getUsernameById(message.getUser().getId());
                 printMessage(username, message.getMensaje());

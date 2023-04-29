@@ -1,6 +1,9 @@
 package model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.util.*;
 
 @Entity
@@ -23,6 +26,8 @@ public class Room {
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("fecha ASC")
+    @Fetch(FetchMode.JOIN)
     private Set<Message> messages = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

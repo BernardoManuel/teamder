@@ -4,6 +4,7 @@ import database.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Message;
+import model.Room;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
@@ -11,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 
 public class MessageRepository {
 
@@ -24,6 +27,7 @@ public class MessageRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
+            message.getRoom().getMessages().add(message);
             session.persist(message);
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -34,23 +38,21 @@ public class MessageRepository {
     }
 
 
-    public ObservableList<Message> findRoomMessages(Integer id_room) throws SQLException {
-        ObservableList<Message> messages = FXCollections.observableArrayList();
-        String query = "SELECT * FROM `mensajes` WHERE id_sala = ? ORDER by fecha asc;";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id_room);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Message message = new Message();
-                    message.setId(resultSet.getInt("id_mensaje"));
-                    message.setMensaje(resultSet.getString("mensaje"));
-                    message.setFecha(resultSet.getLong("fecha"));
+    public List<Message> findRoomMessages(Room room) {
 
-                    // Agrega más atributos de la entidad Message según tu base de datos
-                    messages.add(message);
-                }
-            }
+        List    <Message> messages = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            messages = session.createNativeQuery("SELECT * FROM mensajes WHERE id_sala = :pid_sala", Message.class)
+                            .setParameter("pid_sala", room.getId()).list();
+            session.getTransaction().commit();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
+
         return messages;
     }
 }
