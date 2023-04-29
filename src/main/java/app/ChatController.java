@@ -24,6 +24,14 @@ import java.sql.SQLException;
 import java.time.Instant;
 
 public class ChatController extends BorderPane {
+    //CONSTANTES DE FORMATO DE AUDIO
+    public static final float SAMPLE_RATE = 8000.0f;
+    public static final int SAMPLE_SIZE_IN_BITS = 16;
+    public static final int CHANNELS = 1;
+    public static final boolean SIGNED = true;
+    public static final boolean BIG_ENDIAN = false;
+
+
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
@@ -60,7 +68,7 @@ public class ChatController extends BorderPane {
             loadMessages();
             try {
                 socket = new Socket("localhost", 50000);
-                socket.setSoLinger(true, 0);
+                socket.setSoLinger(SIGNED, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.dataInputStream = new DataInputStream(socket.getInputStream());
@@ -71,13 +79,13 @@ public class ChatController extends BorderPane {
 
 
                 // Configurar la línea de salida de audio (altavoces)
-                AudioFormat formatoAudio = new AudioFormat(8000.0f, 16, 1, true, true);
+                AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
                 lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
                 lineaSalidaAudio.open(formatoAudio);
                 lineaSalidaAudio.start();
 
                 // Configurar la línea de entrada de audio (micrófono)
-                AudioFormat formatoAudio2 = new AudioFormat(8000.0f, 16, 1, true, true);
+                AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
                 lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
                 lineaEntradaAudio.open(formatoAudio2);
                 lineaEntradaAudio.start();
@@ -203,7 +211,7 @@ public class ChatController extends BorderPane {
                 try {
 
                     // Bucle para la reproducción de audio recibido del servidor
-                    while (true) {
+                    while (SIGNED) {
                         // Buffer para los datos de audio
                         byte[] buffer = new byte[1024];
                         int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
