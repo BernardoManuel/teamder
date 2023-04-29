@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import model.Message;
 import model.Room;
 import model.User;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
 import java.sql.Connection;
@@ -31,8 +32,9 @@ public class RoomRepository {
         try {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
+            Hibernate.initialize(user.getRooms());
             rooms = user.getRooms();
-        } catch (IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             session.getTransaction().commit();
@@ -42,35 +44,23 @@ public class RoomRepository {
         return rooms;
     }
 
-    public void save(Room room) throws SQLException {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.persist(room);
-        session.getTransaction().commit();
-        session.close();
+    public void save(Room room, User user) throws SQLException {
+        try {
 
-        /*
-        String generatedColumns[] = { "id_salas" };
-        String query = "INSERT INTO salas (id_juego, nombre, max_jugadores, creador) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query, generatedColumns)) {
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
 
-            statement.setInt(1, room.getId_juego());
-            statement.setString(2, room.getNombre());
-            statement.setInt(3, room.getMax_jugadores());
-            statement.setInt(4, room.getId_creador());
+            user.getRooms().add(room);
+            room.getUsers().add(user);
 
-            // Configura más parámetros del statement según tu base de datos y entidad Room
-            statement.executeUpdate();
+            session.merge(room);
 
-            try (ResultSet rs = statement.getGeneratedKeys()) {
-                if (rs.next()) {
-                    room.setId(rs.getInt(1));
-                    createRelationRoomToUser(room);
-                }
-            }
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
-
-         */
     }
 
     public void createRelationRoomToUser(Room room) throws SQLException {

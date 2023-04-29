@@ -22,7 +22,7 @@ public class User {
     private String salt;
     private String correo;
     private String descripcion;
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Room> rooms = new HashSet<>();
 
     public User() {

@@ -69,7 +69,7 @@ public class RoomCreatorController {
             room.setMax_jugadores(Integer.parseInt(inputMaxPlayers.getText().trim()));
             room.setId_creador(user.getId());
 
-            roomRepository.save(room);
+            roomRepository.save(room, user);
             homeController.addNewRoomToChatsList(room);
             cleanInputs();
         } catch (SQLException | IOException e) {

@@ -18,7 +18,7 @@ public class Room {
     private Integer max_jugadores;
     @Column(name = "creador")
     private Integer id_creador;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "sala_usuario",
             joinColumns = @JoinColumn(name = "id_salas"),
             inverseJoinColumns = @JoinColumn(name = "cod_user"))
