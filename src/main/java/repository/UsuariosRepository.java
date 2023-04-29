@@ -49,19 +49,6 @@ public class UsuariosRepository {
         session.persist(usuario);
         session.getTransaction().commit();
         session.close();
-        /*
-        String query = "INSERT INTO usuarios (nom_user, contraseña, salt, correo, descripcion) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, usuario.getNombreUsuario());
-            statement.setString(2, usuario.getContraseña());
-            statement.setString(3, usuario.getSalt());
-            statement.setString(4, usuario.getCorreo());
-            statement.setString(5, usuario.getDescripcion());
-            // Configura más parámetros del statement según tu base de datos y entidad Usuario
-            statement.executeUpdate();
-        }
-
-         */
     }
 
     public boolean isNombreUsuarioExists(String nombreUsuario) throws SQLException {
