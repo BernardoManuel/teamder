@@ -43,8 +43,6 @@ public class MessageRepository {
                 while (resultSet.next()) {
                     Message message = new Message();
                     message.setId(resultSet.getInt("id_mensaje"));
-                    message.setId_sala(resultSet.getInt("id_sala"));
-                    message.setId_user(resultSet.getInt("code_user"));
                     message.setMensaje(resultSet.getString("mensaje"));
                     message.setFecha(resultSet.getLong("fecha"));
 

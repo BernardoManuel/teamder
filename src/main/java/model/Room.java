@@ -24,15 +24,19 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "cod_user"))
     private Set<User> users = new HashSet<>();
 
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Message> messages = new HashSet<>();
+
     public Room() {}
 
-    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users) {
+    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users, Set<Message> messages) {
         this.id = id;
         this.id_juego = id_juego;
         this.nombre = nombre;
         this.max_jugadores = max_jugadores;
         this.id_creador = id_creador;
         this.users = users;
+        this.messages = messages;
     }
 
     public Integer getId() {
@@ -81,5 +85,13 @@ public class Room {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 }

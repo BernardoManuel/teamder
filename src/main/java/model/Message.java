@@ -11,35 +11,31 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    private Integer id_sala;
-    @Column(name = "code_user")
-    private Integer id_user;
-    @Column
     private String mensaje;
     @Column
     private long fecha;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sala")
+    private Room room;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "code_user")
+    private User user;
+
     public Message() {
     }
 
-    public Message(Integer id, Integer id_sala, Integer id_user, String mensaje, long fecha) {
+    public Message(Integer id, String mensaje, long fecha, Room room, User user) {
         this.id = id;
-        this.id_sala = id_sala;
-        this.id_user = id_user;
         this.mensaje = mensaje;
         this.fecha = fecha;
+        this.room = room;
+        this.user = user;
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public Integer getId_sala() {
-        return id_sala;
-    }
-
-    public Integer getId_user() {
-        return id_user;
     }
 
     public String getMensaje() {
@@ -54,19 +50,27 @@ public class Message {
         this.id = id;
     }
 
-    public void setId_sala(Integer id_sala) {
-        this.id_sala = id_sala;
-    }
-
-    public void setId_user(Integer id_user) {
-        this.id_user = id_user;
-    }
-
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
 
     public void setFecha(long fecha) {
         this.fecha = fecha;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

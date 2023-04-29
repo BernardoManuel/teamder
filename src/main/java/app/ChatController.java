@@ -122,7 +122,7 @@ public class ChatController extends BorderPane {
         try {
             ObservableList<Message> messages = messageRepository.findRoomMessages(room.getId());
             for (Message message : messages) {
-                String username = usuariosRepository.getUsernameById(message.getId_user());
+                String username = usuariosRepository.getUsernameById(message.getUser().getId());
                 printMessage(username, message.getMensaje());
             }
         } catch (Exception e ) {
@@ -157,10 +157,10 @@ public class ChatController extends BorderPane {
     private void saveMessage(String msg) {
         Message message = new Message();
 
-        message.setId_sala(room.getId());
-        message.setId_user(user.getId());
+        message.setUser(user);
         message.setMensaje(msg);
         message.setFecha(Instant.now().getEpochSecond());
+        message.setRoom(room);
 
         messageRepository.save(message);
     }

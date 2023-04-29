@@ -25,10 +25,13 @@ public class User {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Room> rooms = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Message> messages = new HashSet<>();
+
     public User() {
     }
 
-    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms) {
+    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.contraseña = contraseña;
@@ -36,6 +39,7 @@ public class User {
         this.correo = correo;
         this.descripcion = descripcion;
         this.rooms = rooms;
+        this.messages = messages;
     }
 
     public Integer getId() {
@@ -90,7 +94,15 @@ public class User {
         return rooms;
     }
 
-    public void setRooms(HashSet<Room> rooms) {
+    public void setRooms(Set<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 }
