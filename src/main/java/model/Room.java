@@ -10,8 +10,6 @@ public class Room {
     @Column(name = "id_salas")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
-    private Integer id_juego;
     @Column(name = "nombre")
     private String nombre;
     @Column
@@ -27,16 +25,20 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> messages = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_juego")
+    private Game game;
+
     public Room() {}
 
-    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users, Set<Message> messages) {
+    public Room(Integer id, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users, Set<Message> messages, Game game) {
         this.id = id;
-        this.id_juego = id_juego;
         this.nombre = nombre;
         this.max_jugadores = max_jugadores;
         this.id_creador = id_creador;
         this.users = users;
         this.messages = messages;
+        this.game = game;
     }
 
     public Integer getId() {
@@ -47,12 +49,12 @@ public class Room {
         this.id = id;
     }
 
-    public Integer getId_juego() {
-        return id_juego;
+    public Game getGame() {
+        return game;
     }
 
-    public void setId_juego(Integer id_juego) {
-        this.id_juego = id_juego;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public String getNombre() {

@@ -1,13 +1,16 @@
 package repository;
 
+import database.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Game;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class GamesRepository {
 
@@ -39,20 +42,21 @@ public class GamesRepository {
         return games;
     }
 
-    public int getGameByName(String name) throws SQLException {
-        String query = "select cod_juego from juegos where nom_juego = ?;";
-
+    public Game getGameByName(String name) throws SQLException {
         Game game = null;
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, name);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    game = new Game();
-                    game.setId(resultSet.getInt("cod_juego"));
-                }
-            }
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            List<Game> gamesResult = session.createNativeQuery("SELECT * FROM juegos WHERE nom_juego = :pnom_juego", Game.class)
+                    .setParameter("pnom_juego", name)
+                    .list();
+            game = gamesResult.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
 
-        return game.getId();
+        return game;
     }
 }

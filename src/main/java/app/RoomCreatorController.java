@@ -64,10 +64,10 @@ public class RoomCreatorController {
         try {
             Room room = new Room();
 
-            room.setId_juego(gamesRepository.getGameByName((String) gameSelector.getValue()));
             room.setNombre(inputRoomName.getText());
             room.setMax_jugadores(Integer.parseInt(inputMaxPlayers.getText().trim()));
             room.setId_creador(user.getId());
+            room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
 
             roomRepository.save(room, user);
             homeController.addNewRoomToChatsList(room);
