@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Game;
 import org.hibernate.Session;
+import model.Usuario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

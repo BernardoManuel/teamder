@@ -18,14 +18,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.User;
+import model.Usuario;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
 import utils.PasswordUtil;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 
 public class RegistroController {
 
@@ -103,7 +106,7 @@ public class RegistroController {
     //Y almacenara el usuario nuevo.
     private void handleRegister() throws SQLException, NoSuchAlgorithmException {
 
-        User nuevoUsuario = new User();
+        Usuario nuevoUsuario = new Usuario();
 
         // Comprobar nombre de usuario único
         String nombreUsuario = usernameField.getText();

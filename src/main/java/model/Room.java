@@ -1,10 +1,13 @@
 package model;
 
-import jakarta.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import java.util.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "salas")
@@ -86,12 +89,28 @@ public class Room {
         this.id_creador = id_creador;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return Objects.equals(id, room.id) && Objects.equals(id_juego, room.id_juego) && Objects.equals(nombre, room.nombre) && Objects.equals(max_jugadores, room.max_jugadores) && Objects.equals(id_creador, room.id_creador);
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, id_juego, nombre, max_jugadores, id_creador);
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", id_juego='" + id_juego + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", max_jugadores=" + max_jugadores +
+                ", id_creador=" + id_creador +
+                '}';
     }
 
     public Set<Message> getMessages() {

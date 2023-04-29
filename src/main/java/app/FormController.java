@@ -14,15 +14,23 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.User;
-import org.hibernate.Session;
+import model.Usuario;
 import repository.UsuariosRepository;
+import utils.ConnectionUtil;
 import utils.PasswordUtil;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class FormController {
 
@@ -37,6 +45,7 @@ public class FormController {
 
     private Session session;
     private UsuariosRepository usuariosRepository;
+    private Connection connection;
 
     public void initialize() {
         session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -52,16 +61,37 @@ public class FormController {
 
         //Colocamos el focus en el boton
         Platform.runLater(() -> buttonLogin.requestFocus());
-        buttonLogin.setOnAction(actionEvent -> {
+
+        passwordField.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
+
+        buttonLogin.setOnAction(actionEvent ->
+                {
                     try {
                         handleLogin();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
-        });
+                }
+        );
 
-        hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent -> formRegistro());
+        hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent ->
+                formRegistro()
+        );
     }
+
+    private void handleEnterKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            try {
+                handleLogin();
+            } catch (SQLException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                mostrarMensajeError("Error al iniciar sesión: " + e.getMessage());
+            }
+        }
+    }
+
 
     private void formRegistro() {
         try {
@@ -78,35 +108,46 @@ public class FormController {
         }
     }
 
+
     /**
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(User usuario) {
+    private void iniciarSesion(Usuario usuario) {
         try {
+//            //Cargamos la vista home
+//            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("homePage.fxml"));
+//            AnchorPane home = formLoader.load();
+//            Scene homeScene = new Scene(home);
+//            //Recuperamos y mostramos la vista home
+//            Stage stage = (Stage) buttonLogin.getScene().getWindow();
+//            stage.setResizable(true);//Permitimos la redimension de la ventana
+//            stage.setScene(homeScene);
+
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
-            ((HomeController)fxmlLoader.getController()).setUsername(usuario);
-
+            ((HomeController) fxmlLoader.getController()).setUsername(usuario);
             Scene scene = new Scene(root, 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
+
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleLogin() throws NoSuchAlgorithmException {
+    private void handleLogin() throws SQLException, NoSuchAlgorithmException {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
         // Validar usuario
-        User usuario = usuariosRepository.findUserByUsername(username);
+        Usuario usuario = usuariosRepository.findUsuarioByNombreUsuario(username);
 
-        if(usuario!=null) {
+        if (usuario != null) {
             // Obtener el salt del usuario encontrado
             String saltStr = usuario.getSalt();
             // Convertir el salt de hexadecimal a bytes
@@ -128,10 +169,12 @@ public class FormController {
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
+                return;
             }
         } else {
             //Lanzar error de inicio de sesión.
             mostrarMensajeError("Usuario o contraseña no coinciden");
+            return;
         }
     }
 
@@ -158,4 +201,10 @@ public class FormController {
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
+
+    private void sendUsernameToHomeView(Parent root, String username) {
+        Text usernameField = (Text) root.lookup("#usernameLogged");
+        usernameField.setText(username);
+    }
+
 }

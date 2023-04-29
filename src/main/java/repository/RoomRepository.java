@@ -1,6 +1,5 @@
 package repository;
 
-import database.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Message;
@@ -13,15 +12,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
 
 public class RoomRepository {
-    private Connection connection;
-    private Session session;
 
-    public RoomRepository() {
-    }
+    private Connection connection;
 
     public RoomRepository(Connection connection) {
         this.connection = connection;
@@ -41,6 +35,22 @@ public class RoomRepository {
             session.close();
         }
 
+        return rooms;
+    }
+
+    public void save(Room room, User user) {
+        try {
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+            user.getRooms().add(room);
+            room.getUsers().add(user);
+            session.merge(room);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
         return rooms;
     }
 

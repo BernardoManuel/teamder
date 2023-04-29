@@ -3,19 +3,19 @@ package repository;
 import database.HibernateUtil;
 import model.User;
 import org.hibernate.Session;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import model.Usuario;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 public class UsuariosRepository {
 
     private Connection connection;
-    private Session session;
-    public UsuariosRepository() {
 
-    }
     public UsuariosRepository(Connection connection) {
         this.connection = connection;
     }
@@ -79,15 +79,35 @@ public class UsuariosRepository {
         return false;
     }
 
+    public Usuario findUsuarioByNombreUsuario(String nombreUsuario) throws SQLException {
+        String query = "SELECT * FROM usuarios WHERE nom_user = ?";
+        Usuario usuario = null;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, nombreUsuario);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    usuario = new Usuario();
+                    usuario.setId(resultSet.getInt("cod_user"));
+                    usuario.setNombreUsuario(resultSet.getString("nom_user"));
+                    usuario.setContraseña(resultSet.getString("contraseña"));
+                    usuario.setSalt(resultSet.getString("salt"));
+                    usuario.setCorreo(resultSet.getString("correo"));
+                    usuario.setDescripcion(resultSet.getString("descripcion"));
+                }
+            }
+        }
+        return usuario;
+    }
+
     public String getUsernameById(int id_user) throws SQLException {
         String query = "select nom_user from usuarios where cod_user = ?;";
 
-        User usuario = null;
+        Usuario usuario = null;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id_user);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    usuario = new User();
+                    usuario = new Usuario();
                     usuario.setNombreUsuario(resultSet.getString("nom_user"));
                 }
             }

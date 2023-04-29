@@ -12,16 +12,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
 import model.Room;
-import model.User;
-import org.hibernate.Session;
+import model.Usuario;
 import repository.RoomRepository;
 import utils.ConnectionUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
 
 public class HomeController {
 
@@ -29,12 +26,11 @@ public class HomeController {
     @FXML private VBox chatsList;
     @FXML private Text userLogged;
 
-    private User user;
+    private Usuario user;
     private ChatController currentChatController;
+
     private RoomRepository roomRepository;
     private Connection connection;
-
-    private RoomRepository roomRepository2;
 
     @FXML
     public void initialize() throws SQLException {
@@ -42,7 +38,6 @@ public class HomeController {
         //Utilizamos el util de conexion para crear una conexion a nuestra BBDD
         connection = ConnectionUtil.getConnection();
         roomRepository = new RoomRepository(connection);
-        roomRepository2 = new RoomRepository();
 
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
@@ -51,8 +46,29 @@ public class HomeController {
                 generateChatsList();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
+
+    }
+
+    public void placePlaceholder() throws IOException {
+        closeCurrentChat();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
+        homeView.setCenter(loader.load());
+    }
+
+    private Parent getChatView(Room room) throws IOException {
+        closeCurrentChat();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
+        Parent root = loader.load();
+        ((ChatController) loader.getController()).setUser(user);
+        ((ChatController) loader.getController()).setRoom(room);
+        currentChatController = loader.getController();
+
+        return root;
     }
 
     private void generateHome() throws IOException {
@@ -118,10 +134,13 @@ public class HomeController {
         });
     }
 
-    public void setUsername(User user) {
+    public void setUsername(Usuario user) {
         this.user = user;
     }
 
+    private void closeWindowEvent(WindowEvent event) {
+        closeCurrentChat();
+    }
 
     @FXML
     private void openRoomCreator() throws IOException {
@@ -139,11 +158,6 @@ public class HomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("friend-view.fxml"));
         homeView.setCenter(loader.load());
     }
-
-    private void closeWindowEvent(WindowEvent event) {
-        closeCurrentChat();
-    }
-
     private void closeCurrentChat() {
         if (currentChatController != null) {
             currentChatController.closeEverything();
