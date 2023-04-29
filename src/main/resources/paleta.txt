@@ -1,0 +1,13 @@
+.color1 {color: #000005;}
+.color2 {color: #19264b;} //Background Left y Bordes Botones
+.color3 {color: #46559a;} //BOTONES
+.color4 {color: #7f8af5;}
+.color5 {color: #c5c5ff;} //Background Login
+
+
+PALETA ACTUAL
+.color1 {color: #142222;} //fondo izq amarillo
+.color2 {color: #125665;} //fondo derecha azul oscuro
+.color3 {color: #e75334;} //boton naranja
+.color4 {color: #ecb95d;}
+.color5 {color: #f8efad;}
