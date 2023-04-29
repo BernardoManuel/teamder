@@ -1,5 +1,6 @@
 package server;
 
+import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,8 +21,10 @@ public class ClientHandler implements Runnable {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             this.dataInputStream = new DataInputStream(socket.getInputStream());
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
             String username_and_idRoom = bufferedReader.readLine();
             this.clientUsername = username_and_idRoom.split("-")[0];
             this.id_room = Integer.parseInt(username_and_idRoom.split("-")[1]);
@@ -39,20 +42,6 @@ public class ClientHandler implements Runnable {
                     clientHandler.bufferedWriter.write(msg);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
-                }
-            } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
-            }
-        }
-    }
-
-    public void sendVoice(int numBytesRecibidos, byte[] buffer) {
-        for (ClientHandler clientHandler : clientHandlers) {
-            try {
-                if (!clientHandler.clientUsername.equals(clientUsername) && clientHandler.id_room == id_room) {
-                    // Enviar los datos al servidor
-                    dataOutputStream.write(buffer, 0, numBytesRecibidos);
-                    dataOutputStream.flush();
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
@@ -89,21 +78,8 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        String msgFromClient;
-        while (socket.isConnected()) {
-            try {
-                msgFromClient = bufferedReader.readLine();
-                broadcastMessage(msgFromClient);
+        while (true) {
 
-                // Buffer para los datos de audio
-                byte[] buffer = new byte[1024];
-                int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
-
-                sendVoice(numBytesRecibidos, buffer);
-            } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
-                break;
-            }
         }
     }
 }

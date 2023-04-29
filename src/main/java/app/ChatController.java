@@ -45,6 +45,8 @@ public class ChatController extends BorderPane {
     private TextField inputMessage;
     @FXML private Button buscarJugadoresBtn;
     @FXML private Button invitarAmigoBtn;
+    SourceDataLine lineaSalidaAudio;
+    TargetDataLine lineaEntradaAudio;
 
 
     public void initialize() throws SQLException {
@@ -66,10 +68,25 @@ public class ChatController extends BorderPane {
 
                 listenForMessage();
                 sendMessage();
-                listenForVoice();
-                sendVoice();
+
+
+                // Configurar la línea de salida de audio (altavoces)
+                AudioFormat formatoAudio = new AudioFormat(8000.0f, 16, 1, true, true);
+                lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
+                lineaSalidaAudio.open(formatoAudio);
+                lineaSalidaAudio.start();
+
+                // Configurar la línea de entrada de audio (micrófono)
+                AudioFormat formatoAudio2 = new AudioFormat(8000.0f, 16, 1, true, true);
+                lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
+                lineaEntradaAudio.open(formatoAudio2);
+                lineaEntradaAudio.start();
+
+                chatVoz();
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
             }
         });
     }
@@ -139,7 +156,7 @@ public class ChatController extends BorderPane {
     // Mensaje de conexión al servidor.
     public void sendMessage() {
         try {
-            bufferedWriter.write(user.getNombreUsuario());
+            bufferedWriter.write(user.getNombreUsuario() +"-"+ room.getId());
             bufferedWriter.newLine();
             bufferedWriter.flush();
             System.out.println("Mensaje enviado");
@@ -180,64 +197,31 @@ public class ChatController extends BorderPane {
     }
 
     // Bucle para el envio de datos de audio al servidor
-    public void sendVoice() {
+    public void chatVoz() {
         new Thread(() -> {
             while (socket != null && socket.isConnected()) {
                 try {
-                    // Configurar la línea de entrada de audio (micrófono)
-                    AudioFormat formatoAudioEntrada = new AudioFormat(16000.f, 16, 1, true, true);
-                    TargetDataLine lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudioEntrada);
-                    lineaEntradaAudio.open(formatoAudioEntrada);
-                    lineaEntradaAudio.start();
 
-                    // Buffer para los datos de audio
-                    byte[] buffer = new byte[1024];
-
-                    // Leer datos de audio del micrófono en el búfer ajustado
-                    int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
-
-                    // Enviar los datos al servidor
-                    dataOutputStream.write(buffer, 0, numBytesLeidos);
-                    dataOutputStream.flush();
-
-                } catch (IOException e) {
-                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                } catch (LineUnavailableException e) {
-                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-
-    // Bucle para la reproducción de audio recibido del servidor
-    public void listenForVoice() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (socket != null && socket.isConnected()) {
-                    try {
-                        // Configurar la línea de salida de audio (altavoces)
-                        AudioFormat formatoAudioSalida = new AudioFormat(16000.0f, 16, 1, true, true);
-                        SourceDataLine lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudioSalida);
-                        lineaSalidaAudio.open(formatoAudioSalida);
-                        lineaSalidaAudio.start();
-
+                    // Bucle para la reproducción de audio recibido del servidor
+                    while (true) {
                         // Buffer para los datos de audio
                         byte[] buffer = new byte[1024];
+                        int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
+
+                        // Enviar datos de audio al servidor
+                        dataOutputStream.write(buffer, 0, numBytesLeidos);
+                        dataOutputStream.flush();
+                        System.out.println("Datos de audio enviados al servidor");
 
                         int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
+                        System.out.println("Datos de audio recibidos del servidor");
 
                         // Reproducir datos de audio en los altavoces
-                        lineaSalidaAudio.write(buffer, 0, buffer.length);
-
-                    } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                    } catch (LineUnavailableException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
-                        e.printStackTrace();
+                        lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                        System.out.println("Audio reproducido en altavoces");
                     }
+                } catch (IOException e) {
+                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
                 }
             }
         }).start();
