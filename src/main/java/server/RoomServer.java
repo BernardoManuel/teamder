@@ -39,14 +39,13 @@ public class RoomServer {
 
                             // Enviar los datos de audio recibidos a todos los clientes conectados
                             for (Socket socketConectado : clientesConectados) {
-                                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-                                outputStream.write(buffer, 0, numBytesRecibidos);
-                                outputStream.flush();
+                                clienteOutputStream.write(buffer, 0, numBytesRecibidos);
+                                clienteOutputStream.flush();
                                 System.out.println("SERVIDOR: datos de audio enviados al cliente");
                             }
                         }
                     } catch (IOException e) {
-                        System.out.println("Error al comunicarse con el cliente: " + e.getMessage());
+                        System.out.println("SERVIDOR: Error al comunicarse con el cliente: " + e.getMessage());
                     }
                 }).start();
             }
