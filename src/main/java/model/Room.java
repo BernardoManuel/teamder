@@ -26,7 +26,7 @@ public class Room {
 
     public Room() {}
 
-    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, HashSet<User> users) {
+    public Room(Integer id, Integer id_juego, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users) {
         this.id = id;
         this.id_juego = id_juego;
         this.nombre = nombre;

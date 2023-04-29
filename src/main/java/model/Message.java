@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Message {
     @Id
     @Column(name = "id_mensaje")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
     private Integer id_sala;
@@ -19,6 +20,14 @@ public class Message {
     private long fecha;
 
     public Message() {
+    }
+
+    public Message(Integer id, Integer id_sala, Integer id_user, String mensaje, long fecha) {
+        this.id = id;
+        this.id_sala = id_sala;
+        this.id_user = id_user;
+        this.mensaje = mensaje;
+        this.fecha = fecha;
     }
 
     public Integer getId() {
@@ -59,29 +68,5 @@ public class Message {
 
     public void setFecha(long fecha) {
         this.fecha = fecha;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return Objects.equals(id, message.id) && Objects.equals(id_sala, message.id_sala) && Objects.equals(id_user, message.id_user) && Objects.equals(mensaje, message.mensaje) && Objects.equals(fecha, message.fecha);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, id_sala, id_user, mensaje, fecha);
-    }
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                ", id_sala=" + id_sala +
-                ", id_user=" + id_user +
-                ", mensaje='" + mensaje + '\'' +
-                ", fecha=" + fecha +
-                '}';
     }
 }

@@ -9,6 +9,7 @@ import java.util.Objects;
 public class Game {
     @Id
     @Column(name = "cod_juego")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "nom_juego")
     private String name;

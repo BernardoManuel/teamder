@@ -63,7 +63,6 @@ public class HomeController {
 
     public void generateChatsList() throws IOException {
         Set<Room> rooms = roomRepository.findUserRooms(user);
-        System.out.println(rooms);
         if (rooms != null) {
             for (Room room : rooms) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));

@@ -1,8 +1,6 @@
 package repository;
 
 import database.HibernateUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import model.User;
 import org.hibernate.Session;
 import java.sql.Connection;
@@ -45,7 +43,7 @@ public class UsuariosRepository {
         return usuario;
     }
 
-    public void save(User usuario) throws SQLException {
+    public void save(User usuario) {
         session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.persist(usuario);

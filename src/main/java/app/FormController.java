@@ -1,5 +1,6 @@
 package app;
 
+import database.HibernateUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -14,15 +15,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
+import org.hibernate.Session;
 import repository.UsuariosRepository;
 import utils.PasswordUtil;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 
 public class FormController {
 
@@ -34,9 +34,12 @@ public class FormController {
     @FXML private Hyperlink hyperlinkCrearCuenta;
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
+
+    private Session session;
     private UsuariosRepository usuariosRepository;
 
     public void initialize() {
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
         usuariosRepository = new UsuariosRepository();
 
         //insertamos el logo del login

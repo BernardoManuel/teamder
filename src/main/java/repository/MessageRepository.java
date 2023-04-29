@@ -1,8 +1,11 @@
 package repository;
 
+import database.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Message;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,15 +20,16 @@ public class MessageRepository {
         this.connection = connection;
     }
 
-    public void save(Message message) throws SQLException {
-        String query = "INSERT INTO mensajes (id_sala, code_user, mensaje, fecha) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, message.getId_sala());
-            statement.setInt(2, message.getId_user());
-            statement.setString(3, message.getMensaje());
-            statement.setLong(4, message.getFecha());
-            // Configura más parámetros del statement según tu base de datos y entidad Message
-            statement.executeUpdate();
+    public void save(Message message) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            session.persist(message);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
     }
 

@@ -44,17 +44,13 @@ public class RoomRepository {
         return rooms;
     }
 
-    public void save(Room room, User user) throws SQLException {
+    public void save(Room room, User user) {
         try {
-
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
-
             user.getRooms().add(room);
             room.getUsers().add(user);
-
             session.merge(room);
-
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();

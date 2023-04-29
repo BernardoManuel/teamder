@@ -84,7 +84,6 @@ public class ChatController extends BorderPane {
             msgPane.getStyleClass().add("message");
 
             messageContainer.getChildren().add(msgPane);
-            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
         });
     }
 
@@ -106,7 +105,6 @@ public class ChatController extends BorderPane {
             }
 
             messageContainer.getChildren().add(msgPane);
-            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
         });
     }
 
@@ -151,12 +149,12 @@ public class ChatController extends BorderPane {
                 bufferedWriter.flush();
                 saveMessage(msg);
             }
-        } catch (IOException | SQLException e) {
+        } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
-    private void saveMessage(String msg) throws SQLException {
+    private void saveMessage(String msg) {
         Message message = new Message();
 
         message.setId_sala(room.getId());

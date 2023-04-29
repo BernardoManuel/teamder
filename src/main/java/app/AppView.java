@@ -1,10 +1,13 @@
 package app;
 
+import database.HibernateUtil;
+import jakarta.persistence.EntityManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.hibernate.Session;
 
 
 public class AppView extends Application {
@@ -12,7 +15,6 @@ public class AppView extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-vista.fxml"));
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
