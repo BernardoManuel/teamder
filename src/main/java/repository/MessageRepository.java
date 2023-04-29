@@ -40,7 +40,7 @@ public class MessageRepository {
 
     public List<Message> findRoomMessages(Room room) {
 
-        List    <Message> messages = null;
+        List<Message> messages = null;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
