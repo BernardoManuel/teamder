@@ -3,6 +3,7 @@ package app;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
@@ -10,10 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Message;
 import model.Room;
-import model.User;
+import model.Usuario;
 import repository.MessageRepository;
 import repository.UsuariosRepository;
 import utils.ConnectionUtil;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -25,7 +28,7 @@ public class ChatController extends BorderPane {
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-    private User user;
+    private Usuario user;
     private Room room;
     private String inputMessageText;
     private MessageRepository messageRepository;
@@ -42,6 +45,7 @@ public class ChatController extends BorderPane {
 
     public void initialize() throws SQLException {
 
+        inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
         connection = ConnectionUtil.getConnection();
         messageRepository = new MessageRepository(connection);
         usuariosRepository = new UsuariosRepository(connection);
@@ -62,13 +66,6 @@ public class ChatController extends BorderPane {
             }
         });
     }
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
 
     private void printMessage(String message) {
         Platform.runLater(() -> {
@@ -84,7 +81,7 @@ public class ChatController extends BorderPane {
             msgPane.getStyleClass().add("message");
 
             messageContainer.getChildren().add(msgPane);
-            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
+            messageContainer.getStylesheets().add(getClass().getResource("/css/message.css").toExternalForm());
         });
     }
 
@@ -95,21 +92,31 @@ public class ChatController extends BorderPane {
             msgPane.setAlignment(Pos.CENTER_LEFT);
             msgPane.setFillWidth(false);
 
-            Text msgText = new Text(username + ": " + message);
-            msgText.setFill(Color.WHITE);
+            HBox contentPane = new HBox();
+            contentPane.setPadding(new Insets(5, 10, 5, 10));
+            contentPane.getStyleClass().add("message");
 
-            msgPane.getChildren().add(msgText);
-            msgPane.getStyleClass().add("message");
+            Text msgText = new Text(username + ": " + message);
+            msgText.getStyleClass().add("message-text");
+            contentPane.getChildren().add(msgText);
+
+            msgPane.getChildren().add(contentPane);
 
             if (username.equals(user.getNombreUsuario())) {
                 msgPane.getStyleClass().add("own-message");
             }
 
             messageContainer.getChildren().add(msgPane);
-            messageContainer.getStylesheets().add("file:///C:/Users/Estudios/Documents/Proyectos/teamder/src/main/resources/css/message.css");
+            messageContainer.getStylesheets().add(getClass().getResource("/css/message.css").toExternalForm());
         });
     }
 
+    private void handleEnterKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            onButtonClick();
+            event.consume();
+        }
+    }
 
     @FXML
     private void onButtonClick() {
@@ -127,7 +134,7 @@ public class ChatController extends BorderPane {
                 String username = usuariosRepository.getUsernameById(message.getId_user());
                 printMessage(username, message.getMensaje());
             }
-        } catch (Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -156,17 +163,6 @@ public class ChatController extends BorderPane {
         }
     }
 
-    private void saveMessage(String msg) throws SQLException {
-        Message message = new Message();
-
-        message.setId_sala(room.getId());
-        message.setId_user(user.getId());
-        message.setMensaje(msg);
-        message.setFecha(Instant.now().getEpochSecond());
-
-        messageRepository.save(message);
-    }
-
     public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
@@ -184,20 +180,6 @@ public class ChatController extends BorderPane {
         }).start();
     }
 
-    public void closeEverything() {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader = null;
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) {
@@ -213,5 +195,38 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void closeEverything() {
+        try {
+            if (bufferedReader != null) {
+                bufferedReader = null;
+            }
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setUser(Usuario user) {
+        this.user = user;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    private void saveMessage(String msg) throws SQLException {
+        Message message = new Message();
+
+        message.setId_sala(room.getId());
+        message.setId_user(user.getId());
+        message.setMensaje(msg);
+        message.setFecha(Instant.now().getEpochSecond());
+
+        messageRepository.save(message);
     }
 }
