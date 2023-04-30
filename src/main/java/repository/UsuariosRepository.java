@@ -1,23 +1,27 @@
 package repository;
 
 import database.HibernateUtil;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import model.User;
 import org.hibernate.Session;
 import java.util.List;
 
 public class UsuariosRepository {
-    private Session session;
     public UsuariosRepository() {}
 
     public User findUserByUsername(String username) {
         User result = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
-            List<User> users = session.createNativeQuery("SELECT * FROM usuarios WHERE nom_user = :pusername", User.class)
-                    .setParameter("pusername", username)
-                    .list();
-            if (users.size() > 0) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<User> query = cb.createQuery(User.class);
+            Root<User> root = query.from(User.class);
+            query.select(root).where(cb.equal(root.get("nombreUsuario"), username));
+            List<User> users = session.createQuery(query).getResultList();
+            if (!users.isEmpty()) {
                 result = users.get(0);
             }
         } catch (IndexOutOfBoundsException e) {
@@ -26,12 +30,11 @@ public class UsuariosRepository {
             session.getTransaction().commit();
             session.close();
         }
-
         return result;
     }
 
     public void save(User usuario) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.persist(usuario);
         session.getTransaction().commit();
@@ -43,9 +46,11 @@ public class UsuariosRepository {
         List<User> result = null;
         try {
             session.beginTransaction();
-            result = session.createNativeQuery("SELECT * FROM usuarios WHERE nom_user = :pnom_user", User.class)
-                    .setParameter("pnom_user", username)
-                    .list();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<User> query = cb.createQuery(User.class);
+            Root<User> root = query.from(User.class);
+            query.select(root).where(cb.equal(root.get("nombreUsuario"), username));
+            result = session.createQuery(query).getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,9 +66,11 @@ public class UsuariosRepository {
         List<User> result = null;
         try {
             session.beginTransaction();
-            result = session.createNativeQuery("SELECT * FROM usuarios WHERE correo = :pcorreo", User.class)
-                    .setParameter("pcorreo", correo)
-                    .list();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<User> query = cb.createQuery(User.class);
+            Root<User> root = query.from(User.class);
+            query.select(root).where(cb.equal(root.get("correo"), correo));
+            result = session.createQuery(query).getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
