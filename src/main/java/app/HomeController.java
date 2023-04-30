@@ -14,6 +14,8 @@ import model.Room;
 import model.User;
 import repository.RoomRepository;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class HomeController {
@@ -102,6 +104,33 @@ public class HomeController {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void updateChatsList() throws IOException {
+        Set<Room> rooms = roomRepository.findUserRooms(user);
+
+        if (rooms != null && !rooms.isEmpty()) {
+            List<HBox> roomsItems = new ArrayList<>();
+            for (Room room: rooms) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+                HBox item = loader.load();
+
+                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+
+
+                // chatsList.getChildren().add(item);
+                roomsItems.add(item);
+                Node view = item.getChildren().get(0).getParent();
+                view.setOnMouseClicked(event -> {
+                    try {
+                        homeView.setCenter(getChatView(room));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+            chatsList.getChildren().setAll(roomsItems);
+        }
     }
 
     public void setUsername(User user) {

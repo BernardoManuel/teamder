@@ -58,7 +58,7 @@ public class RoomCreatorController {
             room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
             roomRepository.save(room, user);
 
-            homeController.addNewRoomToChatsList(room);
+            homeController.updateChatsList();
             cleanInputs();
         } catch (IOException e) {
             e.printStackTrace();

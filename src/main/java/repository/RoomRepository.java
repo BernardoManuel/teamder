@@ -25,7 +25,6 @@ public class RoomRepository {
         } finally {
             session.close();
         }
-
         return rooms;
     }
 
@@ -36,6 +35,7 @@ public class RoomRepository {
             user.getRooms().add(room);
             room.getUsers().add(user);
             session.merge(room);
+            session.merge(user);
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
