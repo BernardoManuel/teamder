@@ -57,7 +57,6 @@ public class UsuariosRepository {
         } finally {
             session.close();
         }
-
         return (result != null && result.size() > 0);
     }
 
@@ -79,5 +78,20 @@ public class UsuariosRepository {
         }
 
         return (result != null && result.size() > 0);
+    }
+
+    public User updateUser(User user) {
+        User result = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            result = session.get(User.class, user.getId());
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return result;
     }
 }

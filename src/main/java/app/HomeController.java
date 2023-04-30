@@ -13,6 +13,7 @@ import javafx.stage.WindowEvent;
 import model.Room;
 import model.User;
 import repository.RoomRepository;
+import repository.UsuariosRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,12 @@ public class HomeController {
     private User user;
     private ChatController currentChatController;
     private RoomRepository roomRepository;
+    private UsuariosRepository userRepository;
 
     @FXML
     public void initialize(){
         roomRepository = new RoomRepository();
+        userRepository = new UsuariosRepository();
 
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
@@ -89,36 +92,18 @@ public class HomeController {
         return root;
     }
 
-    public void addNewRoomToChatsList(Room room) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-        HBox item = loader.load();
-
-        ((ChatItemController) loader.getController()).setTitle(room.getNombre());
-
-        chatsList.getChildren().add(item);
-        Node view = item.getChildren().get(0).getParent();
-        view.setOnMouseClicked(event -> {
-            try {
-                homeView.setCenter(getChatView(room));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     public void updateChatsList() throws IOException {
-        Set<Room> rooms = roomRepository.findUserRooms(user);
+        updateUser();
+        Set<Room> rooms = user.getRooms();
 
         if (rooms != null && !rooms.isEmpty()) {
+            System.out.println(rooms.size());
             List<HBox> roomsItems = new ArrayList<>();
             for (Room room: rooms) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
                 HBox item = loader.load();
-
                 ((ChatItemController) loader.getController()).setTitle(room.getNombre());
 
-
-                // chatsList.getChildren().add(item);
                 roomsItems.add(item);
                 Node view = item.getChildren().get(0).getParent();
                 view.setOnMouseClicked(event -> {
@@ -164,6 +149,10 @@ public class HomeController {
             currentChatController.closeEverything();
             currentChatController = null;
         }
+    }
+
+    public void updateUser() {
+        this.user = userRepository.updateUser(user);
     }
 }
 

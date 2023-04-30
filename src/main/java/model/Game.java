@@ -1,7 +1,6 @@
 package model;
 
 import jakarta.persistence.*;
-import java.util.Objects;
 
 
 @Entity
@@ -51,28 +50,5 @@ public class Game {
 
     public void setGenero(String genero) {
         this.genero = genero;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(descripcion, game.descripcion) && Objects.equals(genero, game.genero);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, descripcion, genero);
-    }
-
-    @Override
-    public String toString() {
-        return "Game{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                ", genero='" + genero + '\'' +
-                '}';
     }
 }

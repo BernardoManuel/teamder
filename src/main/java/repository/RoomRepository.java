@@ -5,6 +5,7 @@ import model.Room;
 import model.User;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+
 import java.util.Set;
 
 public class RoomRepository {
@@ -32,10 +33,8 @@ public class RoomRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
-            user.getRooms().add(room);
             room.getUsers().add(user);
             session.merge(room);
-            session.merge(user);
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();

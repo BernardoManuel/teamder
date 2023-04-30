@@ -27,7 +27,7 @@ public class MessageRepository {
             session.close();
         }
     }
-
+/*
     public List<Message> findRoomMessages(Room room) {
         List<Message> result = null;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -44,13 +44,12 @@ public class MessageRepository {
         return result;
     }
 
-/*
+ */
     public List<Message> findRoomMessages(Room room) {
         List<Message> result = null;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
-
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Message> query = cb.createQuery(Message.class);
             Root<Message> root = query.from(Message.class);
@@ -65,5 +64,4 @@ public class MessageRepository {
 
         return result;
     }
-    */
 }
