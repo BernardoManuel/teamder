@@ -31,8 +31,8 @@ public class ChatController extends BorderPane {
     public static final boolean SIGNED = true;
     public static final boolean BIG_ENDIAN = false;
 
-
-    private Socket socket;
+    private Socket textChatSocket;
+    private Socket voiceChatSocket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
 
@@ -51,8 +51,10 @@ public class ChatController extends BorderPane {
     private VBox messageContainer;
     @FXML
     private TextField inputMessage;
-    @FXML private Button buscarJugadoresBtn;
-    @FXML private Button invitarAmigoBtn;
+    @FXML
+    private Button buscarJugadoresBtn;
+    @FXML
+    private Button invitarAmigoBtn;
     SourceDataLine lineaSalidaAudio;
     TargetDataLine lineaEntradaAudio;
 
@@ -67,16 +69,16 @@ public class ChatController extends BorderPane {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                socket = new Socket("localhost", 50000);
-                socket.setSoLinger(SIGNED, 0);
-                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                this.dataInputStream = new DataInputStream(socket.getInputStream());
-                this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                textChatSocket = new Socket("localhost", 50000);
+                this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
+                this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
+
+                voiceChatSocket = new Socket("localhost", 50001);
+                this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
+                this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
 
                 listenForMessage();
                 sendMessage();
-
 
                 // Configurar la línea de salida de audio (altavoces)
                 AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
@@ -84,16 +86,24 @@ public class ChatController extends BorderPane {
                 lineaSalidaAudio.open(formatoAudio);
                 lineaSalidaAudio.start();
 
+
                 // Configurar la línea de entrada de audio (micrófono)
                 AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
                 lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
                 lineaEntradaAudio.open(formatoAudio2);
                 lineaEntradaAudio.start();
 
-                chatVoz();
+                sendVoz();
+                receiveVoz();
+
             } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
+                closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                lineaEntradaAudio.close();
+                lineaSalidaAudio.close();
             } catch (LineUnavailableException e) {
+                lineaEntradaAudio.close();
+                lineaSalidaAudio.close();
                 throw new RuntimeException(e);
             }
         });
@@ -156,7 +166,7 @@ public class ChatController extends BorderPane {
                 String username = usuariosRepository.getUsernameById(message.getId_user());
                 printMessage(username, message.getMensaje());
             }
-        } catch (Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -164,18 +174,18 @@ public class ChatController extends BorderPane {
     // Mensaje de conexión al servidor.
     public void sendMessage() {
         try {
-            bufferedWriter.write(user.getNombreUsuario() +"-"+ room.getId());
+            bufferedWriter.write(user.getNombreUsuario() + "-" + room.getId());
             bufferedWriter.newLine();
             bufferedWriter.flush();
             System.out.println("Mensaje enviado");
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
+            closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
         }
     }
 
     public void sendMessage(String msg) {
         try {
-            if (socket.isConnected()) {
+            if (textChatSocket.isConnected()) {
                 bufferedWriter.write(user.getNombreUsuario() + ": " + msg);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
@@ -183,7 +193,7 @@ public class ChatController extends BorderPane {
                 System.out.println("Mensaje enviado");
             }
         } catch (IOException | SQLException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter,dataInputStream,dataOutputStream);
+            closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
         }
     }
 
@@ -192,12 +202,12 @@ public class ChatController extends BorderPane {
             @Override
             public void run() {
                 String msgFromRoom;
-                while (socket != null && socket.isConnected()) {
+                while (textChatSocket != null && textChatSocket.isConnected()) {
                     try {
                         msgFromRoom = bufferedReader.readLine();
                         printMessage(msgFromRoom);
                     } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                        closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
                     }
                 }
             }
@@ -205,13 +215,13 @@ public class ChatController extends BorderPane {
     }
 
     // Bucle para el envio de datos de audio al servidor
-    public void chatVoz() {
+    public void sendVoz() {
         new Thread(() -> {
-            while (socket != null && socket.isConnected()) {
+            while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
 
-                    // Bucle para la reproducción de audio recibido del servidor
-                    while (SIGNED) {
+                    // Bucle para el envio de datos de audio al servidor
+                    while (true) {
                         // Buffer para los datos de audio
                         byte[] buffer = new byte[1024];
                         int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
@@ -220,6 +230,26 @@ public class ChatController extends BorderPane {
                         dataOutputStream.write(buffer, 0, numBytesLeidos);
                         dataOutputStream.flush();
                         System.out.println("Datos de audio enviados al servidor");
+                    }
+                } catch (IOException e) {
+                    lineaEntradaAudio.close();
+                    lineaSalidaAudio.close();
+                    closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                }
+            }
+        }).start();
+    }
+
+    // Bucle para recibir de datos de audio al servidor
+    public void receiveVoz() {
+        new Thread(() -> {
+            while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
+                try {
+
+                    // Bucle para la reproducción de audio recibido del servidor
+                    while (true) {
+                        // Buffer para los datos de audio
+                        byte[] buffer = new byte[1024];
 
                         int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
                         System.out.println("Datos de audio recibidos del servidor");
@@ -229,7 +259,9 @@ public class ChatController extends BorderPane {
                         System.out.println("Audio reproducido en altavoces");
                     }
                 } catch (IOException e) {
-                    closeEverything(socket, bufferedReader, bufferedWriter, dataInputStream,dataOutputStream);
+                    lineaEntradaAudio.close();
+                    lineaSalidaAudio.close();
+                    closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
                 }
             }
         }).start();
@@ -263,9 +295,13 @@ public class ChatController extends BorderPane {
             if (bufferedReader != null) {
                 bufferedReader = null;
             }
-            if (socket != null) {
-                socket.close();
-                socket = null;
+            if (textChatSocket != null) {
+                textChatSocket.close();
+                textChatSocket = null;
+            }
+            if (voiceChatSocket != null) {
+                voiceChatSocket.close();
+                voiceChatSocket = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
