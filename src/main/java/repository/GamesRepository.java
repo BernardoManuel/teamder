@@ -1,7 +1,11 @@
 package repository;
 
 import database.HibernateUtil;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import model.Game;
+import model.Message;
 import org.hibernate.Session;
 import java.util.List;
 
@@ -15,7 +19,11 @@ public class GamesRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
-            result = session.createNativeQuery("SELECT * FROM juegos", Game.class).list();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Game> query = cb.createQuery(Game.class);
+            Root<Game> root = query.from(Game.class);
+            query.select(root);
+            result = session.createQuery(query).getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,16 +39,19 @@ public class GamesRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
-            List<Game> gamesResult = session.createNativeQuery("SELECT * FROM juegos WHERE nom_juego = :pnom_juego", Game.class)
-                    .setParameter("pnom_juego", name)
-                    .list();
-            game = gamesResult.get(0);
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Game> query = cb.createQuery(Game.class);
+            Root<Game> root = query.from(Game.class);
+            query.select(root).where(cb.equal(root.get("name"), name));
+            List<Game> result = session.createQuery(query).getResultList();
+            if (result != null && !result.isEmpty()) {
+                game = result.get(0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             session.close();
         }
-
         return game;
     }
 }

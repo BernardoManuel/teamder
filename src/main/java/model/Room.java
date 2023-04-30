@@ -19,7 +19,7 @@ public class Room {
     private Integer max_jugadores;
     @Column(name = "creador")
     private Integer id_creador;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinTable(name = "sala_usuario",
             joinColumns = @JoinColumn(name = "id_salas"),
             inverseJoinColumns = @JoinColumn(name = "cod_user"))
@@ -30,7 +30,7 @@ public class Room {
     @Fetch(FetchMode.JOIN)
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "id_juego")
     private Game game;
 

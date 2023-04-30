@@ -121,9 +121,11 @@ public class ChatController extends BorderPane {
     public void loadMessages() {
         try {
             List<Message> messages = messageRepository.findRoomMessages(room);
-            for (Message message : messages) {
-                User userMessage = message.getUser();
-                printMessage(userMessage.getNombreUsuario(), message.getMensaje());
+            if (messages != null && !messages.isEmpty()) {
+                for (Message message : messages) {
+                    User userMessage = message.getUser();
+                    printMessage(userMessage.getNombreUsuario(), message.getMensaje());
+                }
             }
         } catch (Exception e ) {
             e.printStackTrace();

@@ -10,6 +10,8 @@ import model.Room;
 import model.User;
 import repository.GamesRepository;
 import repository.RoomRepository;
+import repository.UsuariosRepository;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -57,8 +59,7 @@ public class RoomCreatorController {
             room.setId_creador(user.getId());
             room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
             roomRepository.save(room, user);
-
-            homeController.addNewRoomToChatsList(room);
+            homeController.updateChatsList();
             cleanInputs();
         } catch (IOException e) {
             e.printStackTrace();
