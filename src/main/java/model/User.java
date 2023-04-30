@@ -1,15 +1,18 @@
 package model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Objects;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class User {
     @Id
+    @Column(name = "cod_user")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "nom_user")
     private String nombreUsuario;
@@ -19,6 +22,25 @@ public class Usuario {
     private String salt;
     private String correo;
     private String descripcion;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "users")
+    public Set<Room> rooms = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Message> messages = new HashSet<>();
+
+    public User() {
+    }
+
+    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
+        this.id = id;
+        this.nombreUsuario = nombreUsuario;
+        this.contraseña = contraseña;
+        this.salt = salt;
+        this.correo = correo;
+        this.descripcion = descripcion;
+        this.rooms = rooms;
+        this.messages = messages;
+    }
 
     public Integer getId() {
         return id;
@@ -68,27 +90,19 @@ public class Usuario {
         this.descripcion = descripcion;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario usuario)) return false;
-        return Objects.equals(getId(), usuario.getId()) && Objects.equals(getNombreUsuario(), usuario.getNombreUsuario()) && Objects.equals(getContraseña(), usuario.getContraseña()) && Objects.equals(getSalt(), usuario.getSalt()) && Objects.equals(getCorreo(), usuario.getCorreo()) && Objects.equals(getDescripcion(), usuario.getDescripcion());
+    public Set<Room> getRooms() {
+        return rooms;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getNombreUsuario(), getContraseña(), getSalt(), getCorreo(), getDescripcion());
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
     }
 
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", contraseña='" + contraseña + '\'' +
-                ", salt='" + salt + '\'' +
-                ", correo='" + correo + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                '}';
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 }

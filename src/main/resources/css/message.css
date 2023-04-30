@@ -1,0 +1,14 @@
+.message {
+    -fx-background-color: #176e82;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.message-text {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.own-message {
+-fx-alignment:center-right;
+}

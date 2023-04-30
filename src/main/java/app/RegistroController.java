@@ -18,17 +18,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.Usuario;
+import model.User;
 import repository.UsuariosRepository;
-import utils.ConnectionUtil;
 import utils.PasswordUtil;
-
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
 
 public class RegistroController {
 
@@ -43,13 +37,10 @@ public class RegistroController {
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
     private UsuariosRepository usuariosRepository;
-    private Connection connection;
 
-
-    public void initialize() throws SQLException {
-        //Creamos la conexion a la BBDD y creamos el Repositorio de Usuarios
-        connection = ConnectionUtil.getConnection();
-        usuariosRepository = new UsuariosRepository(connection);
+    public void initialize(){
+        //Creamos el Repositorio de Usuarios
+        usuariosRepository = new UsuariosRepository();
 
         //insertamos el fondo del left pane
         Image imagenFondo = new Image("file:src/main/resources/backgrounds/fondo_left_pane.png");
@@ -76,10 +67,8 @@ public class RegistroController {
                 {
                     try {
                         handleRegister();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
         );
@@ -104,9 +93,9 @@ public class RegistroController {
 
     //Metodo que manejara los datos del registro, comprueba en la base de datos por coincidencias.
     //Y almacenara el usuario nuevo.
-    private void handleRegister() throws SQLException, NoSuchAlgorithmException {
+    private void handleRegister() throws NoSuchAlgorithmException {
 
-        Usuario nuevoUsuario = new Usuario();
+        User nuevoUsuario = new User();
 
         // Comprobar nombre de usuario único
         String nombreUsuario = usernameField.getText();

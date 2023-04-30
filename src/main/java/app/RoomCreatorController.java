@@ -1,29 +1,24 @@
 package app;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.Game;
 import model.Room;
-import model.Usuario;
+import model.User;
 import repository.GamesRepository;
 import repository.RoomRepository;
-import utils.ConnectionUtil;
-
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 
 public class RoomCreatorController {
 
     private HomeController homeController;
     private GamesRepository gamesRepository;
     private RoomRepository roomRepository;
-    private Connection connection;
-    private Usuario user;
+    private User user;
 
     @FXML
     private ChoiceBox gameSelector;
@@ -34,11 +29,9 @@ public class RoomCreatorController {
     @FXML
     private TextField inputMaxPlayers;
 
-    public void initialize() throws SQLException {
-
-        connection = ConnectionUtil.getConnection();
-        gamesRepository = new GamesRepository(connection);
-        roomRepository = new RoomRepository(connection);
+    public void initialize() {
+        gamesRepository = new GamesRepository();
+        roomRepository = new RoomRepository();
 
         Platform.runLater(() -> {
             createGamesList();
@@ -46,16 +39,12 @@ public class RoomCreatorController {
     }
 
     public void createGamesList() {
-        try {
-            ObservableList<Game> games = gamesRepository.findAllGames();
-
+        List<Game> games = gamesRepository.findAllGames();
+        if (games != null) {
             for (Game game : games) {
                 gameSelector.getItems().add(game.getName());
             }
-
             gameSelector.setValue(games.get(0).getName());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -63,22 +52,21 @@ public class RoomCreatorController {
     private void createRoom() {
         try {
             Room room = new Room();
-
-            room.setId_juego(gamesRepository.getGameByName((String) gameSelector.getValue()));
             room.setNombre(inputRoomName.getText());
             room.setMax_jugadores(Integer.parseInt(inputMaxPlayers.getText().trim()));
             room.setId_creador(user.getId());
+            room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
+            roomRepository.save(room, user);
 
-            roomRepository.save(room);
             homeController.addNewRoomToChatsList(room);
             cleanInputs();
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public void setUser(Usuario user) {
+    public void setUser(User user) {
         this.user = user;
     }
     public void setHomeController(HomeController homeController) {

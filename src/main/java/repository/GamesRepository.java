@@ -1,59 +1,46 @@
 package repository;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import database.HibernateUtil;
 import model.Game;
-import model.Usuario;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.hibernate.Session;
+import java.util.List;
 
 public class GamesRepository {
 
-    private Connection connection;
-
-    public GamesRepository(Connection connection) {
-        this.connection = connection;
+    public GamesRepository() {
     }
 
-
-    public ObservableList<Game> findAllGames() throws SQLException {
-        ObservableList<Game> games = FXCollections.observableArrayList();
-        String query = "SELECT * FROM `juegos`;";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Game game = new Game();
-
-                    game.setId(resultSet.getInt("cod_juego"));
-                    game.setName(resultSet.getString("nom_juego"));
-                    game.setDescripcion(resultSet.getString("descripcion"));
-                    game.setGenero(resultSet.getString("genero"));
-
-                    // Agrega más atributos de la entidad Game según tu base de datos
-                    games.add(game);
-                }
-            }
+    public List<Game> findAllGames() {
+        List<Game> result = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            result = session.createNativeQuery("SELECT * FROM juegos", Game.class).list();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
-        return games;
+
+        return result;
     }
 
-    public int getGameByName(String name) throws SQLException {
-        String query = "select cod_juego from juegos where nom_juego = ?;";
-
+    public Game getGameByName(String name) {
         Game game = null;
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, name);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    game = new Game();
-                    game.setId(resultSet.getInt("cod_juego"));
-                }
-            }
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            List<Game> gamesResult = session.createNativeQuery("SELECT * FROM juegos WHERE nom_juego = :pnom_juego", Game.class)
+                    .setParameter("pnom_juego", name)
+                    .list();
+            game = gamesResult.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
 
-        return game.getId();
+        return game;
     }
 }

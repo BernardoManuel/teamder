@@ -7,18 +7,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
-public class LoginView extends Application {
+public class AppController extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         try {
-
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-vista.fxml"));
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
             primaryStage.setScene(formScene);
-            primaryStage.setResizable(true); //para que la ventana no sea redimensionable.
-
             primaryStage.show();
 
         } catch (Exception e) {

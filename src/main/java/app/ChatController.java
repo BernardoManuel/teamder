@@ -1,36 +1,32 @@
 package app;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Message;
 import model.Room;
-import model.Usuario;
+import model.User;
 import repository.MessageRepository;
-import repository.UsuariosRepository;
-import utils.ConnectionUtil;
-
 import java.io.*;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
 
 public class ChatController extends BorderPane {
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-    private Usuario user;
+    private User user;
     private Room room;
     private String inputMessageText;
     private MessageRepository messageRepository;
-    private UsuariosRepository usuariosRepository;
-    private Connection connection;
 
     @FXML
     private Text chatTitle;
@@ -40,11 +36,9 @@ public class ChatController extends BorderPane {
     private TextField inputMessage;
 
 
-    public void initialize() throws SQLException {
-
-        connection = ConnectionUtil.getConnection();
-        messageRepository = new MessageRepository(connection);
-        usuariosRepository = new UsuariosRepository(connection);
+    public void initialize() {
+        messageRepository = new MessageRepository();
+        inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
         Platform.runLater(() -> {
             chatTitle.setText(room.getNombre());
@@ -62,34 +56,55 @@ public class ChatController extends BorderPane {
             }
         });
     }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 
     private void printMessage(String message) {
         Platform.runLater(() -> {
-            Pane msgPane = new Pane();
-            msgPane.setPrefHeight(50.0);
-            msgPane.setPrefWidth(320.0);
+            VBox msgPane = new VBox();
+            msgPane.setMinHeight(50.0);
+            msgPane.setAlignment(Pos.CENTER_LEFT);
+            msgPane.setFillWidth(false);
 
             Text msgText = new Text(message);
-            msgText.setLayoutX(20.0);
-            msgText.setLayoutY(30.0);
+            msgText.setFill(Color.WHITE);
 
             msgPane.getChildren().add(msgText);
+            msgPane.getStyleClass().add("message");
+
             messageContainer.getChildren().add(msgPane);
+            messageContainer.getStylesheets().add(getClass().getResource("/css/message.css").toExternalForm());
         });
     }
 
     private void printMessage(String username, String message) {
         Platform.runLater(() -> {
-            Pane msgPane = new Pane();
-            msgPane.setPrefHeight(50.0);
-            msgPane.setPrefWidth(320.0);
+            VBox msgPane = new VBox();
+            msgPane.setMinHeight(50.0);
+            msgPane.setAlignment(Pos.CENTER_LEFT);
+            msgPane.setFillWidth(false);
+
+            HBox contentPane = new HBox();
+            contentPane.setPadding(new Insets(5, 10, 5, 10));
+            contentPane.getStyleClass().add("message");
 
             Text msgText = new Text(username + ": " + message);
-            msgText.setLayoutX(20.0);
-            msgText.setLayoutY(30.0);
+            msgText.getStyleClass().add("message-text");
+            contentPane.getChildren().add(msgText);
 
-            msgPane.getChildren().add(msgText);
+            msgPane.getChildren().add(contentPane);
+
+            if (username.equals(user.getNombreUsuario())) {
+                msgPane.getStyleClass().add("own-message");
+            }
+
             messageContainer.getChildren().add(msgPane);
+            messageContainer.getStylesheets().add(getClass().getResource("/css/message.css").toExternalForm());
         });
     }
 
@@ -97,7 +112,7 @@ public class ChatController extends BorderPane {
     @FXML
     private void onButtonClick() {
         inputMessageText = inputMessage.getText();
-        printMessage(user.getNombreUsuario() + ": " + inputMessageText);
+        printMessage(user.getNombreUsuario(), inputMessageText);
         sendMessage(inputMessageText);
         inputMessage.setText("");
     }
@@ -105,10 +120,10 @@ public class ChatController extends BorderPane {
 
     public void loadMessages() {
         try {
-            ObservableList<Message> messages = messageRepository.findRoomMessages(room.getId());
+            List<Message> messages = messageRepository.findRoomMessages(room);
             for (Message message : messages) {
-                String username = usuariosRepository.getUsernameById(message.getId_user());
-                printMessage(username, message.getMensaje());
+                User userMessage = message.getUser();
+                printMessage(userMessage.getNombreUsuario(), message.getMensaje());
             }
         } catch (Exception e ) {
             e.printStackTrace();
@@ -118,10 +133,9 @@ public class ChatController extends BorderPane {
     // Mensaje de conexión al servidor.
     public void sendMessage() {
         try {
-            bufferedWriter.write(user.getNombreUsuario());
+            bufferedWriter.write(user.getNombreUsuario() + "-" + room.getId());
             bufferedWriter.newLine();
             bufferedWriter.flush();
-            System.out.println("Mensaje enviado");
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -134,10 +148,27 @@ public class ChatController extends BorderPane {
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
                 saveMessage(msg);
-                System.out.println("Mensaje enviado");
             }
-        } catch (IOException | SQLException e) {
+        } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    private void saveMessage(String msg) {
+        Message message = new Message();
+
+        message.setUser(user);
+        message.setMensaje(msg);
+        message.setFecha(Instant.now().getEpochSecond());
+        message.setRoom(room);
+
+        messageRepository.save(message);
+    }
+
+    private void handleEnterKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            onButtonClick();
+            event.consume();
         }
     }
 
@@ -158,6 +189,20 @@ public class ChatController extends BorderPane {
         }).start();
     }
 
+    public void closeEverything() {
+        try {
+            if (bufferedReader != null) {
+                bufferedReader = null;
+            }
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) {
@@ -173,38 +218,5 @@ public class ChatController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void closeEverything() {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader = null;
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setUser(Usuario user) {
-        this.user = user;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    private void saveMessage(String msg) throws SQLException {
-        Message message = new Message();
-
-        message.setId_sala(room.getId());
-        message.setId_user(user.getId());
-        message.setMensaje(msg);
-        message.setFecha(Instant.now().getEpochSecond());
-
-        messageRepository.save(message);
     }
 }

@@ -1,54 +1,43 @@
 package repository;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import database.HibernateUtil;
 import model.Message;
+import model.Room;
+import org.hibernate.Session;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 
 public class MessageRepository {
+    public MessageRepository() {}
 
-    private Connection connection;
-
-    public MessageRepository(Connection connection) {
-        this.connection = connection;
-    }
-
-    public void save(Message message) throws SQLException {
-        String query = "INSERT INTO mensajes (id_sala, code_user, mensaje, fecha) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, message.getId_sala());
-            statement.setInt(2, message.getId_user());
-            statement.setString(3, message.getMensaje());
-            statement.setLong(4, message.getFecha());
-            // Configura más parámetros del statement según tu base de datos y entidad Message
-            statement.executeUpdate();
+    public void save(Message message) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            message.getRoom().getMessages().add(message);
+            session.persist(message);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
     }
 
-
-    public ObservableList<Message> findRoomMessages(Integer id_room) throws SQLException {
-        ObservableList<Message> messages = FXCollections.observableArrayList();
-        String query = "SELECT * FROM `mensajes` WHERE id_sala = ? ORDER by fecha asc;";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id_room);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Message message = new Message();
-                    message.setId(resultSet.getInt("id_mensaje"));
-                    message.setId_sala(resultSet.getInt("id_sala"));
-                    message.setId_user(resultSet.getInt("code_user"));
-                    message.setMensaje(resultSet.getString("mensaje"));
-                    message.setFecha(resultSet.getLong("fecha"));
-
-                    // Agrega más atributos de la entidad Message según tu base de datos
-                    messages.add(message);
-                }
-            }
+    public List<Message> findRoomMessages(Room room) {
+        List<Message> result = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            result = session.createNativeQuery("SELECT * FROM mensajes WHERE id_sala = :pid_sala", Message.class)
+                            .setParameter("pid_sala", room.getId()).list();
+            session.getTransaction().commit();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
-        return messages;
+
+        return result;
     }
 }

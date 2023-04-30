@@ -1,6 +1,6 @@
 package model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -8,29 +8,34 @@ import java.util.Objects;
 public class Message {
     @Id
     @Column(name = "id_mensaje")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
-    private Integer id_sala;
-    @Column(name = "code_user")
-    private Integer id_user;
     @Column
     private String mensaje;
     @Column
     private long fecha;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sala")
+    private Room room;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "code_user")
+    private User user;
+
     public Message() {
+    }
+
+    public Message(Integer id, String mensaje, long fecha, Room room, User user) {
+        this.id = id;
+        this.mensaje = mensaje;
+        this.fecha = fecha;
+        this.room = room;
+        this.user = user;
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public Integer getId_sala() {
-        return id_sala;
-    }
-
-    public Integer getId_user() {
-        return id_user;
     }
 
     public String getMensaje() {
@@ -45,14 +50,6 @@ public class Message {
         this.id = id;
     }
 
-    public void setId_sala(Integer id_sala) {
-        this.id_sala = id_sala;
-    }
-
-    public void setId_user(Integer id_user) {
-        this.id_user = id_user;
-    }
-
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
@@ -61,27 +58,19 @@ public class Message {
         this.fecha = fecha;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return Objects.equals(id, message.id) && Objects.equals(id_sala, message.id_sala) && Objects.equals(id_user, message.id_user) && Objects.equals(mensaje, message.mensaje) && Objects.equals(fecha, message.fecha);
+    public Room getRoom() {
+        return room;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, id_sala, id_user, mensaje, fecha);
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                ", id_sala=" + id_sala +
-                ", id_user=" + id_user +
-                ", mensaje='" + mensaje + '\'' +
-                ", fecha=" + fecha +
-                '}';
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,9 +1,6 @@
 package model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 
@@ -12,6 +9,7 @@ import java.util.Objects;
 public class Game {
     @Id
     @Column(name = "cod_juego")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "nom_juego")
     private String name;

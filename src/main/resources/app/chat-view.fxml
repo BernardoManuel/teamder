@@ -5,14 +5,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
    <top>
-       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
            <children>
-               <Text fx:id="chatTitle" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Título del chat">
+               <Text fx:id="chatTitle" fill="WHITE" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER">
                <HBox.margin>
                   <Insets left="10.0" />
-               </HBox.margin></Text>
+               </HBox.margin>
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font></Text>
            </children>
          <opaqueInsets>
             <Insets />
@@ -23,18 +26,20 @@
        </HBox>
    </top>
    <bottom>
-       <HBox alignment="CENTER" prefHeight="80.0" prefWidth="320.0" spacing="5.0" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER" prefHeight="80.0" prefWidth="320.0" spacing="5.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
            <children>
-               <TextField fx:id="inputMessage" prefHeight="45.0" prefWidth="260.0" />
-               <Button mnemonicParsing="false" onMouseClicked="#onButtonClick" text="Enviar" />
+               <TextField fx:id="inputMessage" accessibleRole="DECREMENT_BUTTON" cache="true" prefHeight="45.0" prefWidth="260.0" />
+               <Button mnemonicParsing="false" onMouseClicked="#onButtonClick" style="-fx-background-color: #e75334;" text="Enviar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Button>
            </children>
        </HBox>
    </bottom>
    <center>
-      <ScrollPane fitToWidth="true" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" BorderPane.alignment="CENTER">
+      <ScrollPane fitToWidth="true" style="-fx-background-color: #176e82; -fx-focus-color: transparent; -fx-faint-focus-color: transparent; -fx-border-color: transparent;" BorderPane.alignment="CENTER">
         <content>
-          <VBox fx:id="messageContainer" minHeight="0.0" minWidth="0.0">
-          </VBox>
+          <VBox fx:id="messageContainer" minHeight="0.0" minWidth="0.0" spacing="5.0" />
         </content>
       </ScrollPane>
    </center>
