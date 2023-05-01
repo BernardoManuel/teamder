@@ -4,16 +4,16 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ClientHandler implements Runnable {
+public class TextChatHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    public static ArrayList<TextChatHandler> textChatHandlers = new ArrayList<TextChatHandler>();
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String clientUsername;
     private int id_room;
 
-    public ClientHandler(Socket socket) {
+    public TextChatHandler(Socket socket) {
         try {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -21,20 +21,22 @@ public class ClientHandler implements Runnable {
             String username_and_idRoom = bufferedReader.readLine();
             this.clientUsername = username_and_idRoom.split("-")[0];
             this.id_room = Integer.parseInt(username_and_idRoom.split("-")[1]);
-            clientHandlers.add(this);
+            textChatHandlers.add(this);
 
         } catch (IOException e) {
+            System.out.println("TEXT CHAT HANDLER: error en el I/O.");
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     public void broadcastMessage(String msg) {
-        for (ClientHandler clientHandler : clientHandlers) {
+        System.out.println("TEXT CHAT HANDLER: reenviando mensaje a clientes conectados.");
+        for (TextChatHandler textChatHandler : textChatHandlers) {
             try {
-                if (!clientHandler.clientUsername.equals(clientUsername) && clientHandler.id_room == id_room) {
-                    clientHandler.bufferedWriter.write(msg);
-                    clientHandler.bufferedWriter.newLine();
-                    clientHandler.bufferedWriter.flush();
+                if (!textChatHandler.clientUsername.equals(clientUsername) && textChatHandler.id_room == id_room) {
+                    textChatHandler.bufferedWriter.write(msg);
+                    textChatHandler.bufferedWriter.newLine();
+                    textChatHandler.bufferedWriter.flush();
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -43,7 +45,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void removeClientHandler() {
-        clientHandlers.remove(this);
+        textChatHandlers.remove(this);
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -69,7 +71,11 @@ public class ClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 msgFromClient = bufferedReader.readLine();
-                broadcastMessage(msgFromClient);
+                System.out.println("TEXT CHAT HANDLER: mensaje recibido del cliente.");
+
+                if(msgFromClient!=null){
+                    broadcastMessage(msgFromClient);
+                }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
