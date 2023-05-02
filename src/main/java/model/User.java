@@ -20,7 +20,9 @@ public class User {
     private String password;
     @Column
     private String salt;
+    @Column
     private String correo;
+    @Column
     private String descripcion;
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Room> rooms = new HashSet<>();

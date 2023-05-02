@@ -53,7 +53,7 @@ public class HomeController {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
                 generateHome();
-                generateChatsList();
+                updateChatsList();
                 solicitudes(user);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,28 +65,6 @@ public class HomeController {
         userLogged.setText(user.getNombreUsuario());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
-    }
-
-    public void generateChatsList() throws IOException {
-        Set<Room> rooms = roomRepository.findUserRooms(user);
-        if (rooms != null) {
-            for (Room room : rooms) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-                HBox item = loader.load();
-
-                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
-
-                chatsList.getChildren().add(item);
-                Node view = item.getChildren().get(0).getParent();
-                view.setOnMouseClicked(event -> {
-                    try {
-                        homeView.setCenter(getChatView(room));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }
     }
 
     public void placePlaceholder() throws IOException {

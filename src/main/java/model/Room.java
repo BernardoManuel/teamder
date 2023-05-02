@@ -13,12 +13,17 @@ public class Room {
     @Column(name = "id_salas")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(name = "nombre")
     private String nombre;
+
     @Column
     private Integer max_jugadores;
-    @Column(name = "creador")
-    private Integer id_creador;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "creador")
+    private User creador;
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinTable(name = "sala_usuario",
             joinColumns = @JoinColumn(name = "id_salas"),
@@ -36,11 +41,11 @@ public class Room {
 
     public Room() {}
 
-    public Room(Integer id, String nombre, Integer max_jugadores, Integer id_creador, Set<User> users, Set<Message> messages, Game game) {
+    public Room(Integer id, String nombre, Integer max_jugadores, User creador, Set<User> users, Set<Message> messages, Game game) {
         this.id = id;
         this.nombre = nombre;
         this.max_jugadores = max_jugadores;
-        this.id_creador = id_creador;
+        this.creador = creador;
         this.users = users;
         this.messages = messages;
         this.game = game;
@@ -78,12 +83,12 @@ public class Room {
         this.max_jugadores = max_jugadores;
     }
 
-    public Integer getId_creador() {
-        return id_creador;
+    public User getCreador() {
+        return creador;
     }
 
-    public void setId_creador(Integer id_creador) {
-        this.id_creador = id_creador;
+    public void setCreador(User creador) {
+        this.creador = creador;
     }
 
     public Set<User> getUsers() {
