@@ -10,59 +10,7 @@
    <right>
       <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <content>
-            <VBox prefHeight="400.0" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
-               <children>
-                  <HBox minHeight="40.0" prefHeight="40.0" prefWidth="230.0" spacing="5.0" style="-fx-background-color: #f8efad;">
-                     <children>
-                        <Pane prefHeight="40.0" prefWidth="44.0" style="-fx-background-color: #e75334;" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="162.0" style="-fx-background-color: #f8efad;">
-                           <children>
-                              <Label text="Gianluca" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="10.0" minHeight="40.0" prefHeight="40.0" prefWidth="230.0" spacing="5.0" style="-fx-background-color: #f8efad;">
-                     <children>
-                        <Pane prefHeight="40.0" prefWidth="85.0" style="-fx-background-color: #e75334;" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <Label text="Bernardo" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="280.0" minHeight="40.0" prefHeight="40.0" prefWidth="230.0" spacing="5.0" style="-fx-background-color: #f8efad;">
-                     <children>
-                        <Pane prefHeight="40.0" prefWidth="85.0" style="-fx-background-color: #e75334;" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <Label text="Diego" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="374.0" minHeight="40.0" prefHeight="40.0" prefWidth="230.0" spacing="5.0" style="-fx-background-color: #f8efad;">
-                     <children>
-                        <Pane prefHeight="40.0" prefWidth="85.0" style="-fx-background-color: #e75334;" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <Label text="Sebastián" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="378.0" minHeight="40.0" prefHeight="40.0" prefWidth="230.0" spacing="5.0" style="-fx-background-color: #f8efad;">
-                     <children>
-                        <Pane prefHeight="40.0" prefWidth="85.0" style="-fx-background-color: #e75334;" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <Label text="Nadia" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </HBox>
-               </children></VBox>
+            <VBox prefHeight="400.0" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER" />
          </content>
       </ScrollPane>
    </right>
@@ -78,14 +26,15 @@
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Label>
-                  <TextField>
+                  <TextField fx:id="usernameTextField">
                      <HBox.margin>
                         <Insets />
-                     </HBox.margin></TextField>
+                     </HBox.margin>
+                  </TextField>
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="40.0" prefWidth="369.0" />
-            <Button mnemonicParsing="false" style="-fx-background-color: #e75334;" text="Agregar" textFill="WHITE">
+            <Button fx:id="addFriendButton" mnemonicParsing="false" onAction="#handleAddFriendButtonAction" style="-fx-background-color: #e75334;" text="Agregar" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

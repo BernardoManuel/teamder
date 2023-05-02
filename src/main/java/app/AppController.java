@@ -27,6 +27,5 @@ public class AppController extends Application {
         launch();
     }
 
-
     }
 
