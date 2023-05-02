@@ -266,11 +266,13 @@ public class ChatController extends BorderPane {
                         byte[] buffer = new byte[1024];
 
                         int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
-                        System.out.println("Datos de audio recibidos del servidor");
+                        if (numBytesRecibidos >= 0) {
+                            System.out.println("Datos de audio recibidos del servidor");
 
-                        // Reproducir datos de audio en los altavoces
-                        lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
-                        System.out.println("Audio reproducido en altavoces");
+                            // Reproducir datos de audio en los altavoces
+                            lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                            System.out.println("Audio reproducido en altavoces");
+                        }
                     }
                 } catch (IOException e) {
                     lineaEntradaAudio.close();

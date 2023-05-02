@@ -24,13 +24,13 @@ public class TextChatHandler implements Runnable {
             textChatHandlers.add(this);
 
         } catch (IOException e) {
-            System.out.println("TEXT CHAT HANDLER: error en el I/O.");
+            debugMsg("TEXT CHAT HANDLER: error en el I/O.");
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     public void broadcastMessage(String msg) {
-        System.out.println("TEXT CHAT HANDLER: reenviando mensaje a clientes conectados.");
+        debugMsg("TEXT CHAT HANDLER: reenviando mensaje a clientes conectados.");
         for (TextChatHandler textChatHandler : textChatHandlers) {
             try {
                 if (!textChatHandler.clientUsername.equals(clientUsername) && textChatHandler.id_room == id_room) {
@@ -46,6 +46,7 @@ public class TextChatHandler implements Runnable {
 
     public void removeClientHandler() {
         textChatHandlers.remove(this);
+        RoomServer.socketsTexto.remove(this);
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -71,7 +72,7 @@ public class TextChatHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 msgFromClient = bufferedReader.readLine();
-                System.out.println("TEXT CHAT HANDLER: mensaje recibido del cliente.");
+                debugMsg("TEXT CHAT HANDLER: mensaje recibido del cliente.");
 
                 if(msgFromClient!=null){
                     broadcastMessage(msgFromClient);
@@ -81,5 +82,9 @@ public class TextChatHandler implements Runnable {
                 break;
             }
         }
+    }
+
+    private void debugMsg(String msg) {
+        // System.out.println(msg);
     }
 }
