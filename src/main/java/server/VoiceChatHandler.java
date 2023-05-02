@@ -52,7 +52,6 @@ public class VoiceChatHandler implements Runnable {
                 int numBytesRecibidos = clienteInputStream.read(buffer, 0, buffer.length);
                 debugMsg("VOICE CHAT HANDLER: datos de audio recibidos del cliente cliente");
 
-
                 // Enviar los datos de audio recibidos a todos los clientes conectados
                 for (Socket socketConectado : RoomServer.socketsVoz) {
                     if (socketConectado!=socket) {
@@ -65,7 +64,7 @@ public class VoiceChatHandler implements Runnable {
                             }
                         } catch (SocketException e) {
                             debugMsg("VOICE CHAT HANDLER: SocketException - " + e.getMessage());
-                            closeEverything(socketConectado, null, clienteOutputStream);
+                            closeEverything(socket, dataInputStream, clienteOutputStream);
                         }
                     }
                 }
