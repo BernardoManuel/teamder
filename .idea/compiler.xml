@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="teamder-chat" />
         <module name="teamder" />
+        <module name="teamder - copia" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

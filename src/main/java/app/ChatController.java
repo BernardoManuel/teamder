@@ -47,7 +47,7 @@ public class ChatController extends BorderPane {
     TargetDataLine lineaEntradaAudio;
 
 
-    public void initialize() throws SQLException {
+    public void initialize() {
         messageRepository = new MessageRepository();
         inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
@@ -55,11 +55,13 @@ public class ChatController extends BorderPane {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                textChatSocket = new Socket("87.221.8.10", 50000);
+                textChatSocket = new Socket("localhost", 50000);
+                textChatSocket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
 
-                voiceChatSocket = new Socket("87.221.8.10", 50001);
+                voiceChatSocket = new Socket("localhost", 50001);
+                voiceChatSocket.setSoLinger(true, 0);
                 this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
                 this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
 
