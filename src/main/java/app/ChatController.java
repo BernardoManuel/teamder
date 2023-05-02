@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -16,11 +17,15 @@ import model.Message;
 import model.Room;
 import model.User;
 import repository.MessageRepository;
+import repository.RoomRepository;
+import repository.UsuariosRepository;
+
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public class ChatController extends BorderPane {
     //CONSTANTES DE FORMATO DE AUDIO
@@ -39,6 +44,8 @@ public class ChatController extends BorderPane {
     private Room room;
     private String inputMessageText;
     private MessageRepository messageRepository;
+    private RoomRepository roomRepository;
+    private UsuariosRepository userRepository;
     @FXML private Text chatTitle;
     @FXML private VBox messageContainer;
     @FXML private TextField inputMessage;
@@ -48,6 +55,8 @@ public class ChatController extends BorderPane {
 
     public void initialize() {
         messageRepository = new MessageRepository();
+        roomRepository = new RoomRepository();
+        userRepository = new UsuariosRepository();
         inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
         Platform.runLater(() -> {
@@ -325,4 +334,25 @@ public class ChatController extends BorderPane {
         }
     }
 
+    @FXML
+    public void openDialogAddUser() {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Añadir usuario");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Introduce el nombre de usuario: ");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            addUserToRoom(result.get());
+        }
+    }
+
+    public void addUserToRoom(String username) {
+        User user = userRepository.findUserByUsername(username);
+        if (user != null) {
+            roomRepository.addUser(room, user.getId());
+        } else {
+            System.out.println("El usuario no existe.");
+        }
+    }
 }

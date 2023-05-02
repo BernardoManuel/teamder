@@ -21,7 +21,7 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <Button mnemonicParsing="false" text="Add">
+            <Button mnemonicParsing="false" text="Add" onMouseClicked="#openDialogAddUser">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin></Button>

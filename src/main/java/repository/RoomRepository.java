@@ -42,4 +42,20 @@ public class RoomRepository {
             session.close();
         }
     }
+
+    public void addUser(Room p_room, int user_id) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            User user = session.get(User.class, user_id);
+            Room room = session.get(Room.class, p_room.getId());
+            room.getUsers().add(user);
+            session.merge(room);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
 }
