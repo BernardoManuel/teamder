@@ -38,9 +38,9 @@
          </top>
          <center>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-              <content>
-                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
-              </content>
+               <content>
+                  <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
+               </content>
             </ScrollPane>
          </center>
          <BorderPane.margin>
@@ -48,4 +48,12 @@
          </BorderPane.margin>
       </BorderPane>
    </left>
+   <center>
+      <TableView fx:id="friendRequestsTable">
+         <columns>
+            <TableColumn text="Solicitante" fx:id="solicitanteColumn"/>
+            <TableColumn text="Acción" fx:id="accionColumn"/>
+         </columns>
+      </TableView>
+   </center>
 </BorderPane>

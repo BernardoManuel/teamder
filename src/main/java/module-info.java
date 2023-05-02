@@ -9,9 +9,7 @@ module login.formlogin {
     requires org.hibernate.orm.core;
     requires java.naming;
 
-
-    opens model to org.hibernate.orm.core;
     opens app to javafx.fxml;
+    opens model to javafx.base, org.hibernate.orm.core;
     exports app;
-
 }

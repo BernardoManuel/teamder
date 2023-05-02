@@ -19,22 +19,35 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.Friendship;
 import model.User;
 import org.hibernate.Session;
+import repository.FriendshipRepository;
 import repository.UsuariosRepository;
 import utils.PasswordUtil;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Optional;
 
 public class FormController {
-    @FXML private ImageView imageViewLogo;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private ImageView imageViewLeftPane;
-    @FXML private Button buttonLogin;
-    @FXML private Hyperlink hyperlinkCrearCuenta;
-    @FXML private Pane errorPane;
-    @FXML private Label errorMessage;
+    @FXML
+    private ImageView imageViewLogo;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private ImageView imageViewLeftPane;
+    @FXML
+    private Button buttonLogin;
+    @FXML
+    private Hyperlink hyperlinkCrearCuenta;
+    @FXML
+    private Pane errorPane;
+    @FXML
+    private Label errorMessage;
     private UsuariosRepository usuariosRepository;
 
     public void initialize() {
@@ -54,11 +67,11 @@ public class FormController {
         //Colocamos el focus en el boton
         Platform.runLater(() -> buttonLogin.requestFocus());
         buttonLogin.setOnAction(actionEvent -> {
-                    try {
-                        handleLogin();
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
+            try {
+                handleLogin();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         });
         hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent -> formRegistro());
         session.close();
@@ -83,11 +96,11 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(User usuario) {
+    private void cargarVistaHome(User usuario) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
-            ((HomeController)fxmlLoader.getController()).setUsername(usuario);
+            ((HomeController) fxmlLoader.getController()).setUsername(usuario);
 
             Scene scene = new Scene(root, 905, 621);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
@@ -99,6 +112,7 @@ public class FormController {
         }
     }
 
+
     @FXML
     private void handleLogin() throws NoSuchAlgorithmException {
         String username = usernameField.getText();
@@ -107,7 +121,7 @@ public class FormController {
         // Validar usuario
         User usuario = usuariosRepository.findUserByUsername(username);
 
-        if(usuario!=null) {
+        if (usuario != null) {
             // Obtener el salt del usuario encontrado
             String saltStr = usuario.getSalt();
             // Convertir el salt de hexadecimal a bytes
@@ -125,7 +139,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion(usuario);
+                cargarVistaHome(usuario);
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");

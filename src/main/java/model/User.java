@@ -28,6 +28,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> messages = new HashSet<>();
 
+    // Relación bidireccional entre User y Amistad
+    @OneToMany(mappedBy = "amigo1", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Friendship> amistades = new HashSet<>();
+
+    //@OneToMany(mappedBy = "amigo2", cascade = CascadeType.ALL, orphanRemoval = true)
+    //private Set<Friendship> amistades2 = new HashSet<>();
+
     public User() {
     }
 
@@ -41,6 +48,19 @@ public class User {
         this.rooms = rooms;
         this.messages = messages;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", nombreUsuario='" + nombreUsuario + '\'' +
+                ", contraseña='" + contraseña + '\'' +
+                ", salt='" + salt + '\'' +
+                ", correo='" + correo + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                '}';
+    }
+
 
     public Integer getId() {
         return id;
