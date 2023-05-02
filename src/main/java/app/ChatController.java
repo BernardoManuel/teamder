@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
@@ -34,6 +35,7 @@ public class ChatController extends BorderPane {
     public static final int CHANNELS = 1;
     public static final boolean SIGNED = true;
     public static final boolean BIG_ENDIAN = true;
+    public static final String SERVER_ADDRESS = "localhost";
     private Socket textChatSocket;
     private Socket voiceChatSocket;
     private BufferedWriter bufferedWriter;
@@ -51,56 +53,31 @@ public class ChatController extends BorderPane {
     @FXML private TextField inputMessage;
     SourceDataLine lineaSalidaAudio;
     TargetDataLine lineaEntradaAudio;
+    private Boolean calling;
+    @FXML private Button callBtn;
 
 
     public void initialize() {
         messageRepository = new MessageRepository();
         roomRepository = new RoomRepository();
         userRepository = new UsuariosRepository();
+        calling = false;
         inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
         Platform.runLater(() -> {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                textChatSocket = new Socket("localhost", 50000);
+                textChatSocket = new Socket(SERVER_ADDRESS, 50000);
                 textChatSocket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
 
-                voiceChatSocket = new Socket("localhost", 50001);
-                voiceChatSocket.setSoLinger(true, 0);
-                this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
-                this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
-
                 listenForMessage();
                 sendMessage();
 
-                // Configurar la línea de salida de audio (altavoces)
-                AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
-                lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
-                lineaSalidaAudio.open(formatoAudio);
-                lineaSalidaAudio.start();
-
-
-                // Configurar la línea de entrada de audio (micrófono)
-                AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
-                lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
-                lineaEntradaAudio.open(formatoAudio2);
-                lineaEntradaAudio.start();
-
-                sendVoz();
-                receiveVoz();
-
             } catch (IOException e) {
-                closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
                 closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
-                lineaEntradaAudio.close();
-                lineaSalidaAudio.close();
-            } catch (LineUnavailableException e) {
-                lineaEntradaAudio.close();
-                lineaSalidaAudio.close();
-                throw new RuntimeException(e);
             }
         });
     }
@@ -353,6 +330,44 @@ public class ChatController extends BorderPane {
             roomRepository.addUser(room, user.getId());
         } else {
             System.out.println("El usuario no existe.");
+        }
+    }
+
+    @FXML
+    public void startCall() {
+        if (!calling) {
+            callBtn.setText("Colgar");
+            calling = true;
+            try {
+                voiceChatSocket = new Socket(SERVER_ADDRESS, 50001);
+                voiceChatSocket.setSoLinger(true, 0);
+                this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
+                this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
+
+                // Configurar la línea de salida de audio (altavoces)
+                AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
+                lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
+                lineaSalidaAudio.open(formatoAudio);
+                lineaSalidaAudio.start();
+
+                // Configurar la línea de entrada de audio (micrófono)
+                AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
+                lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
+                lineaEntradaAudio.open(formatoAudio2);
+                lineaEntradaAudio.start();
+
+                sendVoz();
+                receiveVoz();
+            } catch (Exception e) {
+                e.printStackTrace();
+                closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                lineaEntradaAudio.close();
+                lineaSalidaAudio.close();
+            }
+        } else {
+            callBtn.setText("Llamar");
+            calling = false;
+            closeEverything();
         }
     }
 }
