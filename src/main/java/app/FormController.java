@@ -19,17 +19,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.Friendship;
 import model.User;
 import org.hibernate.Session;
-import repository.FriendshipRepository;
 import repository.UsuariosRepository;
 import utils.PasswordUtil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Optional;
 
 public class FormController {
     @FXML
@@ -132,7 +128,7 @@ public class FormController {
             String passwordGenerada = PasswordUtil.bytesToHex(bytePassword);
 
             // Obtener la contraseña almacenada en la BBDD
-            String passwordBbdd = usuario.getContraseña();
+            String passwordBbdd = usuario.getPassword();
 
             // Comparar las contraseñas de manera segura
             boolean passwordsIguales = MessageDigest.isEqual(passwordGenerada.getBytes(), passwordBbdd.getBytes());

@@ -117,7 +117,6 @@ public class HomeController {
         Set<Room> rooms = user.getRooms();
 
         if (rooms != null && !rooms.isEmpty()) {
-            System.out.println(rooms.size());
             List<HBox> roomsItems = new ArrayList<>();
             for (Room room : rooms) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));

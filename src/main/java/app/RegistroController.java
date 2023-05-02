@@ -130,7 +130,7 @@ public class RegistroController {
             String saltStr = PasswordUtil.bytesToHex(salt); // Convertir a representación hexadecimal
 
             // Guardar hashStr y salt en la base de datos para el nuevo usuario
-            nuevoUsuario.setContraseña(hashStr);
+            nuevoUsuario.setPassword(hashStr);
             nuevoUsuario.setSalt(saltStr);
         } else {
             mostrarMensajeError("Las contraseñas no coinciden");

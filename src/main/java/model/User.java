@@ -16,8 +16,8 @@ public class User {
     private Integer id;
     @Column(name = "nom_user")
     private String nombreUsuario;
-    @Column(name = "contraseña")
-    private String contraseña;
+    @Column(name = "password")
+    private String password;
     @Column
     private String salt;
     private String correo;
@@ -38,10 +38,10 @@ public class User {
     public User() {
     }
 
-    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
+    public User(Integer id, String nombreUsuario, String password, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
-        this.contraseña = contraseña;
+        this.password = password;
         this.salt = salt;
         this.correo = correo;
         this.descripcion = descripcion;
@@ -54,7 +54,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", contraseña='" + contraseña + '\'' +
+                ", contraseña='" + password + '\'' +
                 ", salt='" + salt + '\'' +
                 ", correo='" + correo + '\'' +
                 ", descripcion='" + descripcion + '\'' +
@@ -78,12 +78,12 @@ public class User {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String contraseña) {
+        this.password = contraseña;
     }
 
     public String getSalt() {
