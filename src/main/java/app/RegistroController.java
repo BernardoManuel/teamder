@@ -19,10 +19,9 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
-import repository.UsuariosRepository;
+import repository.UserRepository;
 import utils.PasswordUtil;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 
 public class RegistroController {
 
@@ -36,11 +35,11 @@ public class RegistroController {
     @FXML private TextField confirmPasswordField;
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
-    private UsuariosRepository usuariosRepository;
+    private UserRepository userRepository;
 
     public void initialize(){
         //Creamos el Repositorio de Usuarios
-        usuariosRepository = new UsuariosRepository();
+        userRepository = new UserRepository();
 
         //insertamos el fondo del left pane
         Image imagenFondo = new Image("file:src/main/resources/backgrounds/fondo_left_pane.png");
@@ -99,7 +98,7 @@ public class RegistroController {
 
         // Comprobar nombre de usuario único
         String nombreUsuario = usernameField.getText();
-        if (usuariosRepository.isNombreUsuarioExists(nombreUsuario)) {
+        if (userRepository.isNombreUsuarioExists(nombreUsuario)) {
             // El nombre de usuario ya existe, muestra un mensaje de error o lanza una excepción
             // TODO: Mostrar mensaje de error o lanzar excepción
             mostrarMensajeError("El nombre de usuario ya existe.");
@@ -109,7 +108,7 @@ public class RegistroController {
 
         // Comprobar correo electrónico único
         String correo = correoField.getText();
-        if (usuariosRepository.isCorreoExists(correo)) {
+        if (userRepository.isCorreoExists(correo)) {
             // El correo electrónico ya existe, muestra un mensaje de error o lanza una excepción
             // TODO: Mostrar mensaje de error o lanzar excepción
             mostrarMensajeError("El correo electronico ya existe");
@@ -143,7 +142,7 @@ public class RegistroController {
             return;
         }else{
             //Guardamos el nuevo usuario
-            usuariosRepository.save(nuevoUsuario);
+            userRepository.save(nuevoUsuario);
 
             //Volver al login
             formIniciarSesion();

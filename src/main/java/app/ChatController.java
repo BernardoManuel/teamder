@@ -19,7 +19,7 @@ import model.Room;
 import model.User;
 import repository.MessageRepository;
 import repository.RoomRepository;
-import repository.UsuariosRepository;
+import repository.UserRepository;
 
 import javax.sound.sampled.*;
 import java.io.*;
@@ -47,7 +47,7 @@ public class ChatController extends BorderPane {
     private String inputMessageText;
     private MessageRepository messageRepository;
     private RoomRepository roomRepository;
-    private UsuariosRepository userRepository;
+    private UserRepository userRepository;
     @FXML private Text chatTitle;
     @FXML private VBox messageContainer;
     @FXML private TextField inputMessage;
@@ -60,7 +60,7 @@ public class ChatController extends BorderPane {
     public void initialize() {
         messageRepository = new MessageRepository();
         roomRepository = new RoomRepository();
-        userRepository = new UsuariosRepository();
+        userRepository = new UserRepository();
         calling = false;
         inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 

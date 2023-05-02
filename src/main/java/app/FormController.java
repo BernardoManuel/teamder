@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
 import org.hibernate.Session;
-import repository.UsuariosRepository;
+import repository.UserRepository;
 import utils.PasswordUtil;
 
 import java.security.MessageDigest;
@@ -44,11 +44,11 @@ public class FormController {
     private Pane errorPane;
     @FXML
     private Label errorMessage;
-    private UsuariosRepository usuariosRepository;
+    private UserRepository userRepository;
 
     public void initialize() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        usuariosRepository = new UsuariosRepository();
+        userRepository = new UserRepository();
 
         passwordField.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
@@ -76,7 +76,7 @@ public class FormController {
     private void formRegistro() {
         try {
             //Cargamos la vista home
-            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("registro.fxml"));
+            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("register-view.fxml"));
             AnchorPane registro = formLoader.load();
             Scene registroScene = new Scene(registro);
             //Recuperamos y mostramos la vista registro
@@ -115,7 +115,7 @@ public class FormController {
         String password = passwordField.getText();
 
         // Validar usuario
-        User usuario = usuariosRepository.findUserByUsername(username);
+        User usuario = userRepository.findUserByUsername(username);
 
         if (usuario != null) {
             // Obtener el salt del usuario encontrado

@@ -9,10 +9,9 @@ import model.Friendship;
 import model.User;
 import database.HibernateUtil;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import repository.FriendshipRepository;
-import repository.UsuariosRepository;
+import repository.UserRepository;
 
 public class FriendsController {
     @FXML
@@ -43,7 +42,7 @@ public class FriendsController {
     public void handleAddFriendButtonAction() {
         String friendUsername = usernameTextField.getText().trim();
         if (!friendUsername.isEmpty()) {
-            UsuariosRepository userRepository = new UsuariosRepository();
+            UserRepository userRepository = new UserRepository();
             User friend = userRepository.findUserByUsername(friendUsername);
             if (friend != null) {
                 Friendship friendship = new Friendship();
