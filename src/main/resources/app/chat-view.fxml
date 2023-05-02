@@ -7,15 +7,24 @@
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
    <top>
-       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER_LEFT">
            <children>
-               <Text fx:id="chatTitle" fill="WHITE" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER">
-               <HBox.margin>
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0" HBox.hgrow="ALWAYS">
+               <children>
+                     <Text fx:id="chatTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+               </children>
+               <padding>
                   <Insets left="10.0" />
-               </HBox.margin>
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Text>
+               </padding>
+            </HBox>
+            <Button mnemonicParsing="false" text="Add">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></Button>
            </children>
          <opaqueInsets>
             <Insets />

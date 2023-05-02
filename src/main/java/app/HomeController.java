@@ -80,7 +80,7 @@ public class HomeController {
         homeView.setCenter(loader.load());
     }
 
-    private Parent getChatView(Room room) throws IOException {
+    public Parent getChatView(Room room) throws IOException {
         closeCurrentChat();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
