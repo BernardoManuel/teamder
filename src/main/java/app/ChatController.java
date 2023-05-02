@@ -47,7 +47,7 @@ public class ChatController extends BorderPane {
     TargetDataLine lineaEntradaAudio;
 
 
-    public void initialize() throws SQLException {
+    public void initialize() {
         messageRepository = new MessageRepository();
         inputMessage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
@@ -56,10 +56,12 @@ public class ChatController extends BorderPane {
             loadMessages();
             try {
                 textChatSocket = new Socket("localhost", 50000);
+                textChatSocket.setSoLinger(true, 0);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
                 this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
 
                 voiceChatSocket = new Socket("localhost", 50001);
+                voiceChatSocket.setSoLinger(true, 0);
                 this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
                 this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
 
@@ -233,18 +235,14 @@ public class ChatController extends BorderPane {
         new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
+                    // Buffer para los datos de audio
+                    byte[] buffer = new byte[1024];
+                    int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
 
-                    // Bucle para el envio de datos de audio al servidor
-                    while (true) {
-                        // Buffer para los datos de audio
-                        byte[] buffer = new byte[1024];
-                        int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
-
-                        // Enviar datos de audio al servidor
-                        dataOutputStream.write(buffer, 0, numBytesLeidos);
-                        dataOutputStream.flush();
-                        System.out.println("Datos de audio enviados al servidor");
-                    }
+                    // Enviar datos de audio al servidor
+                    dataOutputStream.write(buffer, 0, numBytesLeidos);
+                    dataOutputStream.flush();
+                    System.out.println("Datos de audio enviados al servidor");
                 } catch (IOException e) {
                     lineaEntradaAudio.close();
                     lineaSalidaAudio.close();
@@ -259,20 +257,16 @@ public class ChatController extends BorderPane {
         new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
+                    // Buffer para los datos de audio
+                    byte[] buffer = new byte[1024];
 
-                    // Bucle para la reproducción de audio recibido del servidor
-                    while (true) {
-                        // Buffer para los datos de audio
-                        byte[] buffer = new byte[1024];
+                    int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
+                    if (numBytesRecibidos >= 0) {
+                        System.out.println("Datos de audio recibidos del servidor");
 
-                        int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
-                        if (numBytesRecibidos >= 0) {
-                            System.out.println("Datos de audio recibidos del servidor");
-
-                            // Reproducir datos de audio en los altavoces
-                            lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
-                            System.out.println("Audio reproducido en altavoces");
-                        }
+                        // Reproducir datos de audio en los altavoces
+                        lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                        System.out.println("Audio reproducido en altavoces");
                     }
                 } catch (IOException e) {
                     lineaEntradaAudio.close();
@@ -299,7 +293,6 @@ public class ChatController extends BorderPane {
             }
             if (socket != null) {
                 socket.close();
-                socket = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
