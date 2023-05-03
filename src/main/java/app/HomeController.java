@@ -20,6 +20,7 @@ import repository.FriendshipRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +36,11 @@ public class HomeController {
     private VBox chatsList;
     @FXML
     private Text userLogged;
-
     private User user;
     private ChatController currentChatController;
     private RoomRepository roomRepository;
     private UserRepository userRepository;
     private FriendshipRepository friendshipRepository;
-
 
     @FXML
     public void initialize() {
@@ -50,7 +49,6 @@ public class HomeController {
         friendshipRepository = new FriendshipRepository();
 
         Platform.runLater(() -> {
-            homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
                 generateHome();
                 updateChatsList();
@@ -148,14 +146,6 @@ public class HomeController {
             currentChatController = null;
         }
     }
-
-    @FXML
-    private TableColumn<Friendship, String> solicitanteColumn;
-    @FXML
-    private TableColumn<Friendship, String> accionColumn;
-    @FXML
-    private TableView<Friendship> friendRequestsTable;
-
 
     private void solicitudes(User usuario) {
         Session session = HibernateUtil.getSessionFactory().openSession();

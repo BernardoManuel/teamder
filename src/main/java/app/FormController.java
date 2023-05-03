@@ -65,6 +65,7 @@ public class FormController {
         buttonLogin.setOnAction(actionEvent -> {
             try {
                 handleLogin();
+
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -98,7 +99,7 @@ public class FormController {
             Parent root = fxmlLoader.load();
             ((HomeController) fxmlLoader.getController()).setUsername(usuario);
 
-            Scene scene = new Scene(root, 905, 621);
+            Scene scene = new Scene(root, 950, 600);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);

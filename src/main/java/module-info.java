@@ -2,7 +2,6 @@ module login.formlogin {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires java.desktop;
     requires jakarta.persistence;

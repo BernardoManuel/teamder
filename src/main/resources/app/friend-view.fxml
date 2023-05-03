@@ -6,13 +6,6 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.FriendsController">
-   <right>
-      <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <VBox prefHeight="400.0" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER" />
-         </content>
-      </ScrollPane>
-   </right>
    <center>
       <VBox alignment="CENTER" prefHeight="400.0" prefWidth="389.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
          <children>

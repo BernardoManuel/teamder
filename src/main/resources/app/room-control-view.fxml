@@ -43,7 +43,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="40.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onMouseClicked="#addUserToRoom" style="-fx-background-color: #e75334;" text="Add" textFill="WHITE">
+                                    <Button mnemonicParsing="false" onMouseClicked="#addUserToRoom" style="-fx-background-color: #e75334;" text="Añadir" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font></Button>
@@ -78,12 +78,12 @@
                      <center>
                         <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                            <children>
-                              <Button mnemonicParsing="false" onMouseClicked="#leaveRoom" style="-fx-background-color: #e75334;" text="Abandonar sala" textFill="WHITE">
+                              <Button mnemonicParsing="false" onMouseClicked="#leaveRoom" style="-fx-background-color: #e75334;" text="Eliminar sala" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                                  <HBox.margin>
-                                    <Insets top="10.0" />
+                                    <Insets top="20.0" />
                                  </HBox.margin></Button>
                            </children>
                         </HBox>
@@ -96,7 +96,7 @@
    <top>
       <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onMouseClicked="#closeRoomControls" style="-fx-background-color: #e75334;" text="X" textFill="WHITE">
+            <Button mnemonicParsing="false" onMouseClicked="#closeRoomControls" style="-fx-background-color: #e75334;" text="Volver" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>

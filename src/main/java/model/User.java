@@ -34,9 +34,6 @@ public class User {
     @OneToMany(mappedBy = "amigo1", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Friendship> amistades = new HashSet<>();
 
-    //@OneToMany(mappedBy = "amigo2", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private Set<Friendship> amistades2 = new HashSet<>();
-
     public User() {
     }
 
@@ -62,6 +59,28 @@ public class User {
                 ", descripcion='" + descripcion + '\'' +
                 '}';
     }
+
+    public Set<Friendship> getAmistades() {
+        return amistades;
+    }
+
+    public void setAmistades(Set<Friendship> amistades) {
+        this.amistades = amistades;
+    }
+
+    @Transient
+    public List<User> getAmigos() {
+        List<User> amigos = new ArrayList<>();
+        for (Friendship amistad : amistades) {
+            if (amistad.getAmigo1().equals(this)) {
+                amigos.add(amistad.getAmigo2());
+            } else {
+                amigos.add(amistad.getAmigo1());
+            }
+        }
+        return amigos;
+    }
+
 
 
     public Integer getId() {
