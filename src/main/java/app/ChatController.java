@@ -102,11 +102,15 @@ public class ChatController extends BorderPane {
             msgPane.setAlignment(Pos.CENTER_LEFT);
             msgPane.setFillWidth(false);
 
-            Text msgText = new Text(message);
-            msgText.setFill(Color.WHITE);
+            HBox contentPane = new HBox();
+            contentPane.setPadding(new Insets(5, 10, 5, 10));
+            contentPane.getStyleClass().add("message");
 
-            msgPane.getChildren().add(msgText);
-            msgPane.getStyleClass().add("message");
+            Text msgText = new Text(message);
+            msgText.getStyleClass().add("message-text");
+            contentPane.getChildren().add(msgText);
+
+            msgPane.getChildren().add(contentPane);
 
             messageContainer.getChildren().add(msgPane);
             messageContainer.getStylesheets().add(getClass().getResource("/css/message.css").toExternalForm());
