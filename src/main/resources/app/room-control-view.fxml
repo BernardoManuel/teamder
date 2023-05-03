@@ -78,7 +78,7 @@
                      <center>
                         <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                            <children>
-                              <Button mnemonicParsing="false" onMouseClicked="#leaveRoom" style="-fx-background-color: #e75334;" text="Eliminar sala" textFill="WHITE">
+                              <Button mnemonicParsing="false" onMouseClicked="#leaveRoom" style="-fx-background-color: #e75334;" text="Abandonar sala" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>

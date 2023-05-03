@@ -4,12 +4,22 @@ import database.HibernateUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
 import model.Friendship;
@@ -30,12 +40,14 @@ import java.util.Set;
 
 public class HomeController {
 
+    @FXML public ScrollPane friendshipsListContainer;
     @FXML
     private BorderPane homeView;
     @FXML
     private VBox chatsList;
     @FXML
     private Text userLogged;
+    private VBox friendshipsList;
     private User user;
     private ChatController currentChatController;
     private RoomRepository roomRepository;
@@ -49,9 +61,11 @@ public class HomeController {
         friendshipRepository = new FriendshipRepository();
 
         Platform.runLater(() -> {
+            homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
                 generateHome();
                 updateChatsList();
+                updateFriendshipsList();
                 solicitudes(user);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,6 +102,7 @@ public class HomeController {
 
     public void updateChatsList() throws IOException {
         updateUser();
+        updateFriendshipsList();
         Set<Room> rooms = user.getRooms();
 
         List<HBox> roomsItems = new ArrayList<>();
@@ -148,8 +163,6 @@ public class HomeController {
     }
 
     private void solicitudes(User usuario) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-
         FriendshipRepository friendshipRepository = new FriendshipRepository();
         List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
 
@@ -184,7 +197,59 @@ public class HomeController {
                 }
             }
         }
-        session.close();
+    }
+
+    public void updateFriendshipsList() {
+        friendshipsList = new VBox();
+        Set<Friendship> friends = friendshipRepository.getFriendships(user);
+        if (friends != null && friends.size() > 0) {
+            for (Friendship friendship : friends) {
+                createFriendshipItem(friendship);
+            }
+        }
+        friendshipsListContainer.setContent(friendshipsList);
+    }
+
+    public void createFriendshipItem(Friendship f) {
+        HBox userItem = new HBox();
+        userItem.setAlignment(Pos.CENTER);
+        userItem.setSpacing(10.0);
+
+        // Crea un círculo en lugar de un Pane
+        Circle imgUser = new Circle();
+        imgUser.setRadius(20.0);
+        imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
+
+        HBox labelUserContainer = new HBox();
+        Label labelUser = new Label();
+        labelUser.setText(f.getAmigo2().getNombreUsuario());
+
+
+        labelUser.setFont(javafx.scene.text.Font.font("System", FontWeight.BOLD, 14));
+        labelUser.setTextFill(javafx.scene.paint.Color.BLACK);
+
+        labelUserContainer.getChildren().add(labelUser);
+        labelUserContainer.setAlignment(Pos.CENTER_LEFT);
+        labelUserContainer.setPadding(new Insets(0, 0, 0,10));
+        HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
+
+        userItem.getChildren().add(imgUser);
+        userItem.getChildren().add(labelUserContainer);
+        Button btnRemove = new Button("Borrar");
+        btnRemove.setStyle("-fx-background-color: #e75334");
+        btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
+        btnRemove.setTextFill(Color.WHITE);
+        btnRemove.setOnMouseClicked(event -> {
+            removeUserFromFriendship(f);
+        });
+        userItem.getChildren().add(btnRemove);
+
+        friendshipsList.getChildren().add(userItem);
+    }
+
+    public void removeUserFromFriendship(Friendship f) {
+        friendshipRepository.deleteFriendship(f);
+        updateFriendshipsList();
     }
 
 

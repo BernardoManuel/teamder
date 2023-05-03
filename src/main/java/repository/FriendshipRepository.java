@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public class FriendshipRepository {
 
@@ -66,6 +67,8 @@ public class FriendshipRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
+            friendship.setAmigo1(null);
+            friendship.setAmigo2(null);
             session.delete(friendship);
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -73,6 +76,22 @@ public class FriendshipRepository {
         } finally {
             session.close();
         }
+    }
+
+    public Set<Friendship> getFriendships(User puser) {
+        Set<Friendship> result = null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            User user = session.get(User.class, puser.getId());
+            result = user.getAmistades();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return result;
     }
 
 
