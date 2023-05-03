@@ -5,20 +5,23 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RoomControlController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f8efad;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RoomControlController">
    <center>
       <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <content>
-          <VBox spacing="10.0">
+          <VBox spacing="10.0" style="-fx-background-color: #125665;">
                <children>
                   <BorderPane>
                      <top>
                         <HBox alignment="CENTER" prefHeight="35.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Label text="Agregar usuario">
+                              <Label text="Agregar usuario" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="18.0" />
                                  </font>
+                                 <HBox.margin>
+                                    <Insets bottom="25.0" top="10.0" />
+                                 </HBox.margin>
                               </Label>
                            </children>
                         </HBox>
@@ -28,13 +31,22 @@
                            <children>
                               <HBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label text="Nombre de usuario:" />
+                                    <Label text="Nombre de usuario:" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="13.0" />
+                                       </font></Label>
                                     <TextField fx:id="inputUsername" />
                                  </children>
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" />
+                                 </VBox.margin>
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="40.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onMouseClicked="#addUserToRoom" text="Add" />
+                                    <Button mnemonicParsing="false" onMouseClicked="#addUserToRoom" style="-fx-background-color: #e75334;" text="Add" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="13.0" />
+                                       </font></Button>
                                  </children>
                               </HBox>
                            </children>
@@ -46,12 +58,15 @@
                      <top>
                         <HBox alignment="CENTER" prefHeight="35.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Label text="Lista de usuarios">
+                              <Label text="Lista de usuarios" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="18.0" />
                                  </font>
                               </Label>
                            </children>
+                           <BorderPane.margin>
+                              <Insets bottom="10.0" top="10.0" />
+                           </BorderPane.margin>
                         </HBox>
                      </top>
                      <VBox.margin>
@@ -63,7 +78,13 @@
                      <center>
                         <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                            <children>
-                              <Button mnemonicParsing="false" text="Abandonar sala" onMouseClicked="#leaveRoom" />
+                              <Button mnemonicParsing="false" onMouseClicked="#leaveRoom" style="-fx-background-color: #e75334;" text="Abandonar sala" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin></Button>
                            </children>
                         </HBox>
                      </center>
@@ -73,9 +94,15 @@
       </ScrollPane>
    </center>
    <top>
-      <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onMouseClicked="#closeRoomControls" text="X" />
+            <Button mnemonicParsing="false" onMouseClicked="#closeRoomControls" style="-fx-background-color: #e75334;" text="X" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></Button>
          </children>
          <BorderPane.margin>
             <Insets bottom="5.0" right="5.0" top="5.0" />

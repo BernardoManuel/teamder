@@ -21,11 +21,17 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <Button fx:id="callBtn" mnemonicParsing="false" onMouseClicked="#startCall" text="Llamar" />
-            <Button mnemonicParsing="false" onMouseClicked="#openRoomControls" text="Options">
+            <Button fx:id="callBtn" mnemonicParsing="false" onMouseClicked="#startCall" style="-fx-background-color: #e75334;" text="Llamar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
+            <Button mnemonicParsing="false" onMouseClicked="#openRoomControls" style="-fx-background-color: #e75334;" text="Options" textFill="WHITE">
                <HBox.margin>
                   <Insets right="10.0" />
-               </HBox.margin></Button>
+               </HBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
            </children>
          <opaqueInsets>
             <Insets />
@@ -41,7 +47,7 @@
                <TextField fx:id="inputMessage" accessibleRole="DECREMENT_BUTTON" cache="true" prefHeight="45.0" prefWidth="260.0" />
                <Button mnemonicParsing="false" onMouseClicked="#onButtonClick" style="-fx-background-color: #e75334;" text="Enviar" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="13.0" />
                </font></Button>
            </children>
        </HBox>
