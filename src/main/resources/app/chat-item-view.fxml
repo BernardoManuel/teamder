@@ -3,18 +3,20 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?> <!-- Importa la clase Circle -->
 
 <HBox prefHeight="30.0" prefWidth="185.0" spacing="5" style="-fx-background-color: #f8efad;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatItemController">
-   <children>
-      <Pane prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #e75334;" />
-      <Pane prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f8efad;">
-         <children>
-              <Text fx:id="roomTitle" layoutX="10.0" layoutY="20.0" text="">
-               <font>
-                  <Font name="System Bold Italic" size="14.0" />
-               </font>
-            </Text>
-         </children>
-       </Pane>
-   </children>
+    <children>
+        <!-- Reemplaza el Pane con un Circle -->
+        <Circle radius="15.0" fill="#e75334" centerX="15.0" centerY="15.0" />
+        <Pane prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f8efad;">
+            <children>
+                <Text fx:id="roomTitle" layoutX="10.0" layoutY="20.0" text="">
+                    <font>
+                        <Font name="System Bold Italic" size="14.0" />
+                    </font>
+                </Text>
+            </children>
+        </Pane>
+    </children>
 </HBox>

@@ -9,6 +9,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import model.Room;
 import model.User;
 import repository.RoomRepository;
@@ -89,13 +93,19 @@ public class RoomControlController {
         userItem.setAlignment(Pos.CENTER);
         userItem.setSpacing(10.0);
 
-        Pane imgUser = new Pane();
-        imgUser.setPrefSize(35.0, 35.0);
-        imgUser.setStyle("-fx-background-color: red;");
+        // Crea un círculo en lugar de un Pane
+        Circle imgUser = new Circle();
+        imgUser.setRadius(20.0);
+        imgUser.setFill(Color.web("#f8efad"));
 
         HBox labelUserContainer = new HBox();
         Label labelUser = new Label();
         labelUser.setText(u.getNombreUsuario());
+
+
+        labelUser.setFont(Font.font("System", FontWeight.BOLD, 14));
+        labelUser.setTextFill(Color.WHITE);
+
         labelUserContainer.getChildren().add(labelUser);
         labelUserContainer.setAlignment(Pos.CENTER_LEFT);
         labelUserContainer.setPadding(new Insets(0, 0, 0,10));
@@ -105,6 +115,9 @@ public class RoomControlController {
         userItem.getChildren().add(labelUserContainer);
         if (!u.getId().equals(user.getId())) {
             Button btnRemove = new Button("Borrar");
+            btnRemove.setStyle("-fx-background-color: #e75334");
+            btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
+            btnRemove.setTextFill(Color.WHITE);
             btnRemove.setOnMouseClicked(event -> {
                 removeUserFromRoom(u);
             });
@@ -113,6 +126,7 @@ public class RoomControlController {
 
         usersList.getChildren().add(userItem);
     }
+
 
     public void removeUserFromRoom(User user) {
         roomRepository.removeUser(room.getId(), user.getId());
