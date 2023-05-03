@@ -35,7 +35,7 @@ public class Room {
     @Fetch(FetchMode.JOIN)
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_juego")
     private Game game;
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RoomControlController">
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <content>
+          <VBox spacing="10.0">
+               <children>
+                  <BorderPane>
+                     <top>
+                        <HBox alignment="CENTER" prefHeight="35.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label text="Agregar usuario">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </top>
+                     <center>
+                        <VBox BorderPane.alignment="CENTER">
+                           <children>
+                              <HBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label text="Nombre de usuario:" />
+                                    <TextField fx:id="inputUsername" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="40.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onMouseClicked="#addUserToRoom" text="Add" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </center>
+                  </BorderPane>
+                  <Separator prefWidth="200.0" />
+                  <BorderPane fx:id="usersListContainer">
+                     <top>
+                        <HBox alignment="CENTER" prefHeight="35.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label text="Lista de usuarios">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </top>
+                     <VBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </VBox.margin>
+                  </BorderPane>
+                  <Separator prefWidth="200.0" />
+                  <BorderPane>
+                     <center>
+                        <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+                           <children>
+                              <Button mnemonicParsing="false" text="Abandonar sala" onMouseClicked="#leaveRoom" />
+                           </children>
+                        </HBox>
+                     </center>
+                  </BorderPane>
+               </children></VBox>
+        </content>
+      </ScrollPane>
+   </center>
+   <top>
+      <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onMouseClicked="#closeRoomControls" text="X" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </HBox>
+   </top>
+</BorderPane>

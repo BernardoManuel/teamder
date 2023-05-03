@@ -71,6 +71,7 @@ public class HomeController {
         closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
+        updateChatsList();
     }
 
     public Parent getChatView(Room room) throws IOException {
@@ -80,6 +81,8 @@ public class HomeController {
         Parent root = loader.load();
         ((ChatController) loader.getController()).setUser(user);
         ((ChatController) loader.getController()).setRoom(room);
+        ((ChatController) loader.getController()).setHomeView(homeView);
+        ((ChatController) loader.getController()).setHomeController(this);
         currentChatController = loader.getController();
 
         return root;
@@ -89,8 +92,9 @@ public class HomeController {
         updateUser();
         Set<Room> rooms = user.getRooms();
 
+        List<HBox> roomsItems = new ArrayList<>();
         if (rooms != null && !rooms.isEmpty()) {
-            List<HBox> roomsItems = new ArrayList<>();
+            roomsItems = new ArrayList<>();
             for (Room room : rooms) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
                 HBox item = loader.load();
@@ -106,8 +110,8 @@ public class HomeController {
                     }
                 });
             }
-            chatsList.getChildren().setAll(roomsItems);
         }
+        chatsList.getChildren().setAll(roomsItems);
     }
 
     public void setUsername(User user) {

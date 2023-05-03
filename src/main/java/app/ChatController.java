@@ -2,8 +2,10 @@ package app;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -42,6 +44,7 @@ public class ChatController extends BorderPane {
     private BufferedReader bufferedReader;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    private HomeController homeController;
     private User user;
     private Room room;
     private String inputMessageText;
@@ -54,7 +57,9 @@ public class ChatController extends BorderPane {
     SourceDataLine lineaSalidaAudio;
     TargetDataLine lineaEntradaAudio;
     private Boolean calling;
+    private BorderPane homeView;
     @FXML private Button callBtn;
+    @FXML private BorderPane chatView;
 
 
     public void initialize() {
@@ -312,24 +317,18 @@ public class ChatController extends BorderPane {
     }
 
     @FXML
-    public void openDialogAddUser() {
-        TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Añadir usuario");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Introduce el nombre de usuario: ");
-
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            addUserToRoom(result.get());
-        }
-    }
-
-    public void addUserToRoom(String username) {
-        User user = userRepository.findUserByUsername(username);
-        if (user != null) {
-            roomRepository.addUser(room, user.getId());
-        } else {
-            System.out.println("El usuario no existe.");
+    public void openRoomControls() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("room-control-view.fxml"));
+            Parent root = loader.load();
+            ((RoomControlController)loader.getController()).setChatView(chatView);
+            ((RoomControlController)loader.getController()).setHomeView(homeView);
+            ((RoomControlController)loader.getController()).setRoom(room);
+            ((RoomControlController)loader.getController()).setUser(user);
+            ((RoomControlController) loader.getController()).setHomeController(homeController);
+            homeView.setCenter(root);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -369,5 +368,13 @@ public class ChatController extends BorderPane {
             calling = false;
             closeEverything();
         }
+    }
+
+    public void setHomeView(BorderPane homeView) {
+        this.homeView = homeView;
+    }
+
+    public void setHomeController(HomeController homeController) {
+        this.homeController = homeController;
     }
 }

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
+<BorderPane fx:id="chatView" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
    <top>
        <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER_LEFT">
            <children>
@@ -21,8 +21,8 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <Button fx:id="callBtn" mnemonicParsing="false" text="Llamar" onMouseClicked="#startCall"/>
-            <Button mnemonicParsing="false" onMouseClicked="#openDialogAddUser" text="Add">
+            <Button fx:id="callBtn" mnemonicParsing="false" onMouseClicked="#startCall" text="Llamar" />
+            <Button mnemonicParsing="false" onMouseClicked="#openRoomControls" text="Options">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin></Button>
