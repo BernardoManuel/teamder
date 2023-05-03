@@ -12,15 +12,21 @@
          <ImageView fx:id="imageLoading" fitHeight="191.0" fitWidth="307.0" pickOnBounds="true" preserveRatio="true">
             <VBox.margin>
                <Insets top="50.0" />
-            </VBox.margin></ImageView>
+            </VBox.margin>
+         </ImageView>
          <Label text="Loading..." textFill="WHITE">
             <font>
                <Font name="System Bold Italic" size="18.0" />
             </font>
             <VBox.margin>
-               <Insets bottom="50.0" top="100.0" />
+               <Insets bottom="10.0" />
             </VBox.margin>
          </Label>
+         <ProgressBar fx:id="progressBar" prefWidth="300.0" VBox.vgrow="NEVER">
+            <VBox.margin>
+               <Insets bottom="50.0" />
+            </VBox.margin>
+         </ProgressBar>
       </VBox>
    </children>
 </StackPane>
