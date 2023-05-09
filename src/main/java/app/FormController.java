@@ -1,5 +1,10 @@
 package app;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import database.HibernateUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,6 +16,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,11 +31,18 @@ import model.User;
 import org.hibernate.Session;
 import repository.UserRepository;
 import utils.PasswordUtil;
-
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Optional;
 
 public class FormController {
+    @FXML
+    private Button buttonGoogleLogin;
     @FXML
     private ImageView imageViewLogo;
     @FXML
@@ -51,6 +66,14 @@ public class FormController {
         userRepository = new UserRepository();
 
         passwordField.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
+
+        buttonGoogleLogin.setOnAction(actionEvent -> {
+            try {
+                handleGoogleLogin();
+            } catch (IOException | URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         //insertamos el logo del login
         Image logoFormulario = new Image("file:src/main/resources/logo/logo_sin_fondo.png");
@@ -147,7 +170,45 @@ public class FormController {
         }
     }
 
-    // Método para mostrar el mensaje de error en el Pane
+    private void handleGoogleLogin() throws IOException, URISyntaxException {
+        // Crea el objeto GoogleAuthorizationCodeFlow para solicitar el token de acceso
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                new NetHttpTransport(),
+                JacksonFactory.getDefaultInstance(),
+                "62436554661-tuktjv2848dilg4irptfjrvf5ag41mqu.apps.googleusercontent.com",
+                "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",
+                Collections.singleton("https://www.googleapis.com/auth/userinfo.email"))
+                .build();
+
+        // Crea la URL para solicitar el código de autorización
+        String authorizationUrl = flow.newAuthorizationUrl().setRedirectUri("http://localhost").build();
+
+        // Abre el navegador web para que el usuario conceda permisos y obtenga el código de autorización
+        Desktop.getDesktop().browse(new URI(authorizationUrl));
+
+        // Pide al usuario que introduzca el código de autorización que ha obtenido
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Autenticador de Google");
+        dialog.setHeaderText("Por favor, ingresa tu código de autorización");
+        dialog.setContentText("Código de Autorización:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+
+            String authorizationCode = result.get();
+            GoogleTokenResponse tokenResponse = flow.newTokenRequest(authorizationCode).setRedirectUri("http://localhost").execute();
+
+            // Crea el objeto GoogleCredential con el token de acceso obtenido
+            GoogleCredential credential = new GoogleCredential.Builder()
+                    .setJsonFactory(JacksonFactory.getDefaultInstance())
+                    .setTransport(new NetHttpTransport())
+                    .setClientSecrets("62436554661-tuktjv2848dilg4irptfjrvf5ag41mqu.apps.googleusercontent.com", "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")
+                    .build()
+                    .setFromTokenResponse(tokenResponse);
+        }
+    }
+
+
     private void mostrarMensajeError(String mensaje) {
         // Configura el mensaje de error en el Label
         errorMessage.setText(mensaje);

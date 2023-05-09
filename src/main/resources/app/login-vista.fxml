@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.FormController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.FormController">
 
    <children>
       <BorderPane prefHeight="600" prefWidth="800">
 
          <left>
             <AnchorPane prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #f8efad; -fx-border-width: 2px 0px 2px 2px; -fx-border-color: #142222;" BorderPane.alignment="CENTER">
-                  <ImageView fx:id="imageViewLeftPane" fitHeight="600" fitWidth="400.0" />
+               <children>
+                     <ImageView fx:id="imageViewLeftPane" fitHeight="600" fitWidth="400.0" />
+               </children>
             </AnchorPane>
          </left>
 
@@ -24,17 +27,17 @@
                         <Font size="13.0" />
                      </font>
                   </TextField>
-                  <PasswordField fx:id="passwordField" layoutX="120.0" layoutY="333.0" promptText="Contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;" >
+                  <PasswordField fx:id="passwordField" layoutX="120.0" layoutY="333.0" promptText="Contraseña" style="-fx-background-color: transparent; -fx-border-color: #f8efad; -fx-border-width: 0px 0px 1px 0px; -fx-text-fill: white;">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </PasswordField>
-                  <Button fx:id="buttonLogin" layoutX="142.0" layoutY="459.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="118.0" style="-fx-background-color: #e75334;" text="Iniciar Sesión" textFill="WHITE" textOverrun="CLIP">
+                  <Button fx:id="buttonLogin" layoutX="143.0" layoutY="420.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="118.0" style="-fx-background-color: #e75334;" text="Iniciar Sesión" textFill="WHITE" textOverrun="CLIP">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font></Button>
-                  <Hyperlink fx:id="hyperlinkCrearCuenta" layoutX="217.0" layoutY="513.0" text="Crea una cuenta." />
-                  <Label layoutX="93.0" layoutY="516.0" text="¿No tienes una cuenta?" textFill="WHITE" />
+                  <Hyperlink fx:id="hyperlinkCrearCuenta" layoutX="228.0" layoutY="525.0" text="Crea una cuenta." />
+                  <Label layoutX="85.0" layoutY="529.0" text="¿No tienes una cuenta?" textFill="WHITE" />
                   <ImageView fx:id="imageViewLogo" fitHeight="211.0" fitWidth="233.0" layoutX="85.0" layoutY="37.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" />
                   <Pane fx:id="errorPane" layoutX="84.0" layoutY="395.0" prefHeight="31.0" prefWidth="230.0" style="-fx-background-color: rgba(255, 0, 0, 0.6); -fx-background-radius: 5; -fx-border-radius: 5; " visible="false">
                      <children>
@@ -45,6 +48,7 @@
                         </Label>
                      </children>
                   </Pane>
+                  <Button fx:id="buttonGoogleLogin" layoutX="127.0" layoutY="478.0" mnemonicParsing="false" text="Inicia sesión con Google" />
                </children></AnchorPane>
          </right>
 
