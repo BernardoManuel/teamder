@@ -20,7 +20,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
 import repository.UserRepository;
+
+import utils.EmailValidator;
 import utils.PasswordUtil;
+import utils.PasswordValidator;
+import utils.UsernameValidator;
+
 import java.security.NoSuchAlgorithmException;
 
 public class RegistroController {
@@ -36,10 +41,14 @@ public class RegistroController {
     @FXML private Pane errorPane;
     @FXML private Label errorMessage;
     private UserRepository userRepository;
+    private EmailValidator emailValidator;
+    private PasswordValidator passwordValidator;
+    private UsernameValidator usernameValidator;
 
     public void initialize(){
         //Creamos el Repositorio de Usuarios
         userRepository = new UserRepository();
+
 
         //insertamos el fondo del left pane
         Image imagenFondo = new Image("file:src/main/resources/backgrounds/fondo_left_pane.png");
@@ -95,6 +104,7 @@ public class RegistroController {
     private void handleRegister() throws NoSuchAlgorithmException {
 
         User nuevoUsuario = new User();
+        usernameValidator = new UsernameValidator();
 
         // Comprobar nombre de usuario único
         String nombreUsuario = usernameField.getText();
@@ -110,12 +120,21 @@ public class RegistroController {
         String correo = correoField.getText();
         if (userRepository.isCorreoExists(correo)) {
             // El correo electrónico ya existe, muestra un mensaje de error o lanza una excepción
-            // TODO: Mostrar mensaje de error o lanzar excepción
             mostrarMensajeError("El correo electronico ya existe");
             return;
+        } else {
+            //Verificamos de que sea un correo valido.
+            emailValidator = new EmailValidator();
+            if(emailValidator.validate(correo)){
+                //Set correo electronico
+                nuevoUsuario.setCorreo(correo);
+            } else {
+                // El correo electrónico no tiene un formato valido.
+                mostrarMensajeError("Correo electronico no valido");
+                return;
+            }
         }
-        //Set correo electronico
-        nuevoUsuario.setCorreo(correo);
+
 
         //Comprobar contraseñas concuerdan
         String pass1 = passwordField.getText();
@@ -128,9 +147,29 @@ public class RegistroController {
             String hashStr = PasswordUtil.bytesToHex(hashedPassword); // Convertir a representación hexadecimal
             String saltStr = PasswordUtil.bytesToHex(salt); // Convertir a representación hexadecimal
 
-            // Guardar hashStr y salt en la base de datos para el nuevo usuario
-            nuevoUsuario.setPassword(hashStr);
-            nuevoUsuario.setSalt(saltStr);
+            //Validar seguridad de la contraseña
+            passwordValidator = new PasswordValidator();
+            if(!passwordValidator.validateLength(password)){
+                mostrarMensajeError("Contraseña debe contener al menos 8 caracteres");
+                return;
+            } else if(!passwordValidator.validateUpperCase(password)){
+                mostrarMensajeError("Contraseña debe contener al menos una letra mayúscula");
+                return;
+            } else if(!passwordValidator.validateLowerCase(password)){
+                mostrarMensajeError("Contraseña debe contener al menos una letra minúscula");
+                return;
+            } else if(!passwordValidator.validateDigits(password)){
+                mostrarMensajeError("Contraseña debe contener al menos un digito");
+                return;
+            } else if(!passwordValidator.validateSpecialChars(password)){
+                mostrarMensajeError("Contraseña debe contener al menos un caracter especial \"!@#$%^&*()-+\"");
+                return;
+            } else {
+                // Guardar hashStr y salt en la base de datos para el nuevo usuario
+                nuevoUsuario.setPassword(hashStr);
+                nuevoUsuario.setSalt(saltStr);
+            }
+
         } else {
             mostrarMensajeError("Las contraseñas no coinciden");
             return;
@@ -140,6 +179,9 @@ public class RegistroController {
         if(nombreUsuario.isEmpty()||correo.isEmpty()||pass1.isEmpty()||pass2.isEmpty()){
             mostrarMensajeError("Debe rellenar todos los campos");
             return;
+
+        }else if(!usernameValidator.validate(nombreUsuario)){
+            mostrarMensajeError("El nombre de usuario no es valido");
         }else{
             //Guardamos el nuevo usuario
             userRepository.save(nuevoUsuario);
