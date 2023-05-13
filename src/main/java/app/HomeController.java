@@ -1,6 +1,5 @@
 package app;
 
-import database.HibernateUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,16 +20,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import listeners.FriendshipRequestListener;
 import model.Friendship;
 import model.Room;
 import model.User;
-import org.hibernate.Session;
 import repository.FriendshipRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +37,10 @@ import java.util.Optional;
 import java.util.Set;
 
 
-public class HomeController {
+public class HomeController implements FriendshipRequestListener {
 
-    @FXML public ScrollPane friendshipsListContainer;
+    @FXML
+    public ScrollPane friendshipsListContainer;
     @FXML
     private BorderPane homeView;
     @FXML
@@ -66,7 +66,7 @@ public class HomeController {
                 generateHome();
                 updateChatsList();
                 updateFriendshipsList();
-                solicitudes(user);
+                startListeningForRequests(user);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -162,52 +162,26 @@ public class HomeController {
         }
     }
 
-    private void solicitudes(User usuario) {
-        FriendshipRepository friendshipRepository = new FriendshipRepository();
-        List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
-
-        System.out.println("Hay " + pendingFriendRequests.size() + " solicitudes de amistad pendientes para el usuario: " + usuario.getNombreUsuario());
-
-        for (Friendship friendRequest : pendingFriendRequests) {
-            User requester = friendRequest.getAmigo1();
-
-            // Verifica si requester no es nulo antes de usarlo
-            if (requester != null) {
-                System.out.println("Solicitud de amistad encontrada de " + requester.getNombreUsuario());
-
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Solicitud de amistad");
-                alert.setHeaderText(requester.getNombreUsuario() + " quiere ser tu amigo.");
-                alert.setContentText("¿Aceptas la solicitud de amistad?");
-
-                ButtonType acceptButton = new ButtonType("Aceptar");
-                ButtonType rejectButton = new ButtonType("Rechazar");
-                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(acceptButton, rejectButton, cancelButton);
-
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.isPresent() && result.get() == acceptButton) {
-                    // Aceptar la solicitud y guardar en la base de datos
-                    friendRequest.setSolicitud("aceptado");
-                    friendshipRepository.updateFriendshipStatus(friendRequest);
-                } else if (result.isPresent() && result.get() == rejectButton) {
-                    // Rechazar la solicitud y eliminar de la base de datos
-                    friendshipRepository.deleteFriendship(friendRequest);
-                }
-            }
-        }
-    }
 
     public void updateFriendshipsList() {
-        friendshipsList = new VBox();
-        Set<Friendship> friends = friendshipRepository.getFriendships(user);
-        if (friends != null && friends.size() > 0) {
-            for (Friendship friendship : friends) {
-                createFriendshipItem(friendship);
+        new Thread(() -> {
+            while (true) {
+                try {
+                    friendshipsList = new VBox();
+                    Set<Friendship> friends = friendshipRepository.getFriendships(user);
+                    if (friends != null && friends.size() > 0) {
+                        for (Friendship friendship : friends) {
+                            createFriendshipItem(friendship);
+                        }
+                    }
+                    friendshipsListContainer.setContent(friendshipsList);
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        friendshipsListContainer.setContent(friendshipsList);
+        }).start();
+
     }
 
     public void createFriendshipItem(Friendship f) {
@@ -230,7 +204,7 @@ public class HomeController {
 
         labelUserContainer.getChildren().add(labelUser);
         labelUserContainer.setAlignment(Pos.CENTER_LEFT);
-        labelUserContainer.setPadding(new Insets(0, 0, 0,10));
+        labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
 
         userItem.getChildren().add(imgUser);
@@ -256,5 +230,73 @@ public class HomeController {
     public void updateUser() {
         this.user = userRepository.updateUser(user);
     }
+
+
+    // Hilo del escuchador de solicitudes de amistades
+    public void startListeningForRequests(User usuario) {
+        new Thread(() -> {
+            while (true) {
+                List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
+                // Mostrar las solicitudes no mostradas
+                for (Friendship friendRequest : pendingFriendRequests) {
+                    onRequestReceived(usuario, friendRequest);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    // Implementación del escuchador
+    @Override
+    public void onRequestReceived(User usuario, Friendship friendRequest) {
+        User requester = friendRequest.getAmigo1();
+        // Verificar si requester no es nulo antes de usarlo
+        if (requester != null) {
+            System.out.println("Solicitud de amistad encontrada de " + requester.getNombreUsuario());
+            // Mostrar el diálogo Alert en el hilo principal de JavaFX
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Solicitud de amistad");
+                alert.setHeaderText(requester.getNombreUsuario() + " quiere ser tu amigo.");
+                alert.setContentText("¿Aceptas la solicitud de amistad?");
+
+                ButtonType acceptButton = new ButtonType("Aceptar");
+                ButtonType rejectButton = new ButtonType("Rechazar");
+                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(acceptButton, rejectButton, cancelButton);
+
+                friendRequest.setShown(true);
+                friendshipRepository.updateFriendshipStatus(friendRequest);
+
+                // Obtener la ventana actual
+                Window currentWindow = homeView.getScene().getWindow();
+                // Establecer la ventana actual como propietario de la alerta
+                alert.initOwner(currentWindow);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == acceptButton) {
+                    // Aceptar la solicitud y guardar en la base de datos
+                    friendRequest.setSolicitud("aceptado");
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+                } else if (result.isPresent() && result.get() == rejectButton) {
+                    // Rechazar la solicitud y guardar en la base de datos
+                    friendRequest.setSolicitud("rechazado");
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+                } else {
+                    // Cancelar la solicitud
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+                }
+            });
+        }
+    }
+
+
+
+
 }
 

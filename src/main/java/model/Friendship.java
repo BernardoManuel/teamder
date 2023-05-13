@@ -23,6 +23,9 @@ public class Friendship {
     @Column(name = "motivo_bloqueo")
     private String motivo_bloqueo;
 
+    @Column(name = "is_shown")
+    private Boolean isShown;
+
     public Friendship() {
     }
 
@@ -80,5 +83,13 @@ public class Friendship {
 
     public void setMotivo_bloqueo(String motivo_bloqueo) {
         this.motivo_bloqueo = motivo_bloqueo;
+    }
+
+    public Boolean getShown() {
+        return isShown;
+    }
+
+    public void setShown(Boolean shown) {
+        isShown = shown;
     }
 }

@@ -34,7 +34,7 @@ public class FriendshipRepository {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
-            org.hibernate.query.Query<Friendship> query = session.createQuery("FROM Friendship WHERE amigo2 = :user AND solicitud = 'pendiente'", Friendship.class);
+            org.hibernate.query.Query<Friendship> query = session.createQuery("FROM Friendship WHERE amigo2 = :user AND solicitud = 'pendiente' AND isShown = false", Friendship.class);
             query.setParameter("user", user);
             pendingFriendRequests = query.getResultList();
             session.getTransaction().commit();

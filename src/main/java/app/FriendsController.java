@@ -49,6 +49,7 @@ public class FriendsController {
                 friendship.setAmigo1(currentUser);
                 friendship.setAmigo2(friend);
                 friendship.setSolicitud("pendiente");
+                friendship.setShown(false);
 
                 FriendshipRepository friendshipRepository = new FriendshipRepository();
                 friendshipRepository.saveFriendship(friendship);
@@ -62,7 +63,7 @@ public class FriendsController {
     }
 
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
