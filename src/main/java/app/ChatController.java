@@ -37,7 +37,7 @@ public class ChatController extends BorderPane {
     public static final int CHANNELS = 1;
     public static final boolean SIGNED = true;
     public static final boolean BIG_ENDIAN = false;
-    public static final String SERVER_ADDRESS = "95.60.213.14";
+    public static final String SERVER_ADDRESS = "localhost";
     private Socket textChatSocket;
     private Socket voiceChatSocket;
     private BufferedWriter bufferedWriter;

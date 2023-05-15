@@ -61,6 +61,8 @@ public class FormController {
     private Label errorMessage;
     private UserRepository userRepository;
 
+    public static User currentUser;
+
     public void initialize() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         userRepository = new UserRepository();
@@ -159,6 +161,7 @@ public class FormController {
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
+                currentUser = usuario;  // Guarda el usuario en la variable estática
                 cargarVistaHome(usuario);
             } else {
                 //Lanzar error de inicio de sesión.

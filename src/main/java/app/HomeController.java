@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,6 +21,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import listeners.FriendshipRequestListener;
@@ -45,12 +47,16 @@ public class HomeController implements FriendshipRequestListener {
     private VBox chatsList;
     @FXML
     private Text userLogged;
+    @FXML
+    private Button logoutButton;
     private VBox friendshipsList;
     private User user;
     private ChatController currentChatController;
     private RoomRepository roomRepository;
     private UserRepository userRepository;
     private FriendshipRepository friendshipRepository;
+
+
 
     @FXML
     public void initialize() {
@@ -68,6 +74,9 @@ public class HomeController implements FriendshipRequestListener {
                 e.printStackTrace();
             }
         });
+
+        logoutButton.setOnAction(actionEvent -> handleLogoutButtonAction());
+
     }
 
     private void generateHome() throws IOException {
@@ -312,7 +321,22 @@ public class HomeController implements FriendshipRequestListener {
         }
     }
 
+    private void handleLogoutButtonAction() {
+        // Cerrar la sesión actual y volver a la pantalla de inicio de sesión
 
+        // Limpia el usuario actual
+        FormController.currentUser = null;
+
+        // Cambiar a la vista de inicio de sesión
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-vista.fxml")); // Asegúrate de que esta ruta es correcta
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
