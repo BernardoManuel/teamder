@@ -31,10 +31,8 @@ import repository.RoomRepository;
 import repository.UserRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class HomeController implements FriendshipRequestListener {
@@ -59,7 +57,6 @@ public class HomeController implements FriendshipRequestListener {
         roomRepository = new RoomRepository();
         userRepository = new UserRepository();
         friendshipRepository = new FriendshipRepository();
-
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
@@ -167,22 +164,31 @@ public class HomeController implements FriendshipRequestListener {
         new Thread(() -> {
             while (true) {
                 try {
-                    friendshipsList = new VBox();
                     Set<Friendship> friends = friendshipRepository.getFriendships(user);
                     if (friends != null && friends.size() > 0) {
-                        for (Friendship friendship : friends) {
-                            createFriendshipItem(friendship);
-                        }
+                        // Ordenar los amigos por nombre de usuario
+                        List<Friendship> sortedFriends = friends.stream()
+                                .sorted(Comparator.comparing(f -> f.getAmigo2().getNombreUsuario()))
+                                .collect(Collectors.toList());
+
+                        Platform.runLater(() -> {
+                            friendshipsList = new VBox();
+                            for (Friendship friendship : sortedFriends) {
+                                if(friendship.getSolicitud().equals("aceptado")){
+                                    createFriendshipItem(friendship);
+                                }
+                            }
+                            friendshipsListContainer.setContent(friendshipsList);
+                        });
                     }
-                    friendshipsListContainer.setContent(friendshipsList);
-                    Thread.sleep(2000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-
     }
+
 
     public void createFriendshipItem(Friendship f) {
         HBox userItem = new HBox();
@@ -283,6 +289,17 @@ public class HomeController implements FriendshipRequestListener {
                     // Aceptar la solicitud y guardar en la base de datos
                     friendRequest.setSolicitud("aceptado");
                     friendshipRepository.updateFriendshipStatus(friendRequest);
+
+                    // Creamos la amistad aceptada para el cliente que recibe la solicitud.
+                    Friendship friendship = new Friendship();
+                    friendship.setAmigo1(usuario);
+                    friendship.setAmigo2(friendRequest.getAmigo1());
+                    friendship.setSolicitud("aceptado");
+                    friendship.setShown(true);
+
+                    friendshipRepository.saveFriendship(friendship);
+                    //Actualizamos la lista de amistades
+                    updateFriendshipsList();
                 } else if (result.isPresent() && result.get() == rejectButton) {
                     // Rechazar la solicitud y guardar en la base de datos
                     friendRequest.setSolicitud("rechazado");
