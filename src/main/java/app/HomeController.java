@@ -181,7 +181,7 @@ public class HomeController implements FriendshipRequestListener {
                             friendshipsListContainer.setContent(friendshipsList);
                         });
                     }
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -225,13 +225,13 @@ public class HomeController implements FriendshipRequestListener {
         userItem.getChildren().add(btnRemove);
 
         friendshipsList.getChildren().add(userItem);
+
     }
 
     public void removeUserFromFriendship(Friendship f) {
         friendshipRepository.deleteFriendship(f);
         updateFriendshipsList();
     }
-
 
     public void updateUser() {
         this.user = userRepository.updateUser(user);

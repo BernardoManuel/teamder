@@ -32,12 +32,12 @@ import java.util.Optional;
 
 public class ChatController extends BorderPane {
     //CONSTANTES DE FORMATO DE AUDIO
-    public static final float SAMPLE_RATE = 44100.0f;
+    public static final float SAMPLE_RATE = 16000f;
     public static final int SAMPLE_SIZE_IN_BITS = 16;
     public static final int CHANNELS = 1;
     public static final boolean SIGNED = true;
-    public static final boolean BIG_ENDIAN = true;
-    public static final String SERVER_ADDRESS = "localhost";
+    public static final boolean BIG_ENDIAN = false;
+    public static final String SERVER_ADDRESS = "95.60.213.14";
     private Socket textChatSocket;
     private Socket voiceChatSocket;
     private BufferedWriter bufferedWriter;
