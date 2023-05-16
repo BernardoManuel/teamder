@@ -47,10 +47,11 @@ public class AppController extends Application {
 
     private void showLoginScreen() {
         try {
-            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-vista.fxml"));
+            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
             primaryStage.setScene(formScene);
+            primaryStage.setResizable(false);
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();

@@ -329,7 +329,7 @@ public class HomeController implements FriendshipRequestListener {
 
         // Cambiar a la vista de inicio de sesión
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-vista.fxml")); // Asegúrate de que esta ruta es correcta
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml")); // Asegúrate de que esta ruta es correcta
             Parent root = loader.load();
             Stage stage = (Stage) logoutButton.getScene().getWindow();
             stage.setScene(new Scene(root));

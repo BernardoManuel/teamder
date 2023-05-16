@@ -39,7 +39,9 @@ public class RegistroController {
     @FXML private TextField passwordField;
     @FXML private TextField confirmPasswordField;
     @FXML private Pane errorPane;
+    @FXML private Pane errorPane2;
     @FXML private Label errorMessage;
+    @FXML private Label errorMessage2;
     private UserRepository userRepository;
     private EmailValidator emailValidator;
     private PasswordValidator passwordValidator;
@@ -86,7 +88,7 @@ public class RegistroController {
     //Metodo que envia al inicio de sesion
     private void formIniciarSesion() {
         try{
-            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-vista.fxml"));
+            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
 
@@ -106,18 +108,27 @@ public class RegistroController {
         User nuevoUsuario = new User();
         usernameValidator = new UsernameValidator();
 
-        // Comprobar nombre de usuario único
+        //Recogemos los campos
         String nombreUsuario = usernameField.getText();
+        String correo = correoField.getText();
+        String pass1 = passwordField.getText();
+        String pass2 = confirmPasswordField.getText();
+
+        //Validar campos vacios
+        if(nombreUsuario.isEmpty()||correo.isEmpty()||pass1.isEmpty()||pass2.isEmpty()){
+            mostrarMensajeError("Debe rellenar todos los campos");
+            return;
+        }
+
+        // Comprobar nombre de usuario único
         if (userRepository.isNombreUsuarioExists(nombreUsuario)) {
             // El nombre de usuario ya existe, muestra un mensaje de error o lanza una excepción
-            // TODO: Mostrar mensaje de error o lanzar excepción
             mostrarMensajeError("El nombre de usuario ya existe.");
             return;
         }
         nuevoUsuario.setNombreUsuario(nombreUsuario);
 
         // Comprobar correo electrónico único
-        String correo = correoField.getText();
         if (userRepository.isCorreoExists(correo)) {
             // El correo electrónico ya existe, muestra un mensaje de error o lanza una excepción
             mostrarMensajeError("El correo electronico ya existe");
@@ -137,9 +148,6 @@ public class RegistroController {
 
 
         //Comprobar contraseñas concuerdan
-        String pass1 = passwordField.getText();
-        String pass2 = confirmPasswordField.getText();
-
         if(pass1.equals(pass2)){
             String password = passwordField.getText();
             byte[] salt = PasswordUtil.generateSalt();
@@ -150,19 +158,19 @@ public class RegistroController {
             //Validar seguridad de la contraseña
             passwordValidator = new PasswordValidator();
             if(!passwordValidator.validateLength(password)){
-                mostrarMensajeError("Contraseña debe contener al menos 8 caracteres");
+                mostrarMensajeErrorGrande("Contraseña debe contener", "al menos 8 caracteres");
                 return;
             } else if(!passwordValidator.validateUpperCase(password)){
-                mostrarMensajeError("Contraseña debe contener al menos una letra mayúscula");
+                mostrarMensajeErrorGrande("Contraseña debe contener", "al menos una letra mayúscula");
                 return;
             } else if(!passwordValidator.validateLowerCase(password)){
-                mostrarMensajeError("Contraseña debe contener al menos una letra minúscula");
+                mostrarMensajeErrorGrande("Contraseña debe contener", "al menos una letra minúscula");
                 return;
             } else if(!passwordValidator.validateDigits(password)){
-                mostrarMensajeError("Contraseña debe contener al menos un digito");
+                mostrarMensajeErrorGrande("Contraseña debe contener", "al menos un digito");
                 return;
             } else if(!passwordValidator.validateSpecialChars(password)){
-                mostrarMensajeError("Contraseña debe contener al menos un caracter especial \"!@#$%^&*()-+\"");
+                mostrarMensajeErrorGrande("Contraseña debe contener al menos", "un caracter especial \"!@#$%^&*()-+\"");
                 return;
             } else {
                 // Guardar hashStr y salt en la base de datos para el nuevo usuario
@@ -175,12 +183,7 @@ public class RegistroController {
             return;
         }
 
-        //Validar campos vacios
-        if(nombreUsuario.isEmpty()||correo.isEmpty()||pass1.isEmpty()||pass2.isEmpty()){
-            mostrarMensajeError("Debe rellenar todos los campos");
-            return;
-
-        }else if(!usernameValidator.validate(nombreUsuario)){
+        if(!usernameValidator.validate(nombreUsuario)){
             mostrarMensajeError("El nombre de usuario no es valido");
         }else{
             //Guardamos el nuevo usuario
@@ -214,6 +217,34 @@ public class RegistroController {
 
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
+    }
+
+    // Método para mostrar el mensaje de error en el Pane
+    private void mostrarMensajeErrorGrande(String mensaje1, String mensaje2) {
+        // Configura el mensaje de error en el Label
+        errorMessage.setText(mensaje1);
+        errorMessage2.setText(mensaje2);
+        // Hace visible el Pane de error
+        errorPane.setVisible(true);
+        errorPane2.setVisible(true);
+
+        // Crea una Timeline para ocultar el mensaje de error después de 3 segundos
+        Timeline timeline = new Timeline();
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Oculta el mensaje de error
+                ocultarMensajeErrorGrande();
+            }
+        });
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+
+    private void ocultarMensajeErrorGrande() {
+
+        errorPane.setVisible(false);
+        errorPane2.setVisible(false);
     }
 
 

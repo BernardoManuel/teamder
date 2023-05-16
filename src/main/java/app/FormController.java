@@ -107,6 +107,7 @@ public class FormController {
             Scene registroScene = new Scene(registro);
             //Recuperamos y mostramos la vista registro
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
+            stage.setResizable(false);
             stage.setScene(registroScene);
 
         } catch (Exception e) {
