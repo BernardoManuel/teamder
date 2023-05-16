@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Window;
 import model.Friendship;
 import model.User;
 import database.HibernateUtil;
@@ -84,6 +85,10 @@ public class FriendsController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(content);
+        // Obtener la ventana actual
+        Window currentWindow = usernameTextField.getScene().getWindow();
+        // Establecer la ventana actual como propietario de la alerta
+        alert.initOwner(currentWindow);
         alert.showAndWait();
     }
 
