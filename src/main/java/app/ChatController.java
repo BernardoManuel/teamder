@@ -61,6 +61,9 @@ public class ChatController extends BorderPane {
     @FXML private Button callBtn;
     @FXML private BorderPane chatView;
 
+    private Thread listenForMessageThread;
+    private Thread sendVozThread;
+    private Thread receiveVozThread;
 
     public void initialize() {
         messageRepository = new MessageRepository();
@@ -208,7 +211,7 @@ public class ChatController extends BorderPane {
     }
 
     public void listenForMessage() {
-        new Thread(new Runnable() {
+        listenForMessageThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 String msgFromRoom;
@@ -221,12 +224,13 @@ public class ChatController extends BorderPane {
                     }
                 }
             }
-        }).start();
+        });
+        listenForMessageThread.start();
     }
 
     // Bucle para el envio de datos de audio al servidor
     public void sendVoz() {
-        new Thread(() -> {
+        sendVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
 
@@ -247,12 +251,13 @@ public class ChatController extends BorderPane {
                     closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
                 }
             }
-        }).start();
+        });
+        sendVozThread.start();
     }
 
     // Bucle para recibir de datos de audio al servidor
     public void receiveVoz() {
-        new Thread(() -> {
+        receiveVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
 
@@ -276,7 +281,8 @@ public class ChatController extends BorderPane {
                     closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
                 }
             }
-        }).start();
+        });
+        receiveVozThread.start();
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {

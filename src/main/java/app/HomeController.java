@@ -55,6 +55,9 @@ public class HomeController implements FriendshipRequestListener {
     private RoomRepository roomRepository;
     private UserRepository userRepository;
     private FriendshipRepository friendshipRepository;
+    private Thread updateFriendshipsThread;
+    private Thread listenFriendshipRequestsThread;
+
 
 
 
@@ -70,6 +73,16 @@ public class HomeController implements FriendshipRequestListener {
                 updateChatsList();
                 updateFriendshipsList();
                 startListeningForRequests(user);
+
+                // Obtener el Stage principal
+                Stage primaryStage = (Stage) homeView.getScene().getWindow();
+
+                // Agregar controlador de eventos para cerrar la aplicación
+                primaryStage.setOnCloseRequest(event -> {
+                    // Detener los hilos y cerrar la aplicación
+                    stopAllThreads();
+                    Platform.exit();
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -170,8 +183,8 @@ public class HomeController implements FriendshipRequestListener {
 
 
     public void updateFriendshipsList() {
-        new Thread(() -> {
-            while (true) {
+        updateFriendshipsThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Set<Friendship> friends = friendshipRepository.getFriendships(user);
                     if (friends != null && friends.size() > 0) {
@@ -195,7 +208,8 @@ public class HomeController implements FriendshipRequestListener {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        updateFriendshipsThread.start();
     }
 
 
@@ -249,8 +263,8 @@ public class HomeController implements FriendshipRequestListener {
 
     // Hilo del escuchador de solicitudes de amistades
     public void startListeningForRequests(User usuario) {
-        new Thread(() -> {
-            while (true) {
+        listenFriendshipRequestsThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
                 List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
                 // Mostrar las solicitudes no mostradas
                 for (Friendship friendRequest : pendingFriendRequests) {
@@ -262,7 +276,8 @@ public class HomeController implements FriendshipRequestListener {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        listenFriendshipRequestsThread.start();
     }
 
     // Implementación del escuchador
@@ -327,6 +342,9 @@ public class HomeController implements FriendshipRequestListener {
         // Limpia el usuario actual
         FormController.currentUser = null;
 
+        // Detener los hilos y esperar a que finalicen
+        stopAllThreads();
+
         // Cambiar a la vista de inicio de sesión
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml")); // Asegúrate de que esta ruta es correcta
@@ -338,6 +356,15 @@ public class HomeController implements FriendshipRequestListener {
         }
     }
 
+    public void stopAllThreads(){
+        // Detener los hilos y esperar a que finalicen
+        if (updateFriendshipsThread != null) {
+            updateFriendshipsThread.interrupt();
+        }
+        if (listenFriendshipRequestsThread != null) {
+            listenFriendshipRequestsThread.interrupt();
+        }
+    }
 
 }
 

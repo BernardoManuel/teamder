@@ -44,6 +44,11 @@ public class FriendsController {
         if (!friendUsername.isEmpty()) {
             UserRepository userRepository = new UserRepository();
             User friend = userRepository.findUserByUsername(friendUsername);
+
+            if(friend==currentUser){
+                showAlert("Error","No se puede enviar una solicitud de amistad a usted mismo.");
+            }
+
             if (friend != null) {
                 Friendship friendship = new Friendship();
                 friendship.setAmigo1(currentUser);
