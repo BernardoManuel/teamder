@@ -85,7 +85,7 @@ public class ChatController extends BorderPane {
                 sendMessage();
 
             } catch (IOException e) {
-                closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                closeEverything();
             }
         });
     }
@@ -175,7 +175,7 @@ public class ChatController extends BorderPane {
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException e) {
-            closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+            closeEverything();
         }
     }
 
@@ -188,7 +188,7 @@ public class ChatController extends BorderPane {
                 saveMessage(msg);
             }
         } catch (IOException e) {
-            closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+            closeEverything();
         }
     }
 
@@ -220,7 +220,7 @@ public class ChatController extends BorderPane {
                         msgFromRoom = bufferedReader.readLine();
                         printMessage(msgFromRoom);
                     } catch (IOException e) {
-                        closeEverything(textChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                        closeEverything();
                     }
                 }
             }
@@ -228,103 +228,130 @@ public class ChatController extends BorderPane {
         listenForMessageThread.start();
     }
 
-    // Bucle para el envio de datos de audio al servidor
+    // Bucle para el envío de datos de audio al servidor
     public void sendVoz() {
         sendVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
+                    // Verificar si la línea de entrada de audio está inicializada
+                    if (lineaEntradaAudio != null) {
+                        // Bucle para el envío de datos de audio al servidor
+                        while (true) {
+                            // Buffer para los datos de audio
+                            byte[] buffer = new byte[1024];
+                            int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
 
-                    // Bucle para el envio de datos de audio al servidor
-                    while (true) {
-                        // Buffer para los datos de audio
-                        byte[] buffer = new byte[1024];
-                        int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
-
-                        // Enviar datos de audio al servidor
-                        dataOutputStream.write(buffer, 0, numBytesLeidos);
-                        dataOutputStream.flush();
-                        System.out.println("Datos de audio enviados al servidor");
+                            // Enviar datos de audio al servidor
+                            dataOutputStream.write(buffer, 0, numBytesLeidos);
+                            dataOutputStream.flush();
+                            System.out.println("Datos de audio enviados al servidor");
+                        }
                     }
                 } catch (IOException e) {
                     lineaEntradaAudio.close();
                     lineaSalidaAudio.close();
-                    closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                    closeEverything();
                 }
             }
         });
         sendVozThread.start();
     }
 
-    // Bucle para recibir de datos de audio al servidor
+    // Bucle para recibir datos de audio del servidor
     public void receiveVoz() {
         receiveVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
                 try {
+                    // Verificar si la línea de salida de audio está inicializada
+                    if (lineaSalidaAudio != null) {
+                        // Bucle para la reproducción de audio recibido del servidor
+                        while (true) {
+                            // Buffer para los datos de audio
+                            byte[] buffer = new byte[1024];
 
-                    // Bucle para la reproducción de audio recibido del servidor
-                    while (true) {
-                        // Buffer para los datos de audio
-                        byte[] buffer = new byte[1024];
+                            int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
+                            if (numBytesRecibidos >= 0) {
+                                System.out.println("Datos de audio recibidos del servidor");
 
-                        int numBytesRecibidos = dataInputStream.read(buffer, 0, buffer.length);
-                        if (numBytesRecibidos >= 0) {
-                            System.out.println("Datos de audio recibidos del servidor");
-
-                            // Reproducir datos de audio en los altavoces
-                            lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
-                            System.out.println("Audio reproducido en altavoces");
+                                // Reproducir datos de audio en los altavoces
+                                lineaSalidaAudio.write(buffer, 0, numBytesRecibidos);
+                                System.out.println("Audio reproducido en altavoces");
+                            }
                         }
                     }
                 } catch (IOException e) {
                     lineaEntradaAudio.close();
                     lineaSalidaAudio.close();
-                    closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
+                    closeEverything();
                 }
             }
         });
         receiveVozThread.start();
     }
 
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+
+    public void closeEverything() {
         try {
+            // Cerrar conexiones de texto
             if (bufferedReader != null) {
                 bufferedReader.close();
+                bufferedReader = null;
             }
             if (bufferedWriter != null) {
                 bufferedWriter.close();
+                bufferedWriter = null;
             }
-            if (dataInputStream != null) {
-                dataInputStream.close();
+            if (textChatSocket != null) {
+                textChatSocket.close();
+                textChatSocket = null;
             }
-            if (dataOutputStream != null) {
-                dataOutputStream.close();
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
+
+            // Detener líneas de audio solo si la llamada está activa
+            if (calling) {
+                stopAudioThreads();
+
+                if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
+                    lineaEntradaAudio.stop();
+                    lineaEntradaAudio.close();
+                    lineaEntradaAudio = null;
+                }
+                if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
+                    lineaSalidaAudio.stop();
+                    lineaSalidaAudio.close();
+                    lineaSalidaAudio = null;
+                }
+                if (dataInputStream != null) {
+                    dataInputStream.close();
+                    dataInputStream = null;
+                }
+                if (dataOutputStream != null) {
+                    dataOutputStream.close();
+                    dataOutputStream = null;
+                }
+                if (voiceChatSocket != null) {
+                    voiceChatSocket.close();
+                    voiceChatSocket = null;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void closeEverything() {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader = null;
-            }
-            if (textChatSocket != null) {
-                textChatSocket.close();
-                textChatSocket = null;
-            }
-            if (voiceChatSocket != null) {
-                voiceChatSocket.close();
-                voiceChatSocket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+    public void stopAllThreads(){
+        // Detener hilos relacionados con audio
+        if (sendVozThread != null) {
+            sendVozThread.interrupt();
+        }
+        if (receiveVozThread != null) {
+            receiveVozThread.interrupt();
+        }
+        if(listenForMessageThread != null){
+            listenForMessageThread.interrupt();
         }
     }
+
 
     @FXML
     public void openRoomControls() {
@@ -348,37 +375,89 @@ public class ChatController extends BorderPane {
             callBtn.setText("Colgar");
             calling = true;
             try {
-                voiceChatSocket = new Socket(SERVER_ADDRESS, 50001);
-                voiceChatSocket.setSoLinger(true, 0);
-                this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
-                this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
-
-                // Configurar la línea de salida de audio (altavoces)
-                AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
-                lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
-                lineaSalidaAudio.open(formatoAudio);
-                lineaSalidaAudio.start();
-
                 // Configurar la línea de entrada de audio (micrófono)
                 AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
                 lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
                 lineaEntradaAudio.open(formatoAudio2);
-                lineaEntradaAudio.start();
 
-                sendVoz();
-                receiveVoz();
+                // Asegúrate de que la línea de entrada de audio esté inicializada antes de iniciarla
+                if (lineaEntradaAudio != null) {
+                    lineaEntradaAudio.start();
+
+                    voiceChatSocket = new Socket(SERVER_ADDRESS, 50001);
+                    voiceChatSocket.setSoLinger(true, 0);
+                    this.dataInputStream = new DataInputStream(voiceChatSocket.getInputStream());
+                    this.dataOutputStream = new DataOutputStream(voiceChatSocket.getOutputStream());
+
+                    // Configurar la línea de salida de audio (altavoces)
+                    AudioFormat formatoAudio = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
+                    lineaSalidaAudio = AudioSystem.getSourceDataLine(formatoAudio);
+                    lineaSalidaAudio.open(formatoAudio);
+                    lineaSalidaAudio.start();
+
+                    sendVoz();
+                    receiveVoz();
+                } else {
+                    throw new IllegalStateException("No se pudo inicializar la línea de entrada de audio.");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
-                closeEverything(voiceChatSocket, bufferedReader, bufferedWriter, dataInputStream, dataOutputStream);
-                lineaEntradaAudio.close();
-                lineaSalidaAudio.close();
+                callBtn.setText("Llamar");
+                calling = false;
+                stopAudioThreads();
+                closeAudioConnections();
             }
         } else {
             callBtn.setText("Llamar");
             calling = false;
-            closeEverything();
+            stopAudioThreads();
+            closeAudioConnections();
         }
     }
+
+
+
+    private void stopAudioThreads() {
+        if (sendVozThread != null) {
+            sendVozThread.interrupt();
+            sendVozThread = null;
+        }
+        if (receiveVozThread != null) {
+            receiveVozThread.interrupt();
+            receiveVozThread = null;
+        }
+    }
+
+    private void closeAudioConnections() {
+        try {
+            if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
+                lineaEntradaAudio.stop();
+                lineaEntradaAudio.close();
+                lineaEntradaAudio = null;
+            }
+            if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
+                lineaSalidaAudio.stop();
+                lineaSalidaAudio.close();
+                lineaSalidaAudio = null;
+            }
+            if (dataInputStream != null) {
+                dataInputStream.close();
+                dataInputStream = null;
+            }
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
+                dataOutputStream = null;
+            }
+            if (voiceChatSocket != null) {
+                voiceChatSocket.close();
+                voiceChatSocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public void setHomeView(BorderPane homeView) {
         this.homeView = homeView;
