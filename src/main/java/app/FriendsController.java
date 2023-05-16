@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import model.Friendship;
 import model.User;
 import database.HibernateUtil;
@@ -12,6 +13,8 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import repository.FriendshipRepository;
 import repository.UserRepository;
+
+import java.util.Set;
 
 public class FriendsController {
     @FXML
@@ -41,22 +44,32 @@ public class FriendsController {
     @FXML
     public void handleAddFriendButtonAction() {
         String friendUsername = usernameTextField.getText().trim();
+        FriendshipRepository friendshipRepository = new FriendshipRepository();
+
         if (!friendUsername.isEmpty()) {
             UserRepository userRepository = new UserRepository();
             User friend = userRepository.findUserByUsername(friendUsername);
 
-            if(friend==currentUser){
-                showAlert("Error","No se puede enviar una solicitud de amistad a usted mismo.");
+            if(friendUsername.equals(currentUser.getNombreUsuario().toString())){
+                showAlert("Error","No puede enviar una solicitud de amistad a usted mismo.");
             }
 
-            if (friend != null) {
+            Set<Friendship> friendshipSet = currentUser.getAmistades();
+            Boolean alreadyFriends = false;
+            for (Friendship f : friendshipSet){
+                if(f.getAmigo1()==friend){
+                    alreadyFriends=true;
+                    showAlert("Error",friend.getNombreUsuario()+" ya está en su lista de amistades.");
+                }
+            }
+
+            if (friend != null && !alreadyFriends) {
                 Friendship friendship = new Friendship();
                 friendship.setAmigo1(currentUser);
                 friendship.setAmigo2(friend);
                 friendship.setSolicitud("pendiente");
                 friendship.setShown(false);
 
-                FriendshipRepository friendshipRepository = new FriendshipRepository();
                 friendshipRepository.saveFriendship(friendship);
                 showAlert("Éxito", "Se envió la solicitud de amistad a " + friendUsername);
             } else {
