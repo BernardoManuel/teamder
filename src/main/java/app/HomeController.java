@@ -84,7 +84,7 @@ public class HomeController implements FriendshipRequestListener {
                     // Detener los hilos y cerrar la aplicación
                     stopAll();
                     // Detenemos todos los hilos y flujos de datos en el controller del chat.
-                    //currentChatController.closeEverything();
+                    currentChatController.closeApplication();
                     Platform.exit();
                 });
             } catch (IOException e) {
@@ -405,7 +405,7 @@ public class HomeController implements FriendshipRequestListener {
         // Detener los hilos y esperar a que finalicen
         stopAll();
         // Detenemos todos los hilos y flujos de datos en el controller del chat.
-        //currentChatController.closeEverything();
+        currentChatController.closeApplication();
 
         // Cambiar a la vista de inicio de sesión
         try {

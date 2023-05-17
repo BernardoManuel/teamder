@@ -457,7 +457,16 @@ public class ChatController extends BorderPane {
         }
     }
 
+    public void closeApplication() {
+        // Detener todos los hilos
+        stopAllThreads();
 
+        // Cerrar conexiones y flujos de datos
+        closeEverything();
+
+        // Cerrar las líneas de audio y conexiones de audio
+        closeAudioConnections();
+    }
 
     public void setHomeView(BorderPane homeView) {
         this.homeView = homeView;
