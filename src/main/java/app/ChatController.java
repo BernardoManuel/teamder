@@ -378,13 +378,12 @@ public class ChatController extends BorderPane {
             callBtn.setText("Colgar");
             calling = true;
             try {
-                // Configurar la línea de entrada de audio (micrófono)
-                AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
-                lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
-                lineaEntradaAudio.open(formatoAudio2);
-
                 // Asegúrate de que la línea de entrada de audio esté inicializada antes de iniciarla
-                if (lineaEntradaAudio != null) {
+                if (voiceChatSocket == null) {
+                    // Configurar la línea de entrada de audio (micrófono)
+                    AudioFormat formatoAudio2 = new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
+                    lineaEntradaAudio = AudioSystem.getTargetDataLine(formatoAudio2);
+                    lineaEntradaAudio.open(formatoAudio2);
                     lineaEntradaAudio.start();
 
                     voiceChatSocket = new Socket(SERVER_ADDRESS, 50001);
@@ -401,7 +400,8 @@ public class ChatController extends BorderPane {
                     sendVoz();
                     receiveVoz();
                 } else {
-                    throw new IllegalStateException("No se pudo inicializar la línea de entrada de audio.");
+                    lineaEntradaAudio.start();
+                    lineaSalidaAudio.start();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -413,8 +413,8 @@ public class ChatController extends BorderPane {
         } else {
             callBtn.setText("Llamar");
             calling = false;
-            stopAudioThreads();
-            closeAudioConnections();
+            lineaEntradaAudio.stop();
+            lineaSalidaAudio.stop();
         }
     }
 
@@ -460,15 +460,51 @@ public class ChatController extends BorderPane {
         }
     }
 
-    public void closeApplication() {
+    public void closeApplication() throws IOException {
         // Detener todos los hilos
         stopAllThreads();
 
-        // Cerrar conexiones y flujos de datos
-        closeEverything();
+        if (bufferedReader != null) {
+            bufferedReader.close();
+            bufferedReader = null;
+        }
+        if (bufferedWriter != null) {
+            bufferedWriter.close();
+            bufferedWriter = null;
+        }
+        if (textChatSocket != null) {
+            textChatSocket.close();
+            textChatSocket = null;
+        }
 
-        // Cerrar las líneas de audio y conexiones de audio
-        closeAudioConnections();
+        if (calling) {
+            stopAudioThreads();
+
+            if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
+                lineaEntradaAudio.stop();
+                lineaEntradaAudio.close();
+                lineaEntradaAudio = null;
+            }
+            if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
+                lineaSalidaAudio.stop();
+                lineaSalidaAudio.close();
+                lineaSalidaAudio = null;
+            }
+            if (dataInputStream != null) {
+                dataInputStream.close();
+                dataInputStream = null;
+            }
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
+                dataOutputStream = null;
+            }
+            if (voiceChatSocket != null) {
+                voiceChatSocket.close();
+                voiceChatSocket = null;
+            }
+        }
+
+
     }
 
     public void setHomeView(BorderPane homeView) {

@@ -61,20 +61,20 @@ public class HomeController implements FriendshipRequestListener {
 
 
 
-
-
     @FXML
     public void initialize() {
         roomRepository = new RoomRepository();
         userRepository = new UserRepository();
         friendshipRepository = new FriendshipRepository();
+        friendshipsList = new VBox();
+
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
                 generateHome();
                 updateChatsList();
                 updateFriendshipsList();
-                startListeningForRequests(user);
+                startListenForFriendships(user);
 
                 // Obtener el Stage principal
                 Stage primaryStage = (Stage) homeView.getScene().getWindow();
@@ -85,7 +85,11 @@ public class HomeController implements FriendshipRequestListener {
                     stopAll();
                     // Detenemos todos los hilos y flujos de datos en el controller del chat.
                     if(currentChatController!=null){
-                        currentChatController.closeApplication();
+                        try {
+                            currentChatController.closeApplication();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                     Platform.exit();
                 });
@@ -94,7 +98,13 @@ public class HomeController implements FriendshipRequestListener {
             }
         });
 
-        logoutButton.setOnAction(actionEvent -> handleLogoutButtonAction());
+        logoutButton.setOnAction(actionEvent -> {
+            try {
+                handleLogoutButtonAction();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
     }
 
@@ -188,11 +198,14 @@ public class HomeController implements FriendshipRequestListener {
     }
 
     public void updateFriendshipsList() {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(this::updateFriendships, 0, 1, TimeUnit.SECONDS);
+        Platform.runLater(() -> {
+            executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.scheduleAtFixedRate(this::updateFriendships, 0, 2, TimeUnit.SECONDS);
+        });
     }
 
     private void updateFriendships() {
+        Platform.runLater(() -> {
         Set<Friendship> friends = friendshipRepository.getFriendships(user);
         if (friends != null && friends.size() > 0) {
             // Ordenar los amigos por nombre de usuario
@@ -200,16 +213,16 @@ public class HomeController implements FriendshipRequestListener {
                     .sorted(Comparator.comparing(f -> f.getAmigo2().getNombreUsuario()))
                     .collect(Collectors.toList());
 
-            Platform.runLater(() -> {
-                friendshipsList = new VBox();
+                friendshipsList.getChildren().removeAll();
+                friendshipsList.getChildren().clear();
                 for (Friendship friendship : sortedFriends) {
                     if (friendship.getSolicitud().equals("aceptado")) {
                         createFriendshipItem(friendship);
                     }
                 }
                 friendshipsListContainer.setContent(friendshipsList);
-            });
         }
+        });
     }
 
     public void stopUpdateFriendshipsList() {
@@ -219,93 +232,98 @@ public class HomeController implements FriendshipRequestListener {
     }
 
 
-
-//    public void updateFriendshipsList() {
-//        updateFriendshipsThread = new Thread(() -> {
-//            while (!Thread.currentThread().isInterrupted()) {
-//                try {
-//                    Set<Friendship> friends = friendshipRepository.getFriendships(user);
-//                    if (friends != null && friends.size() > 0) {
-//                        // Ordenar los amigos por nombre de usuario
-//                        List<Friendship> sortedFriends = friends.stream()
-//                                .sorted(Comparator.comparing(f -> f.getAmigo2().getNombreUsuario()))
-//                                .collect(Collectors.toList());
-//
-//                        Platform.runLater(() -> {
-//                            friendshipsList = new VBox();
-//                            for (Friendship friendship : sortedFriends) {
-//                                if(friendship.getSolicitud().equals("aceptado")){
-//                                    createFriendshipItem(friendship);
-//                                }
-//                            }
-//                            friendshipsListContainer.setContent(friendshipsList);
-//                        });
-//                    }
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        updateFriendshipsThread.start();
-//    }
-
-
     public void createFriendshipItem(Friendship f) {
-        HBox userItem = new HBox();
-        userItem.setAlignment(Pos.CENTER);
-        userItem.setSpacing(10.0);
+        Platform.runLater(() -> {
+            HBox userItem = new HBox();
+            userItem.setAlignment(Pos.CENTER);
+            userItem.setSpacing(10.0);
 
-        // Crea un círculo en lugar de un Pane
-        Circle imgUser = new Circle();
-        imgUser.setRadius(20.0);
-        imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
+            // Crea un círculo en lugar de un Pane
+            Circle imgUser = new Circle();
+            imgUser.setRadius(20.0);
+            imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
 
-        HBox labelUserContainer = new HBox();
-        Label labelUser = new Label();
-        labelUser.setText(f.getAmigo2().getNombreUsuario());
+            HBox labelUserContainer = new HBox();
+            Label labelUser = new Label();
+            labelUser.setText(f.getAmigo2().getNombreUsuario());
 
 
-        labelUser.setFont(javafx.scene.text.Font.font("System", FontWeight.BOLD, 14));
-        labelUser.setTextFill(javafx.scene.paint.Color.BLACK);
+            labelUser.setFont(javafx.scene.text.Font.font("System", FontWeight.BOLD, 14));
+            labelUser.setTextFill(javafx.scene.paint.Color.BLACK);
 
-        labelUserContainer.getChildren().add(labelUser);
-        labelUserContainer.setAlignment(Pos.CENTER_LEFT);
-        labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
-        HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
+            labelUserContainer.getChildren().add(labelUser);
+            labelUserContainer.setAlignment(Pos.CENTER_LEFT);
+            labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
+            HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
 
-        userItem.getChildren().add(imgUser);
-        userItem.getChildren().add(labelUserContainer);
-        Button btnRemove = new Button("Borrar");
-        btnRemove.setStyle("-fx-background-color: #e75334");
-        btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
-        btnRemove.setTextFill(Color.WHITE);
-        btnRemove.setOnMouseClicked(event -> {
-            removeUserFromFriendship(f);
+            userItem.getChildren().add(imgUser);
+            userItem.getChildren().add(labelUserContainer);
+            Button btnRemove = new Button("Borrar");
+            btnRemove.setStyle("-fx-background-color: #e75334");
+            btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
+            btnRemove.setTextFill(Color.WHITE);
+            btnRemove.setOnMouseClicked(event -> {
+                removeUserFromFriendship(f);
+            });
+            userItem.getChildren().add(btnRemove);
+
+            friendshipsList.getChildren().add(userItem);
         });
-        userItem.getChildren().add(btnRemove);
-
-        friendshipsList.getChildren().add(userItem);
-
     }
 
     public void removeUserFromFriendship(Friendship f) {
-        Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
-        Friendship friendshipToDelete = new Friendship();
-        for (Friendship fs : friendshipSet){
-            if(fs.getAmigo2().getId()==user.getId()){
-                friendshipToDelete = fs;
+        Platform.runLater(() -> {
+            Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
+            Friendship friendshipToDelete = new Friendship();
+            for (Friendship fs : friendshipSet) {
+                if (fs.getAmigo2().getId() == user.getId()) {
+                    friendshipToDelete = fs;
+                }
             }
-        }
-        friendshipRepository.deleteFriendship(f);
-        friendshipRepository.deleteFriendship(friendshipToDelete);
+            friendshipRepository.deleteFriendship(f);
+            friendshipRepository.deleteFriendship(friendshipToDelete);
+
+            // Eliminar el elemento correspondiente de la lista
+            HBox itemToRemove = null;
+            for (Node node : friendshipsList.getChildren()) {
+                if (node instanceof HBox) {
+                    HBox userItem = (HBox) node;
+                    Friendship friendship = (Friendship) userItem.getUserData();
+                    if (friendship != null && friendship.equals(f)) {
+                        itemToRemove = userItem;
+                        break;
+                    }
+                }
+            }
+            if (itemToRemove != null) {
+                friendshipsList.getChildren().remove(itemToRemove);
+            }
+        });
     }
+
 
     public void updateUser() {
         this.user = userRepository.updateUser(user);
     }
 
-    public void startListeningForRequests(User usuario) {
+    public void startListenForFriendships(User usuario) {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
+            // Mostrar las solicitudes no mostradas
+            for (Friendship friendRequest : pendingFriendRequests) {
+                Platform.runLater(() -> onRequestReceived(usuario, friendRequest));
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public void stopListeningForFriendships() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
+    }
+
+    public void startListenForRequests(User usuario) {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
             List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
@@ -322,25 +340,6 @@ public class HomeController implements FriendshipRequestListener {
         }
     }
 
-
-//    // Hilo del escuchador de solicitudes de amistades
-//    public void startListeningForRequests(User usuario) {
-//        listenFriendshipRequestsThread = new Thread(() -> {
-//            while (!Thread.currentThread().isInterrupted()) {
-//                List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
-//                // Mostrar las solicitudes no mostradas
-//                for (Friendship friendRequest : pendingFriendRequests) {
-//                    onRequestReceived(usuario, friendRequest);
-//                }
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        listenFriendshipRequestsThread.start();
-//    }
 
     // Implementación del escuchador
     @Override
@@ -398,7 +397,7 @@ public class HomeController implements FriendshipRequestListener {
         }
     }
 
-    private void handleLogoutButtonAction() {
+    private void handleLogoutButtonAction() throws IOException {
         // Cerrar la sesión actual y volver a la pantalla de inicio de sesión
 
         // Limpia el usuario actual
@@ -424,6 +423,7 @@ public class HomeController implements FriendshipRequestListener {
 
     public void stopAll(){
         stopUpdateFriendshipsList();
+        stopListeningForFriendships();
         stopListeningForRequests();
     }
 
