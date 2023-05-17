@@ -47,24 +47,28 @@ public class FriendsController {
         String friendUsername = usernameTextField.getText().trim();
         FriendshipRepository friendshipRepository = new FriendshipRepository();
 
+        // Comprobamos que los campos no esten vacios
         if (!friendUsername.isEmpty()) {
             UserRepository userRepository = new UserRepository();
             User friend = userRepository.findUserByUsername(friendUsername);
 
-            if(friendUsername.equals(currentUser.getNombreUsuario().toString())){
-                showAlert("Error","No puede enviar una solicitud de amistad a usted mismo.");
-            }
-
+            // Comprobamos si ya existe la amistad en la lista de amistades.
             Set<Friendship> friendshipSet = currentUser.getAmistades();
             Boolean alreadyFriends = false;
             for (Friendship f : friendshipSet){
                 if(friendUsername.equals(f.getAmigo2().getNombreUsuario().toString())){
                     alreadyFriends=true;
-                    showAlert("Error",friendUsername+" ya está en su lista de amistades.");
+                    showError("Error",friendUsername+" ya está en su lista de amistades.");
                 }
             }
 
-            if (friend != null && !alreadyFriends) {
+            // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
+            if(friendUsername.equals(currentUser.getNombreUsuario().toString())){
+                showError("Error","No puede enviar una solicitud de amistad a usted mismo.");
+
+            }else
+                // Creamos la solicitud de amistad
+                if (friend != null && !alreadyFriends) {
                 Friendship friendship = new Friendship();
                 friendship.setAmigo1(currentUser);
                 friendship.setAmigo2(friend);
@@ -72,17 +76,30 @@ public class FriendsController {
                 friendship.setShown(false);
 
                 friendshipRepository.saveFriendship(friendship);
-                showAlert("Éxito", "Se envió la solicitud de amistad a " + friendUsername);
+                    showAlert("Éxito", "Se envió la solicitud de amistad a " + friendUsername);
             } else {
-                showAlert("Error", "No se encontró el usuario con el nombre de usuario " + friendUsername);
+                    showError("Error", "No se encontró el usuario con el nombre de usuario " + friendUsername);
             }
         } else {
-            showAlert("Error", "Por favor, introduce un nombre de usuario");
+            showError("Error", "Por favor, introduce un nombre de usuario");
         }
     }
 
+
+
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        // Obtener la ventana actual
+        Window currentWindow = usernameTextField.getScene().getWindow();
+        // Establecer la ventana actual como propietario de la alerta
+        alert.initOwner(currentWindow);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setContentText(content);
         // Obtener la ventana actual
