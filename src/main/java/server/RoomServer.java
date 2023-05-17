@@ -79,6 +79,7 @@ public class RoomServer {
                     if(textServerSocket!=null){
                         try {
                             textServerSocket.close();
+
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }

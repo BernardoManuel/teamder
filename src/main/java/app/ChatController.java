@@ -51,15 +51,20 @@ public class ChatController extends BorderPane {
     private MessageRepository messageRepository;
     private RoomRepository roomRepository;
     private UserRepository userRepository;
-    @FXML private Text chatTitle;
-    @FXML private VBox messageContainer;
-    @FXML private TextField inputMessage;
+    @FXML
+    private Text chatTitle;
+    @FXML
+    private VBox messageContainer;
+    @FXML
+    private TextField inputMessage;
     SourceDataLine lineaSalidaAudio;
     TargetDataLine lineaEntradaAudio;
     private Boolean calling;
     private BorderPane homeView;
-    @FXML private Button callBtn;
-    @FXML private BorderPane chatView;
+    @FXML
+    private Button callBtn;
+    @FXML
+    private BorderPane chatView;
 
     private Thread listenForMessageThread;
     private Thread sendVozThread;
@@ -163,7 +168,7 @@ public class ChatController extends BorderPane {
                     printMessage(userMessage.getNombreUsuario(), message.getMensaje());
                 }
             }
-        } catch (Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -339,32 +344,15 @@ public class ChatController extends BorderPane {
     }
 
 
-    public void stopAllThreads(){
-        // Detener hilos relacionados con audio
-        if (sendVozThread != null) {
-            sendVozThread.interrupt();
-            sendVozThread=null;
-        }
-        if (receiveVozThread != null) {
-            receiveVozThread.interrupt();
-            receiveVozThread=null;
-        }
-        if(listenForMessageThread != null){
-            listenForMessageThread.interrupt();
-            listenForMessageThread=null;
-        }
-    }
-
-
     @FXML
     public void openRoomControls() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("room-control-view.fxml"));
             Parent root = loader.load();
-            ((RoomControlController)loader.getController()).setChatView(chatView);
-            ((RoomControlController)loader.getController()).setHomeView(homeView);
-            ((RoomControlController)loader.getController()).setRoom(room);
-            ((RoomControlController)loader.getController()).setUser(user);
+            ((RoomControlController) loader.getController()).setChatView(chatView);
+            ((RoomControlController) loader.getController()).setHomeView(homeView);
+            ((RoomControlController) loader.getController()).setRoom(room);
+            ((RoomControlController) loader.getController()).setUser(user);
             ((RoomControlController) loader.getController()).setHomeController(homeController);
             homeView.setCenter(root);
         } catch (IOException e) {
@@ -419,7 +407,6 @@ public class ChatController extends BorderPane {
     }
 
 
-
     private void stopAudioThreads() {
         if (sendVozThread != null) {
             sendVozThread.interrupt();
@@ -460,6 +447,22 @@ public class ChatController extends BorderPane {
         }
     }
 
+    public void stopAllThreads() {
+        // Detener hilos relacionados con audio
+        if (sendVozThread != null) {
+            sendVozThread.interrupt();
+            sendVozThread = null;
+        }
+        if (receiveVozThread != null) {
+            receiveVozThread.interrupt();
+            receiveVozThread = null;
+        }
+        if (listenForMessageThread != null) {
+            listenForMessageThread.interrupt();
+            listenForMessageThread = null;
+        }
+    }
+
     public void closeApplication() throws IOException {
         // Detener todos los hilos
         stopAllThreads();
@@ -472,39 +475,44 @@ public class ChatController extends BorderPane {
             bufferedWriter.close();
             bufferedWriter = null;
         }
+        if (dataInputStream != null) {
+            dataInputStream.close();
+            dataInputStream = null;
+        }
+        if (dataOutputStream != null) {
+            dataOutputStream.close();
+            dataOutputStream = null;
+        }
         if (textChatSocket != null) {
             textChatSocket.close();
             textChatSocket = null;
         }
-
-        if (calling) {
-            stopAudioThreads();
-
-            if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
-                lineaEntradaAudio.stop();
-                lineaEntradaAudio.close();
-                lineaEntradaAudio = null;
-            }
-            if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
-                lineaSalidaAudio.stop();
-                lineaSalidaAudio.close();
-                lineaSalidaAudio = null;
-            }
-            if (dataInputStream != null) {
-                dataInputStream.close();
-                dataInputStream = null;
-            }
-            if (dataOutputStream != null) {
-                dataOutputStream.close();
-                dataOutputStream = null;
-            }
-            if (voiceChatSocket != null) {
-                voiceChatSocket.close();
-                voiceChatSocket = null;
-            }
+        if (voiceChatSocket != null) {
+            voiceChatSocket.close();
+            voiceChatSocket = null;
         }
-
-
+        if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
+            lineaEntradaAudio.stop();
+            lineaEntradaAudio.close();
+            lineaEntradaAudio = null;
+        }
+        if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
+            lineaSalidaAudio.stop();
+            lineaSalidaAudio.close();
+            lineaSalidaAudio = null;
+        }
+        if (dataInputStream != null) {
+            dataInputStream.close();
+            dataInputStream = null;
+        }
+        if (dataOutputStream != null) {
+            dataOutputStream.close();
+            dataOutputStream = null;
+        }
+        if (voiceChatSocket != null) {
+            voiceChatSocket.close();
+            voiceChatSocket = null;
+        }
     }
 
     public void setHomeView(BorderPane homeView) {
