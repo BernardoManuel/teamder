@@ -343,12 +343,15 @@ public class ChatController extends BorderPane {
         // Detener hilos relacionados con audio
         if (sendVozThread != null) {
             sendVozThread.interrupt();
+            sendVozThread=null;
         }
         if (receiveVozThread != null) {
             receiveVozThread.interrupt();
+            receiveVozThread=null;
         }
         if(listenForMessageThread != null){
             listenForMessageThread.interrupt();
+            listenForMessageThread=null;
         }
     }
 

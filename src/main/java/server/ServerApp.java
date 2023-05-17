@@ -8,7 +8,6 @@ public class ServerApp {
 
     public static void main(String[] args) throws IOException {
 
-
         ServerSocket serverSocketText = new ServerSocket(50000);
         ServerSocket serverSocketVoice = new ServerSocket(50001);
 
@@ -16,5 +15,6 @@ public class ServerApp {
         roomServer.startServer();
 
         System.out.println("<<< SERVIDOR INICIADO >>>\n");
+
     }
 }
