@@ -26,9 +26,11 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import listeners.FriendshipRequestListener;
 import model.Friendship;
+import model.Request;
 import model.Room;
 import model.User;
 import repository.FriendshipRepository;
+import repository.RequestRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
 import java.util.concurrent.Executors;
@@ -39,7 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class HomeController implements FriendshipRequestListener {
+public class HomeController {
 
     @FXML
     public ScrollPane friendshipsListContainer;
@@ -57,6 +59,7 @@ public class HomeController implements FriendshipRequestListener {
     private RoomRepository roomRepository;
     private UserRepository userRepository;
     private FriendshipRepository friendshipRepository;
+    private RequestRepository requestRepository;
     private ScheduledExecutorService executorService;
 
 
@@ -66,6 +69,8 @@ public class HomeController implements FriendshipRequestListener {
         roomRepository = new RoomRepository();
         userRepository = new UserRepository();
         friendshipRepository = new FriendshipRepository();
+        requestRepository = new RequestRepository();
+
         friendshipsList = new VBox();
 
         Platform.runLater(() -> {
@@ -75,6 +80,7 @@ public class HomeController implements FriendshipRequestListener {
                 updateChatsList();
                 updateFriendshipsList();
                 startListenForFriendships(user);
+                startListenForRequests(user);
 
                 // Obtener el Stage principal
                 Stage primaryStage = (Stage) homeView.getScene().getWindow();
@@ -312,7 +318,7 @@ public class HomeController implements FriendshipRequestListener {
             List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
             // Mostrar las solicitudes no mostradas
             for (Friendship friendRequest : pendingFriendRequests) {
-                Platform.runLater(() -> onRequestReceived(usuario, friendRequest));
+                Platform.runLater(() -> onFriendRequestReceived(usuario, friendRequest));
             }
         }, 0, 1, TimeUnit.SECONDS);
     }
@@ -323,27 +329,7 @@ public class HomeController implements FriendshipRequestListener {
         }
     }
 
-    public void startListenForRequests(User usuario) {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> {
-            List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
-            // Mostrar las solicitudes no mostradas
-            for (Friendship friendRequest : pendingFriendRequests) {
-                Platform.runLater(() -> onRequestReceived(usuario, friendRequest));
-            }
-        }, 0, 1, TimeUnit.SECONDS);
-    }
-
-    public void stopListeningForRequests() {
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdownNow();
-        }
-    }
-
-
-    // Implementación del escuchador
-    @Override
-    public void onRequestReceived(User usuario, Friendship friendRequest) {
+    public void onFriendRequestReceived(User usuario, Friendship friendRequest) {
         User requester = friendRequest.getAmigo1();
         // Verificar si requester no es nulo antes de usarlo
         if (requester != null) {
@@ -392,6 +378,77 @@ public class HomeController implements FriendshipRequestListener {
                 } else {
                     // Cancelar la solicitud
                     friendshipRepository.updateFriendshipStatus(friendRequest);
+                }
+            });
+        }
+    }
+
+    public void startListenForRequests(User usuario) {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            List<Request> pendingRequests = requestRepository.getPendingRequests(usuario);
+            // Mostrar las solicitudes no mostradas
+            for (Request request : pendingRequests) {
+                Platform.runLater(() -> onRequestReceived(usuario, request));
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public void stopListeningForRequests() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
+    }
+
+    public void onRequestReceived(User usuario, Request request) {
+        User solicitante = request.getSolicitante();
+        // Verificar si requester no es nulo antes de usarlo
+        if (solicitante != null) {
+            System.out.println(solicitante.getNombreUsuario()+" le ha invitado a unirse a su sala: "+request.getSala().getNombre());
+            // Mostrar el diálogo Alert en el hilo principal de JavaFX
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Invitación");
+                alert.setHeaderText(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: \"+request.getSala().getNombre()");
+                alert.setContentText("¿Aceptas unirte a la sala?");
+
+                ButtonType acceptButton = new ButtonType("Aceptar");
+                ButtonType rejectButton = new ButtonType("Rechazar");
+                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(acceptButton, rejectButton, cancelButton);
+
+                request.setShown(true);
+                requestRepository.updateRequestStatus(request);
+
+                // Obtener la ventana actual
+                Window currentWindow = homeView.getScene().getWindow();
+                // Establecer la ventana actual como propietario de la alerta
+                alert.initOwner(currentWindow);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == acceptButton) {
+                    // Aceptar la solicitud y guardar en la base de datos
+                    request.setEstado("aceptado");
+                    requestRepository.updateRequestStatus(request);
+
+                    // Agregamos el usuario a la sala
+                    roomRepository.addUser(request.getSala(), request.getSolicitado().getId());
+
+                    try {
+                        updateChatsList();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else if (result.isPresent() && result.get() == rejectButton) {
+                    // Rechazar la solicitud y guardar en la base de datos
+                    request.setEstado("rechazado");
+                    requestRepository.updateRequestStatus(request);
+                } else {
+                    // Cancelar la solicitud
+                    request.setEstado("cancelado");
+                    requestRepository.updateRequestStatus(request);
                 }
             });
         }

@@ -24,6 +24,10 @@ public class User {
     private String correo;
     @Column
     private String descripcion;
+
+    @OneToMany(mappedBy = "solicitante", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Request> requests = new HashSet<>();
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Room> rooms = new HashSet<>();
 
@@ -37,34 +41,16 @@ public class User {
     public User() {
     }
 
-    public User(Integer id, String nombreUsuario, String password, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
+    public User(Integer id, String nombreUsuario, String password, String salt, String correo, String descripcion, Set<Request> requests, Set<Room> rooms, Set<Message> messages, Set<Friendship> amistades) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.password = password;
         this.salt = salt;
         this.correo = correo;
         this.descripcion = descripcion;
+        this.requests = requests;
         this.rooms = rooms;
         this.messages = messages;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", contraseña='" + password + '\'' +
-                ", salt='" + salt + '\'' +
-                ", correo='" + correo + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                '}';
-    }
-
-    public Set<Friendship> getAmistades() {
-        return amistades;
-    }
-
-    public void setAmistades(Set<Friendship> amistades) {
         this.amistades = amistades;
     }
 
@@ -80,8 +66,6 @@ public class User {
         }
         return amigos;
     }
-
-
 
     public Integer getId() {
         return id;
@@ -103,8 +87,8 @@ public class User {
         return password;
     }
 
-    public void setPassword(String contraseña) {
-        this.password = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getSalt() {
@@ -131,6 +115,14 @@ public class User {
         this.descripcion = descripcion;
     }
 
+    public Set<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<Request> requests) {
+        this.requests = requests;
+    }
+
     public Set<Room> getRooms() {
         return rooms;
     }
@@ -145,5 +137,13 @@ public class User {
 
     public void setMessages(Set<Message> messages) {
         this.messages = messages;
+    }
+
+    public Set<Friendship> getAmistades() {
+        return amistades;
+    }
+
+    public void setAmistades(Set<Friendship> amistades) {
+        this.amistades = amistades;
     }
 }

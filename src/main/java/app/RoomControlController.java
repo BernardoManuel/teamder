@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -13,8 +14,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Window;
+import model.Friendship;
+import model.Request;
 import model.Room;
 import model.User;
+import repository.FriendshipRepository;
+import repository.RequestRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
 
@@ -33,6 +39,7 @@ public class RoomControlController {
     private Room room;
     private User user;
     private HomeController homeController;
+    private Request request;
 
     public void initialize() {
         userRepository = new UserRepository();
@@ -43,14 +50,72 @@ public class RoomControlController {
         });
     }
 
+    @FXML
     public void addUserToRoom() {
-        User user = userRepository.findUserByUsername(inputUsername.getText());
-        if (user != null) {
-            roomRepository.addUser(room, user.getId());
-            createUsersList();
+
+        RequestRepository requestRepository = new RequestRepository();
+        User solicitado = userRepository.findUserByUsername(inputUsername.getText());
+
+        // Comprobamos que los campos no esten vacios
+        if (solicitado!=null) {
+
+            // Comprobamos si ya existe la amistad en la lista de amistades.
+            Set<Request> requestSet = user.getRequests();
+            Boolean alreadyRequested = false;
+            for (Request r : requestSet){
+                if(solicitado.getNombreUsuario().equals(r.getSolicitado().toString())){
+                    alreadyRequested=true;
+                    showError("Error",solicitado.getNombreUsuario()+" ya ha enviado una solicitud a este usuario.");
+                }
+            }
+
+            // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
+            if(solicitado.getNombreUsuario().equals(user.getNombreUsuario().toString())){
+                showError("Error","No puede enviar una solicitud a usted mismo.");
+
+            }else
+                // Creamos la solicitud de amistad
+                if (!alreadyRequested) {
+
+                    request = new Request();
+                    request.setSolicitante(user);
+                    request.setSolicitado(solicitado);
+                    request.setEstado("pendiente");
+                    request.setSala(room);
+                    request.setShown(false);
+
+                    requestRepository.saveRequest(request);
+
+                    showAlert("Éxito", "Se envió la solicitud a " + solicitado.getNombreUsuario());
+                    inputUsername.clear();
+                } else {
+                    showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
+                }
         } else {
-            System.out.println("El usuario no existe.");
+            showError("Error", "No se encontró ningun usuario.");
         }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        // Obtener la ventana actual
+        Window currentWindow = inputUsername.getScene().getWindow();
+        // Establecer la ventana actual como propietario de la alerta
+        alert.initOwner(currentWindow);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        // Obtener la ventana actual
+        Window currentWindow = inputUsername.getScene().getWindow();
+        // Establecer la ventana actual como propietario de la alerta
+        alert.initOwner(currentWindow);
+        alert.showAndWait();
     }
 
     public void closeRoomControls() {
