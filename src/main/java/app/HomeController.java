@@ -150,25 +150,34 @@ public class HomeController {
 
         List<HBox> roomsItems = new ArrayList<>();
         if (rooms != null && !rooms.isEmpty()) {
-            roomsItems = new ArrayList<>();
-            for (Room room : rooms) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-                HBox item = loader.load();
-                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+            roomsItems = rooms.stream()
+                    .sorted(Comparator.comparing(Room::getNombre))
+                    .map(room -> {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+                            HBox item = loader.load();
+                            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
 
-                roomsItems.add(item);
-                Node view = item.getChildren().get(0).getParent();
-                view.setOnMouseClicked(event -> {
-                    try {
-                        homeView.setCenter(getChatView(room));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
+                            Node view = item.getChildren().get(0).getParent();
+                            view.setOnMouseClicked(event -> {
+                                try {
+                                    homeView.setCenter(getChatView(room));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+
+                            return item;
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
         }
+
         chatsList.getChildren().setAll(roomsItems);
     }
+
 
     public void setUsername(User user) {
         this.user = user;
@@ -206,30 +215,27 @@ public class HomeController {
     }
 
     public void updateFriendshipsList() {
-        Platform.runLater(() -> {
-            executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.scheduleAtFixedRate(this::updateFriendships, 0, 2, TimeUnit.SECONDS);
-        });
+        updateFriendships();
+
     }
 
-    private void updateFriendships() {
-        Platform.runLater(() -> {
-            Set<Friendship> friends = friendshipRepository.getFriendships(user);
-            if (friends != null && friends.size() > 0) {
 
-                userItemList.clear();
-
-                for (Friendship friendship : friends) {
-                    if (friendship.getSolicitud().equals("aceptado")) {
-                        UserItem userItem = new UserItem(user, friendship, friendshipsList);
-                        userItem.generateUserItem(); // Pasa el VBox contenedor como argumento
-                        userItemList.add(userItem);
-                    }
+    public void updateFriendships() {
+        Set<Friendship> friends = friendshipRepository.getFriendships(user);
+        if (friends != null && !friends.isEmpty()) {
+            userItemList.clear();
+            for (Friendship friendship : friends) {
+                if (friendship.getSolicitud().equals("aceptado")) {
+                    UserItem userItem = new UserItem(user, friendship, friendshipsList);
+                    userItem.generateUserItem();
+                    userItemList.add(userItem);
                 }
             }
-            mostrarAmigos();
-        });
+        }
+        Collections.sort(userItemList, Comparator.comparing(userItem -> userItem.getUser().getNombreUsuario()));
+        mostrarAmigos();
     }
+
 
     public void stopUpdateFriendshipsList() {
         if (executorService != null && !executorService.isShutdown()) {
@@ -238,16 +244,16 @@ public class HomeController {
     }
 
     public void mostrarAmigos() {
+        // Ordenar la lista alfabéticamente por el nombre de usuario
+        List<UserItem> sortedUserItemList = userItemList.stream()
+                .sorted(Comparator.comparing(userItem -> userItem.getUser().getNombreUsuario()))
+                .collect(Collectors.toList());
 
-        friendshipsList.getChildren().removeAll();
-        friendshipsList.getChildren().clear();
-
-        for (UserItem userItem : userItemList) {
-            friendshipsList.getChildren().add(userItem.getUserItem());
-        }
-
+        friendshipsList.getChildren().setAll(sortedUserItemList.stream().map(UserItem::getUserItem).collect(Collectors.toList()));
         friendshipsListContainer.setContent(friendshipsList);
     }
+
+
 
     public void updateUser() {
         this.user = userRepository.updateUser(user);

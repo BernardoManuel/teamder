@@ -113,22 +113,4 @@ public class FriendsController {
         alert.showAndWait();
     }
 
-
-    private User findUserByUsername(String username) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<User> query = session.createQuery("FROM User WHERE nombreUsuario = :username", User.class);
-            query.setParameter("username", username);
-            return query.uniqueResult();
-        }
-    }
-
-    private User getUserById(Session session, Integer id) {
-        User user = null;
-        try {
-            user = session.get(User.class, id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
 }

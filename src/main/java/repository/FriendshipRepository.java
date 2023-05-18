@@ -17,7 +17,9 @@ public class FriendshipRepository {
 
     public void saveFriendship(Friendship friendship) {
         Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        Session session = null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
             session.save(friendship);
             transaction.commit();
@@ -26,8 +28,13 @@ public class FriendshipRepository {
                 transaction.rollback();
             }
             e.printStackTrace();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
+
 
     public List<Friendship> getPendingFriendRequests(User user) {
         List<Friendship> pendingFriendRequests = null;
@@ -63,20 +70,30 @@ public class FriendshipRepository {
         }
     }
 
-    public void deleteFriendship(Friendship friendship) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+    public Set<Friendship> deleteFriendship(Friendship friendship, User user) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = null;
         try {
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             friendship.setAmigo1(null);
             friendship.setAmigo2(null);
             session.delete(friendship);
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             e.printStackTrace();
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
+
+        return getFriendships(user);
     }
+
+
 
     public Set<Friendship> getFriendships(User puser) {
         Set<Friendship> result = null;

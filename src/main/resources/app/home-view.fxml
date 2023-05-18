@@ -37,7 +37,7 @@
                </children></HBox>
          </top>
          <center>
-            <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER">
                <content>
                   <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
                </content>
@@ -51,7 +51,7 @@
    <right>
       <BorderPane prefWidth="300.0" BorderPane.alignment="CENTER">
          <center>
-            <ScrollPane fx:id="friendshipsListContainer" hbarPolicy="NEVER" BorderPane.alignment="CENTER" />
+            <ScrollPane fx:id="friendshipsListContainer" hbarPolicy="NEVER" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER" />
          </center>
          <top>
             <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">

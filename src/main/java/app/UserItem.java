@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
-public class UserItem {
+public class UserItem{
 
     private HBox userItem;
     private User user;
@@ -33,6 +33,7 @@ public class UserItem {
         this.friendship=friendship;
         this.parentContainer=parentContainer;
     }
+
 
     public void generateUserItem(){
 
@@ -76,25 +77,24 @@ public class UserItem {
     }
 
     public void removeUserFromFriendship(Friendship f) {
-        Platform.runLater(() -> {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Eliminar Amistad");
+        alert.setHeaderText("Desea eliminar la amistad con " + f.getAmigo2().getNombreUsuario() + "?");
+        alert.setContentText("Pulse Aceptar para eliminar la amistad");
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Eliminar Amistad");
-            alert.setHeaderText("Desea eliminar la amistad con "+f.getAmigo2().getNombreUsuario());
-            alert.setContentText("Pulse Aceptar para eliminar la amistad");
+        ButtonType acceptButton = new ButtonType("Aceptar");
+        ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, cancelButton);
 
-            ButtonType acceptButton = new ButtonType("Aceptar");
-            ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(acceptButton, cancelButton);
+        // Obtener la ventana actual
+        Window currentWindow = parentContainer.getScene().getWindow();
+        // Establecer la ventana actual como propietario de la alerta
+        alert.initOwner(currentWindow);
 
-            // Obtener la ventana actual
-            Window currentWindow = parentContainer.getScene().getWindow();
-            // Establecer la ventana actual como propietario de la alerta
-            alert.initOwner(currentWindow);
+        Optional<ButtonType> result = alert.showAndWait();
 
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (result.isPresent() && result.get() == acceptButton) {
+        if (result.isPresent() && result.get() == acceptButton) {
+            Platform.runLater(() -> {
                 FriendshipRepository friendshipRepository = new FriendshipRepository();
 
                 Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
@@ -108,11 +108,16 @@ public class UserItem {
                 friendshipRepository.updateFriendshipStatus(f);
                 friendshipToDelete.setSolicitud("eliminado");
                 friendshipRepository.updateFriendshipStatus(friendshipToDelete);
-                //friendshipRepository.deleteFriendship(f);
-                //friendshipRepository.deleteFriendship(friendshipToDelete);
-            }
-        });
+                //Set<Friendship> updatedFriendList = friendshipRepository.deleteFriendship(f, user);
+                //Set<Friendship> updatedFriendList2 = friendshipRepository.deleteFriendship(friendshipToDelete, f.getAmigo2());
+            });
+
+            parentContainer.getChildren().remove(userItem);
+            // Eliminar el VBox del padre
+        }
     }
+
+
 
 
     public HBox getUserItem() {
