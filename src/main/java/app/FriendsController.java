@@ -55,21 +55,21 @@ public class FriendsController {
             // Comprobamos si ya existe la amistad en la lista de amistades.
             Set<Friendship> friendshipSet = currentUser.getAmistades();
             Boolean alreadyFriends = false;
-            for (Friendship f : friendshipSet){
+            for (Friendship f : friendshipSet) {
 
-                if(friendUsername.equals(f.getAmigo2().getNombreUsuario().toString()) && !f.getSolicitud().equals("eliminado")){
-                    alreadyFriends=true;
-                    showError("Error",friendUsername+" ya está en su lista de amistades.");
-                }else {
+                if (friendUsername.equals(f.getAmigo2().getNombreUsuario().toString()) && !f.getSolicitud().equals("eliminado")) {
+                    alreadyFriends = true;
+                    showError("Error", friendUsername + " ya está en su lista de amistades.");
+                } else {
                     friendshipRepository.deleteFriendshipsBySolicitud("eliminado");
                 }
             }
 
             // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
-            if(friendUsername.equals(currentUser.getNombreUsuario().toString())){
-                showError("Error","No puede enviar una solicitud de amistad a usted mismo.");
+            if (friendUsername.equals(currentUser.getNombreUsuario().toString())) {
+                showError("Error", "No puede enviar una solicitud de amistad a usted mismo.");
 
-            }else
+            } else {
                 // Creamos la solicitud de amistad
                 if (friend != null && !alreadyFriends) {
                     Friendship friendship = new Friendship();
@@ -81,14 +81,15 @@ public class FriendsController {
                     friendshipRepository.saveFriendship(friendship);
                     showAlert("Éxito", "Se envió la solicitud de amistad a " + friendUsername);
                 } else {
-                    showError("Error", "No se encontró el usuario con el nombre de usuario " + friendUsername);
+                    if (!alreadyFriends) {
+                        showError("Error", "No se encontró el usuario con el nombre de usuario " + friendUsername);
+                    }
                 }
-
+            }
         } else {
             showError("Error", "Por favor, introduce un nombre de usuario");
         }
     }
-
 
 
     private void showAlert(String title, String content) {

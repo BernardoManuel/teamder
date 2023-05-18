@@ -29,8 +29,10 @@ import java.util.Set;
 
 public class RoomControlController {
 
-    @FXML public TextField inputUsername;
-    @FXML public BorderPane usersListContainer;
+    @FXML
+    public TextField inputUsername;
+    @FXML
+    public BorderPane usersListContainer;
     private VBox usersList;
     private BorderPane homeView;
     private BorderPane chatView;
@@ -57,23 +59,23 @@ public class RoomControlController {
         User solicitado = userRepository.findUserByUsername(inputUsername.getText());
 
         // Comprobamos que los campos no esten vacios
-        if (solicitado!=null) {
+        if (solicitado != null) {
 
             // Comprobamos si ya existe la amistad en la lista de amistades.
             Set<Request> requestSet = user.getRequests();
             Boolean alreadyRequested = false;
-            for (Request r : requestSet){
-                if(solicitado.getNombreUsuario().equals(r.getSolicitado().toString())){
-                    alreadyRequested=true;
-                    showError("Error",solicitado.getNombreUsuario()+" ya ha enviado una solicitud a este usuario.");
+            for (Request r : requestSet) {
+                if (solicitado.getNombreUsuario().equals(r.getSolicitado().toString())) {
+                    alreadyRequested = true;
+                    showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
                 }
             }
 
             // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
-            if(solicitado.getNombreUsuario().equals(user.getNombreUsuario().toString())){
-                showError("Error","No puede enviar una solicitud a usted mismo.");
+            if (solicitado.getNombreUsuario().equals(user.getNombreUsuario().toString())) {
+                showError("Error", "No puede enviar una solicitud a usted mismo.");
 
-            }else
+            } else
                 // Creamos la solicitud de amistad
                 if (!alreadyRequested) {
 
@@ -148,11 +150,12 @@ public class RoomControlController {
             usersList.setAlignment(Pos.CENTER);
             usersListContainer.setCenter(usersList);
 
-            for (User u: users) {
+            for (User u : users) {
                 createUserItem(u);
             }
         }
     }
+
     public void createUserItem(User u) {
         HBox userItem = new HBox();
         userItem.setAlignment(Pos.CENTER);
@@ -173,7 +176,7 @@ public class RoomControlController {
 
         labelUserContainer.getChildren().add(labelUser);
         labelUserContainer.setAlignment(Pos.CENTER_LEFT);
-        labelUserContainer.setPadding(new Insets(0, 0, 0,10));
+        labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
 
         userItem.getChildren().add(imgUser);

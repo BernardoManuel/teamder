@@ -13,22 +13,6 @@ public class RoomRepository {
     public RoomRepository() {
     }
 
-    public Set<Room> findUserRooms(User user) {
-        Set<Room> rooms = null;
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try {
-            session.beginTransaction();
-            Hibernate.initialize(user.getRooms());
-            rooms = user.getRooms();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-        return rooms;
-    }
-
     public void save(Room room, User user) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {

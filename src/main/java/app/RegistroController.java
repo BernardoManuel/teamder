@@ -30,24 +30,36 @@ import java.security.NoSuchAlgorithmException;
 
 public class RegistroController {
 
-    @FXML private Hyperlink hyperlinkIniciarSesion;
-    @FXML private Button buttonVolver;
-    @FXML private ImageView imageViewLeftPane;
-    @FXML private Button buttonRegistro;
-    @FXML private TextField usernameField;
-    @FXML private TextField correoField;
-    @FXML private TextField passwordField;
-    @FXML private TextField confirmPasswordField;
-    @FXML private Pane errorPane;
-    @FXML private Pane errorPane2;
-    @FXML private Label errorMessage;
-    @FXML private Label errorMessage2;
+    @FXML
+    private Hyperlink hyperlinkIniciarSesion;
+    @FXML
+    private Button buttonVolver;
+    @FXML
+    private ImageView imageViewLeftPane;
+    @FXML
+    private Button buttonRegistro;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField correoField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private TextField confirmPasswordField;
+    @FXML
+    private Pane errorPane;
+    @FXML
+    private Pane errorPane2;
+    @FXML
+    private Label errorMessage;
+    @FXML
+    private Label errorMessage2;
     private UserRepository userRepository;
     private EmailValidator emailValidator;
     private PasswordValidator passwordValidator;
     private UsernameValidator usernameValidator;
 
-    public void initialize(){
+    public void initialize() {
         //Creamos el Repositorio de Usuarios
         userRepository = new UserRepository();
 
@@ -87,7 +99,7 @@ public class RegistroController {
 
     //Metodo que envia al inicio de sesion
     private void formIniciarSesion() {
-        try{
+        try {
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));
             AnchorPane form = formLoader.load();
             Scene formScene = new Scene(form);
@@ -95,7 +107,7 @@ public class RegistroController {
             //Recuperamos y mostramos la vista registro
             Stage stage = (Stage) buttonVolver.getScene().getWindow();
             stage.setScene(formScene);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -115,7 +127,7 @@ public class RegistroController {
         String pass2 = confirmPasswordField.getText();
 
         //Validar campos vacios
-        if(nombreUsuario.isEmpty()||correo.isEmpty()||pass1.isEmpty()||pass2.isEmpty()){
+        if (nombreUsuario.isEmpty() || correo.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
             mostrarMensajeError("Debe rellenar todos los campos");
             return;
         }
@@ -136,7 +148,7 @@ public class RegistroController {
         } else {
             //Verificamos de que sea un correo valido.
             emailValidator = new EmailValidator();
-            if(emailValidator.validate(correo)){
+            if (emailValidator.validate(correo)) {
                 //Set correo electronico
                 nuevoUsuario.setCorreo(correo);
             } else {
@@ -148,7 +160,7 @@ public class RegistroController {
 
 
         //Comprobar contraseñas concuerdan
-        if(pass1.equals(pass2)){
+        if (pass1.equals(pass2)) {
             String password = passwordField.getText();
             byte[] salt = PasswordUtil.generateSalt();
             byte[] hashedPassword = PasswordUtil.getHashedPassword(password, salt);
@@ -157,19 +169,19 @@ public class RegistroController {
 
             //Validar seguridad de la contraseña
             passwordValidator = new PasswordValidator();
-            if(!passwordValidator.validateLength(password)){
+            if (!passwordValidator.validateLength(password)) {
                 mostrarMensajeErrorGrande("Contraseña debe contener", "al menos 8 caracteres");
                 return;
-            } else if(!passwordValidator.validateUpperCase(password)){
+            } else if (!passwordValidator.validateUpperCase(password)) {
                 mostrarMensajeErrorGrande("Contraseña debe contener", "al menos una letra mayúscula");
                 return;
-            } else if(!passwordValidator.validateLowerCase(password)){
+            } else if (!passwordValidator.validateLowerCase(password)) {
                 mostrarMensajeErrorGrande("Contraseña debe contener", "al menos una letra minúscula");
                 return;
-            } else if(!passwordValidator.validateDigits(password)){
+            } else if (!passwordValidator.validateDigits(password)) {
                 mostrarMensajeErrorGrande("Contraseña debe contener", "al menos un digito");
                 return;
-            } else if(!passwordValidator.validateSpecialChars(password)){
+            } else if (!passwordValidator.validateSpecialChars(password)) {
                 mostrarMensajeErrorGrande("Contraseña debe contener al menos", "un caracter especial \"!@#$%^&*()-+\"");
                 return;
             } else {
@@ -183,9 +195,9 @@ public class RegistroController {
             return;
         }
 
-        if(!usernameValidator.validate(nombreUsuario)){
+        if (!usernameValidator.validate(nombreUsuario)) {
             mostrarMensajeError("El nombre de usuario no es valido");
-        }else{
+        } else {
             //Guardamos el nuevo usuario
             userRepository.save(nuevoUsuario);
 

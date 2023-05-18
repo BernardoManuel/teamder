@@ -240,6 +240,7 @@ public class HomeController {
     public void stopUpdateFriendshipsList() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
+            executorService = null;
         }
     }
 
@@ -252,7 +253,6 @@ public class HomeController {
         friendshipsList.getChildren().setAll(sortedUserItemList.stream().map(UserItem::getUserItem).collect(Collectors.toList()));
         friendshipsListContainer.setContent(friendshipsList);
     }
-
 
 
     public void updateUser() {
@@ -273,6 +273,7 @@ public class HomeController {
     public void stopListeningForFriendships() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
+            executorService = null;
         }
     }
 
@@ -344,6 +345,7 @@ public class HomeController {
     public void stopListeningForRequests() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
+            executorService = null;
         }
     }
 
@@ -356,7 +358,7 @@ public class HomeController {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Invitación");
-                alert.setHeaderText(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: \"+request.getSala().getNombre()");
+                alert.setHeaderText(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: " + request.getSala().getNombre());
                 alert.setContentText("¿Aceptas unirte a la sala?");
 
                 ButtonType acceptButton = new ButtonType("Aceptar");

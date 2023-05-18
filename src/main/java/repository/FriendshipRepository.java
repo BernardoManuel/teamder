@@ -70,27 +70,23 @@ public class FriendshipRepository {
         }
     }
 
-    public Set<Friendship> deleteFriendship(Friendship friendship, User user) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction transaction = null;
+    public void deleteFriendships(Friendship friendship, User user1, User user2) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
-            transaction = session.beginTransaction();
+            session.beginTransaction();
             friendship.setAmigo1(null);
             friendship.setAmigo2(null);
-            session.delete(friendship);
-            transaction.commit();
+            user1.getAmistades().remove(user2);
+            user2.getAmistades().remove(user1);
+            session.merge(friendship);
+            session.merge(user1);
+            session.merge(user2);
+            session.getTransaction().commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             e.printStackTrace();
         } finally {
-            if (session != null) {
-                session.close();
-            }
+            session.close();
         }
-
-        return getFriendships(user);
     }
 
 
@@ -125,17 +121,4 @@ public class FriendshipRepository {
             session.close();
         }
     }
-
-
-
-    /* public User findUserById(Integer id) {
-        User user = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            user = session.get(User.class, id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return user;
-    }*/
-
 }

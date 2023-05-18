@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
-public class UserItem{
+public class UserItem {
 
     private HBox userItem;
     private User user;
@@ -29,13 +29,13 @@ public class UserItem{
     private VBox parentContainer;
 
     public UserItem(User user, Friendship friendship, VBox parentContainer) {
-        this.user=user;
-        this.friendship=friendship;
-        this.parentContainer=parentContainer;
+        this.user = user;
+        this.friendship = friendship;
+        this.parentContainer = parentContainer;
     }
 
 
-    public void generateUserItem(){
+    public void generateUserItem() {
 
         userItem = new HBox();
         userItem.setAlignment(Pos.CENTER);
@@ -68,7 +68,6 @@ public class UserItem{
 
         btnRemove.setOnMouseClicked(event -> {
             removeUserFromFriendship(friendship);
-            parentContainer.getChildren().remove(userItem);
             // Eliminar el VBox del padre
         });
 
@@ -108,16 +107,13 @@ public class UserItem{
                 friendshipRepository.updateFriendshipStatus(f);
                 friendshipToDelete.setSolicitud("eliminado");
                 friendshipRepository.updateFriendshipStatus(friendshipToDelete);
-                //Set<Friendship> updatedFriendList = friendshipRepository.deleteFriendship(f, user);
-                //Set<Friendship> updatedFriendList2 = friendshipRepository.deleteFriendship(friendshipToDelete, f.getAmigo2());
-            });
 
+            });
             parentContainer.getChildren().remove(userItem);
             // Eliminar el VBox del padre
         }
+
     }
-
-
 
 
     public HBox getUserItem() {

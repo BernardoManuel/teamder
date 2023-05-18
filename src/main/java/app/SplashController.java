@@ -16,6 +16,7 @@ public class SplashController {
     private ImageView imageLoading;
     @FXML
     private ProgressBar progressBar;
+
     @FXML
     private void initialize() {
 

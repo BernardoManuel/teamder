@@ -8,7 +8,8 @@ import javafx.scene.text.Text;
 import java.io.IOException;
 
 public class ChatItemController extends HBox {
-    @FXML private Text roomTitle;
+    @FXML
+    private Text roomTitle;
 
     private String title;
 
@@ -18,10 +19,6 @@ public class ChatItemController extends HBox {
             roomTitle.setText(title);
         });
 
-    }
-
-    public void onClick() throws IOException {
-        // System.out.println("test");
     }
 
     public void setTitle(String title) {

@@ -24,8 +24,6 @@ public class RoomCreatorController {
     @FXML
     private ChoiceBox gameSelector;
     @FXML
-    private Button btnCreate;
-    @FXML
     private TextField inputRoomName;
     @FXML
     private TextField inputMaxPlayers;
@@ -69,6 +67,7 @@ public class RoomCreatorController {
     public void setUser(User user) {
         this.user = user;
     }
+
     public void setHomeController(HomeController homeController) {
         this.homeController = homeController;
     }
