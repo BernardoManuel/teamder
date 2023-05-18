@@ -56,7 +56,7 @@ public class FriendsController {
             Set<Friendship> friendshipSet = currentUser.getAmistades();
             Boolean alreadyFriends = false;
             for (Friendship f : friendshipSet){
-                if(friendUsername.equals(f.getAmigo2().getNombreUsuario().toString())){
+                if(friendUsername.equals(f.getAmigo2().getNombreUsuario().toString()) && !f.getSolicitud().equals("eliminado")){
                     alreadyFriends=true;
                     showError("Error",friendUsername+" ya está en su lista de amistades.");
                 }

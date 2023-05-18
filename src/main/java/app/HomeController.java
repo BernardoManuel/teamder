@@ -33,6 +33,7 @@ import repository.FriendshipRepository;
 import repository.RequestRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +63,7 @@ public class HomeController {
     private RequestRepository requestRepository;
     private ScheduledExecutorService executorService;
 
-
+    private List<UserItem> userItemList;
 
     @FXML
     public void initialize() {
@@ -71,6 +72,7 @@ public class HomeController {
         friendshipRepository = new FriendshipRepository();
         requestRepository = new RequestRepository();
 
+        userItemList = new ArrayList<>();
         friendshipsList = new VBox();
 
         Platform.runLater(() -> {
@@ -90,7 +92,7 @@ public class HomeController {
                     // Detener los hilos y cerrar la aplicación
                     stopAll();
                     // Detenemos todos los hilos y flujos de datos en el controller del chat.
-                    if(currentChatController!=null){
+                    if (currentChatController != null) {
                         try {
                             currentChatController.closeApplication();
                         } catch (IOException e) {
@@ -212,22 +214,20 @@ public class HomeController {
 
     private void updateFriendships() {
         Platform.runLater(() -> {
-        Set<Friendship> friends = friendshipRepository.getFriendships(user);
-        if (friends != null && friends.size() > 0) {
-            // Ordenar los amigos por nombre de usuario
-            List<Friendship> sortedFriends = friends.stream()
-                    .sorted(Comparator.comparing(f -> f.getAmigo2().getNombreUsuario()))
-                    .collect(Collectors.toList());
+            Set<Friendship> friends = friendshipRepository.getFriendships(user);
+            if (friends != null && friends.size() > 0) {
 
-                friendshipsList.getChildren().removeAll();
-                friendshipsList.getChildren().clear();
-                for (Friendship friendship : sortedFriends) {
+                userItemList.clear();
+
+                for (Friendship friendship : friends) {
                     if (friendship.getSolicitud().equals("aceptado")) {
-                        createFriendshipItem(friendship);
+                        UserItem userItem = new UserItem(user, friendship, friendshipsList);
+                        userItem.generateUserItem(); // Pasa el VBox contenedor como argumento
+                        userItemList.add(userItem);
                     }
                 }
-                friendshipsListContainer.setContent(friendshipsList);
-        }
+            }
+            mostrarAmigos();
         });
     }
 
@@ -237,76 +237,17 @@ public class HomeController {
         }
     }
 
+    public void mostrarAmigos() {
 
-    public void createFriendshipItem(Friendship f) {
-        Platform.runLater(() -> {
-            HBox userItem = new HBox();
-            userItem.setAlignment(Pos.CENTER);
-            userItem.setSpacing(10.0);
+        friendshipsList.getChildren().removeAll();
+        friendshipsList.getChildren().clear();
 
-            // Crea un círculo en lugar de un Pane
-            Circle imgUser = new Circle();
-            imgUser.setRadius(20.0);
-            imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
+        for (UserItem userItem : userItemList) {
+            friendshipsList.getChildren().add(userItem.getUserItem());
+        }
 
-            HBox labelUserContainer = new HBox();
-            Label labelUser = new Label();
-            labelUser.setText(f.getAmigo2().getNombreUsuario());
-
-
-            labelUser.setFont(javafx.scene.text.Font.font("System", FontWeight.BOLD, 14));
-            labelUser.setTextFill(javafx.scene.paint.Color.BLACK);
-
-            labelUserContainer.getChildren().add(labelUser);
-            labelUserContainer.setAlignment(Pos.CENTER_LEFT);
-            labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
-            HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
-
-            userItem.getChildren().add(imgUser);
-            userItem.getChildren().add(labelUserContainer);
-            Button btnRemove = new Button("Borrar");
-            btnRemove.setStyle("-fx-background-color: #e75334");
-            btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
-            btnRemove.setTextFill(Color.WHITE);
-            btnRemove.setOnMouseClicked(event -> {
-                removeUserFromFriendship(f);
-            });
-            userItem.getChildren().add(btnRemove);
-
-            friendshipsList.getChildren().add(userItem);
-        });
+        friendshipsListContainer.setContent(friendshipsList);
     }
-
-    public void removeUserFromFriendship(Friendship f) {
-        Platform.runLater(() -> {
-            Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
-            Friendship friendshipToDelete = new Friendship();
-            for (Friendship fs : friendshipSet) {
-                if (fs.getAmigo2().getId() == user.getId()) {
-                    friendshipToDelete = fs;
-                }
-            }
-            friendshipRepository.deleteFriendship(f);
-            friendshipRepository.deleteFriendship(friendshipToDelete);
-
-            // Eliminar el elemento correspondiente de la lista
-            HBox itemToRemove = null;
-            for (Node node : friendshipsList.getChildren()) {
-                if (node instanceof HBox) {
-                    HBox userItem = (HBox) node;
-                    Friendship friendship = (Friendship) userItem.getUserData();
-                    if (friendship != null && friendship.equals(f)) {
-                        itemToRemove = userItem;
-                        break;
-                    }
-                }
-            }
-            if (itemToRemove != null) {
-                friendshipsList.getChildren().remove(itemToRemove);
-            }
-        });
-    }
-
 
     public void updateUser() {
         this.user = userRepository.updateUser(user);
@@ -404,7 +345,7 @@ public class HomeController {
         User solicitante = request.getSolicitante();
         // Verificar si requester no es nulo antes de usarlo
         if (solicitante != null) {
-            System.out.println(solicitante.getNombreUsuario()+" le ha invitado a unirse a su sala: "+request.getSala().getNombre());
+            System.out.println(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: " + request.getSala().getNombre());
             // Mostrar el diálogo Alert en el hilo principal de JavaFX
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -463,7 +404,7 @@ public class HomeController {
         // Detener los hilos y esperar a que finalicen
         stopAll();
         // Detenemos todos los hilos y flujos de datos en el controller del chat.
-        if(currentChatController!=null){
+        if (currentChatController != null) {
             currentChatController.closeApplication();
         }
 
@@ -478,7 +419,7 @@ public class HomeController {
         }
     }
 
-    public void stopAll(){
+    public void stopAll() {
         stopUpdateFriendshipsList();
         stopListeningForFriendships();
         stopListeningForRequests();
