@@ -3,8 +3,7 @@ package app;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -12,10 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Window;
 import model.Friendship;
+import model.Request;
 import model.User;
 import repository.FriendshipRepository;
 
+import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 
 public class UserItem {
@@ -74,21 +77,40 @@ public class UserItem {
 
     public void removeUserFromFriendship(Friendship f) {
         Platform.runLater(() -> {
-            FriendshipRepository friendshipRepository = new FriendshipRepository();
 
-            Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
-            Friendship friendshipToDelete = new Friendship();
-            for (Friendship fs : friendshipSet) {
-                if (fs.getAmigo2().getId() == user.getId()) {
-                    friendshipToDelete = fs;
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Eliminar Amistad");
+            alert.setHeaderText("Desea eliminar la amistad con "+f.getAmigo2().getNombreUsuario());
+            alert.setContentText("Pulse Aceptar para eliminar la amistad");
+
+            ButtonType acceptButton = new ButtonType("Aceptar");
+            ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(acceptButton, cancelButton);
+
+            // Obtener la ventana actual
+            Window currentWindow = parentContainer.getScene().getWindow();
+            // Establecer la ventana actual como propietario de la alerta
+            alert.initOwner(currentWindow);
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == acceptButton) {
+                FriendshipRepository friendshipRepository = new FriendshipRepository();
+
+                Set<Friendship> friendshipSet = f.getAmigo2().getAmistades();
+                Friendship friendshipToDelete = new Friendship();
+                for (Friendship fs : friendshipSet) {
+                    if (fs.getAmigo2().getId() == user.getId()) {
+                        friendshipToDelete = fs;
+                    }
                 }
+                f.setSolicitud("eliminado");
+                friendshipRepository.updateFriendshipStatus(f);
+                friendshipToDelete.setSolicitud("eliminado");
+                friendshipRepository.updateFriendshipStatus(friendshipToDelete);
+                //friendshipRepository.deleteFriendship(f);
+                //friendshipRepository.deleteFriendship(friendshipToDelete);
             }
-            f.setSolicitud("eliminado");
-            friendshipRepository.updateFriendshipStatus(f);
-            friendshipToDelete.setSolicitud("eliminado");
-            friendshipRepository.updateFriendshipStatus(friendshipToDelete);
-            //friendshipRepository.deleteFriendship(f);
-            //friendshipRepository.deleteFriendship(friendshipToDelete);
         });
     }
 

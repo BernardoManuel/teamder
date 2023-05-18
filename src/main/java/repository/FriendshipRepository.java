@@ -94,6 +94,21 @@ public class FriendshipRepository {
         return result;
     }
 
+    public void deleteFriendshipsBySolicitud(String solicitud) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            Query query = session.createQuery("DELETE FROM Friendship WHERE solicitud = :solicitud");
+            query.setParameter("solicitud", solicitud);
+            query.executeUpdate();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
 
 
     /* public User findUserById(Integer id) {
