@@ -9,6 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -166,10 +168,17 @@ public class RoomControlController {
         imgUser.setRadius(20.0);
         imgUser.setFill(Color.web("#f8efad"));
 
+        // Crea un ImageView con la imagen
+        ImageView imgView = new ImageView(new Image("file:src/main/resources/icons/friend_icon2.png"));
+        imgView.setFitWidth(40.0);
+        imgView.setFitHeight(40.0);
+
+        // Crea un StackPane para superponer el ImageView sobre el círculo
+        StackPane stackPane = new StackPane(imgUser, imgView);
+
         HBox labelUserContainer = new HBox();
         Label labelUser = new Label();
         labelUser.setText(u.getNombreUsuario());
-
 
         labelUser.setFont(Font.font("System", FontWeight.BOLD, 14));
         labelUser.setTextFill(Color.WHITE);
@@ -179,7 +188,7 @@ public class RoomControlController {
         labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
 
-        userItem.getChildren().add(imgUser);
+        userItem.getChildren().add(stackPane);
         userItem.getChildren().add(labelUserContainer);
         if (!u.getId().equals(user.getId())) {
             Button btnRemove = new Button("Borrar");
