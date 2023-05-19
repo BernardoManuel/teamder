@@ -4,8 +4,11 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -36,7 +39,6 @@ public class UserItem {
 
 
     public void generateUserItem() {
-
         userItem = new HBox();
         userItem.setAlignment(Pos.CENTER);
         userItem.setSpacing(10.0);
@@ -46,10 +48,17 @@ public class UserItem {
         imgUser.setRadius(20.0);
         imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
 
+        // Crea un ImageView con la imagen
+        ImageView imgView = new ImageView(new Image("file:src/main/resources/icons/friend_icon.png"));
+        imgView.setFitWidth(45.0);
+        imgView.setFitHeight(30.0);
+
+        // Crea un StackPane para superponer el ImageView sobre el círculo
+        StackPane stackPane = new StackPane(imgUser, imgView);
+
         HBox labelUserContainer = new HBox();
         Label labelUser = new Label();
         labelUser.setText(friendship.getAmigo2().getNombreUsuario());
-
 
         labelUser.setFont(javafx.scene.text.Font.font("System", FontWeight.BOLD, 14));
         labelUser.setTextFill(javafx.scene.paint.Color.BLACK);
@@ -59,8 +68,9 @@ public class UserItem {
         labelUserContainer.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(labelUserContainer, Priority.ALWAYS);
 
-        userItem.getChildren().add(imgUser);
+        userItem.getChildren().add(stackPane);
         userItem.getChildren().add(labelUserContainer);
+
         Button btnRemove = new Button("Borrar");
         btnRemove.setStyle("-fx-background-color: #e75334");
         btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
@@ -72,8 +82,8 @@ public class UserItem {
         });
 
         userItem.getChildren().add(btnRemove);
-
     }
+
 
     public void removeUserFromFriendship(Friendship f) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

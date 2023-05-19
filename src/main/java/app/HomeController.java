@@ -12,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -78,6 +80,17 @@ public class HomeController {
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
+                // Cargar la imagen desde el archivo
+                Image logoutImage = new Image("file:src/main/resources/icons/icon_logout.png");
+
+                // Crear un ImageView con la imagen cargada
+                ImageView logoutImageView = new ImageView(logoutImage);
+                logoutImageView.setFitWidth(20);
+                logoutImageView.setFitHeight(20);
+
+                // Establecer el ImageView como gráfico del botón
+                logoutButton.setGraphic(logoutImageView);
+
                 generateHome();
                 updateChatsList();
                 updateFriendshipsList();

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.shape.*?> <!-- Importa la clase Circle -->
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.*?> <!-- Importa la clase ImageView -->
 
 <HBox prefHeight="30.0" prefWidth="185.0" spacing="5" style="-fx-background-color: #f8efad;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatItemController">
     <children>
-        <!-- Reemplaza el Pane con un Circle -->
-        <Circle radius="15.0" fill="#e75334" centerX="15.0" centerY="15.0" />
+        <StackPane>
+            <Circle radius="15.0" fill="#e75334" />
+            <!-- Agrega un ImageView con la imagen del icono -->
+            <ImageView fx:id="roomIcon" fitWidth="20.0" fitHeight="20.0">
+            </ImageView>
+        </StackPane>
         <Pane prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f8efad;">
             <children>
                 <Text fx:id="roomTitle" layoutX="10.0" layoutY="20.0" text="">
