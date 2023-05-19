@@ -5,10 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -27,6 +24,7 @@ import repository.RoomRepository;
 import repository.UserRepository;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 
 public class RoomControlController {
@@ -196,7 +194,26 @@ public class RoomControlController {
             btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
             btnRemove.setTextFill(Color.WHITE);
             btnRemove.setOnMouseClicked(event -> {
-                removeUserFromRoom(u);
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Sacar amigo de la sala");
+                alert.setHeaderText("Desea sacar a " + u.getNombreUsuario() + " de la sala?");
+                alert.setContentText("Pulse Aceptar sacar amigo de la sala");
+
+                ButtonType acceptButton = new ButtonType("Aceptar");
+                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(acceptButton, cancelButton);
+
+                // Obtener la ventana actual
+                Window currentWindow = inputUsername.getScene().getWindow();
+                // Establecer la ventana actual como propietario de la alerta
+                alert.initOwner(currentWindow);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == acceptButton) {
+                    removeUserFromRoom(u);
+                }
+
             });
             userItem.getChildren().add(btnRemove);
         }
