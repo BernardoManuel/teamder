@@ -1,6 +1,5 @@
 package app;
 
-import com.sun.javafx.stage.StageHelper;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,9 +11,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import javax.imageio.ImageIO;
-import java.awt.Window;
-import java.awt.image.BufferedImage;
 
 public class AppController extends Application {
 

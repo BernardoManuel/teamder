@@ -16,11 +16,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Window;
 import model.Friendship;
-import model.Request;
 import model.User;
 import repository.FriendshipRepository;
-
-import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 

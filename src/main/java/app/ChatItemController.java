@@ -7,8 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
-
 public class ChatItemController extends HBox {
     @FXML
     private Text roomTitle;

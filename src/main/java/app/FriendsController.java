@@ -3,15 +3,10 @@ package app;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 import model.Friendship;
 import model.User;
-import database.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 import repository.FriendshipRepository;
 import repository.UserRepository;
 
@@ -20,9 +15,6 @@ import java.util.Set;
 public class FriendsController {
     @FXML
     private TextField usernameTextField;
-
-    @FXML
-    private Button addFriendButton;
 
     private User currentUser;
 
@@ -55,23 +47,28 @@ public class FriendsController {
             // Comprobamos si ya existe la amistad en la lista de amistades.
             Set<Friendship> friendshipSet = currentUser.getAmistades();
             Boolean alreadyFriends = false;
+            Boolean pendingRequest = false;
             for (Friendship f : friendshipSet) {
 
-                if (friendUsername.equals(f.getAmigo2().getNombreUsuario().toString()) && !f.getSolicitud().equals("eliminado")) {
-                    alreadyFriends = true;
-                    showError("Error", friendUsername + " ya está en su lista de amistades.");
-                } else {
-                    friendshipRepository.deleteFriendshipsBySolicitud("eliminado");
+                if (friendUsername.equals(f.getAmigo2().getNombreUsuario().toString())) {
+                    if (!f.getSolicitud().equals("eliminado")) {
+                        alreadyFriends = true;
+                        showError("Error", friendUsername + " ya está en su lista de amistades.");
+                    }
+
+                    if (f.getSolicitud().equals("pendiente")) {
+                        pendingRequest = true;
+                        showError("Error", "Ya has enviado una solicitud de amistad a " + friendUsername + ". Por favor, espera su respuesta.");
+                    }
                 }
             }
 
             // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
             if (friendUsername.equals(currentUser.getNombreUsuario().toString())) {
                 showError("Error", "No puede enviar una solicitud de amistad a usted mismo.");
-
             } else {
                 // Creamos la solicitud de amistad
-                if (friend != null && !alreadyFriends) {
+                if (friend != null && !alreadyFriends && !pendingRequest) {
                     Friendship friendship = new Friendship();
                     friendship.setAmigo1(currentUser);
                     friendship.setAmigo2(friend);
@@ -81,7 +78,7 @@ public class FriendsController {
                     friendshipRepository.saveFriendship(friendship);
                     showAlert("Éxito", "Se envió la solicitud de amistad a " + friendUsername);
                 } else {
-                    if (!alreadyFriends) {
+                    if (!alreadyFriends && !pendingRequest) {
                         showError("Error", "No se encontró el usuario con el nombre de usuario " + friendUsername);
                     }
                 }
@@ -90,6 +87,8 @@ public class FriendsController {
             showError("Error", "Por favor, introduce un nombre de usuario");
         }
     }
+
+
 
 
     private void showAlert(String title, String content) {

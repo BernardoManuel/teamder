@@ -3,30 +3,21 @@ package app;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import listeners.FriendshipRequestListener;
 import model.Friendship;
 import model.Request;
 import model.Room;
@@ -120,12 +111,25 @@ public class HomeController {
         });
 
         logoutButton.setOnAction(actionEvent -> {
-            try {
-                handleLogoutButtonAction();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            // Crear el diálogo de confirmación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            // Configurar el título y el mensaje del diálogo
+            alert.setTitle("Cerrar sesión");
+            alert.setHeaderText("¿Seguro que quieres cerrar la sesión?");
+
+            // Mostrar el diálogo y esperar la respuesta del usuario
+            Optional<ButtonType> result = alert.showAndWait();
+
+            // Si el usuario presiona "Aceptar", cerrar la sesión
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    handleLogoutButtonAction();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
+
 
     }
 

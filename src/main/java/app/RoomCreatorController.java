@@ -2,7 +2,6 @@ package app;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.Game;
@@ -10,7 +9,6 @@ import model.Room;
 import model.User;
 import repository.GamesRepository;
 import repository.RoomRepository;
-
 import java.io.IOException;
 import java.util.List;
 

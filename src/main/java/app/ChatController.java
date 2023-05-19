@@ -8,13 +8,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Message;
 import model.Room;
@@ -22,13 +20,12 @@ import model.User;
 import repository.MessageRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
-
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
+
 
 public class ChatController extends BorderPane {
     //CONSTANTES DE FORMATO DE AUDIO

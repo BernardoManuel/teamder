@@ -17,6 +17,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="teamder" options="--add-exports javafx.graphics/com.sun.javafx.stage=login.formlogin" />
       <module name="teamder-chat" options="--add-exports javafx.graphics/com.sun.javafx.application=login.formlogin --add-exports javafx.graphics/com.sun.javafx.tk=login.formlogin --add-exports javafx.graphics/com.sun.javafx.stage=login.formlogin" />
     </option>
   </component>

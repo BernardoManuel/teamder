@@ -1,10 +1,6 @@
 package app;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+
 import database.HibernateUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,15 +27,8 @@ import model.User;
 import org.hibernate.Session;
 import repository.UserRepository;
 import utils.PasswordUtil;
-
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.Optional;
 
 public class FormController {
     @FXML

@@ -20,7 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
 import repository.UserRepository;
-
 import utils.EmailValidator;
 import utils.PasswordUtil;
 import utils.PasswordValidator;
