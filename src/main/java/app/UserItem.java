@@ -49,9 +49,9 @@ public class UserItem {
         imgUser.setFill(javafx.scene.paint.Color.web("#f8efad"));
 
         // Crea un ImageView con la imagen
-        ImageView imgView = new ImageView(new Image("file:src/main/resources/icons/friend_icon.png"));
-        imgView.setFitWidth(45.0);
-        imgView.setFitHeight(30.0);
+        ImageView imgView = new ImageView(new Image("file:src/main/resources/icons/friend_icon2.png"));
+        imgView.setFitWidth(40.0);
+        imgView.setFitHeight(40.0);
 
         // Crea un StackPane para superponer el ImageView sobre el círculo
         StackPane stackPane = new StackPane(imgUser, imgView);

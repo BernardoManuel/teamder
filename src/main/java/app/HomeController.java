@@ -81,7 +81,7 @@ public class HomeController {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
                 // Cargar la imagen desde el archivo
-                Image logoutImage = new Image("file:src/main/resources/icons/icon_logout.png");
+                Image logoutImage = new Image("file:src/main/resources/icons/logout_icon.png");
 
                 // Crear un ImageView con la imagen cargada
                 ImageView logoutImageView = new ImageView(logoutImage);
