@@ -61,17 +61,18 @@ public class RoomControlController {
             Set<Request> requestSet = user.getRequests();
             Boolean alreadyRequested = false;
             for (Request r : requestSet) {
-                if (solicitado.getNombreUsuario().equals(r.getSolicitado().toString())) {
+                if (solicitado.getNombreUsuario().equals(r.getSolicitado().getNombreUsuario())) {
                     alreadyRequested = true;
                     showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
                 }
             }
+            updateUser();
 
             // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
             if (solicitado.getNombreUsuario().equals(user.getNombreUsuario().toString())) {
                 showError("Error", "No puede enviar una solicitud a usted mismo.");
 
-            } else
+            } else {
                 // Creamos la solicitud de amistad
                 if (!alreadyRequested) {
 
@@ -87,8 +88,11 @@ public class RoomControlController {
                     showAlert("Éxito", "Se envió la solicitud a " + solicitado.getNombreUsuario());
                     inputUsername.clear();
                 } else {
-                    showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
+                    if (!alreadyRequested) {
+                        showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
+                    }
                 }
+            }
         } else {
             showError("Error", "No se encontró ningun usuario.");
         }
@@ -238,5 +242,9 @@ public class RoomControlController {
 
     public void setHomeController(HomeController homeController) {
         this.homeController = homeController;
+    }
+
+    private void updateUser() {
+        user = userRepository.updateUser(user);
     }
 }
