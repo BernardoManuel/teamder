@@ -20,6 +20,7 @@ import model.User;
 import repository.MessageRepository;
 import repository.RoomRepository;
 import repository.UserRepository;
+
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
@@ -62,7 +63,6 @@ public class ChatController extends BorderPane {
     private Button callBtn;
     @FXML
     private BorderPane chatView;
-
     private Thread listenForMessageThread;
     private Thread sendVozThread;
     private Thread receiveVozThread;
@@ -78,14 +78,16 @@ public class ChatController extends BorderPane {
             chatTitle.setText(room.getNombre());
             loadMessages();
             try {
-                textChatSocket = new Socket(SERVER_ADDRESS, 50000);
-                textChatSocket.setSoLinger(true, 0);
-                this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
-                this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
-
-                listenForMessage();
-                sendMessage();
-
+                if (textChatSocket == null) {
+                    textChatSocket = new Socket(SERVER_ADDRESS, 50000);
+                    textChatSocket.setSoLinger(true, 0);
+                    this.bufferedReader = new BufferedReader(new InputStreamReader(textChatSocket.getInputStream()));
+                    this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(textChatSocket.getOutputStream()));
+                    sendMessage();
+                }
+                if (listenForMessageThread == null) {
+                    listenForMessage();
+                }
             } catch (IOException e) {
                 closeEverything();
             }
@@ -312,12 +314,12 @@ public class ChatController extends BorderPane {
             if (calling) {
                 stopAudioThreads();
 
-                if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
+                if (lineaEntradaAudio != null) {
                     lineaEntradaAudio.stop();
                     lineaEntradaAudio.close();
                     lineaEntradaAudio = null;
                 }
-                if (lineaSalidaAudio != null && lineaSalidaAudio.isOpen()) {
+                if (lineaSalidaAudio != null) {
                     lineaSalidaAudio.stop();
                     lineaSalidaAudio.close();
                     lineaSalidaAudio = null;

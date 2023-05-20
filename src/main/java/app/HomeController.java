@@ -158,6 +158,7 @@ public class HomeController {
         currentChatController = loader.getController();
 
         return root;
+
     }
 
     public void updateChatsList() throws IOException {
@@ -221,19 +222,22 @@ public class HomeController {
     }
 
     private void closeWindowEvent(WindowEvent event) {
-        closeCurrentChat();
+        try {
+            closeCurrentChat();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void closeCurrentChat() {
+    private void closeCurrentChat() throws IOException {
         if (currentChatController != null) {
-            currentChatController.closeEverything();
+            currentChatController.closeApplication();
             currentChatController = null;
         }
     }
 
     public void updateFriendshipsList() {
         updateFriendships();
-
     }
 
 
