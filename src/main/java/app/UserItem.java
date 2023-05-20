@@ -18,6 +18,7 @@ import javafx.stage.Window;
 import model.Friendship;
 import model.User;
 import repository.FriendshipRepository;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -82,6 +83,7 @@ public class UserItem {
     }
 
 
+    // Cuadro de dialogo cuando se presiona el boton de borrar amistad.
     public void removeUserFromFriendship(Friendship f) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Eliminar Amistad");

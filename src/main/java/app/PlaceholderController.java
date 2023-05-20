@@ -10,6 +10,7 @@ public class PlaceholderController extends BorderPane {
     @FXML
     private ImageView placeholderLogo;
 
+    // Logo
     public void initialize() {
 
         Image logo = new Image("file:src/main/resources/logo/logo_sin_fondo.png");

@@ -203,6 +203,7 @@ public class HomeController {
     }
 
 
+    // Abre la vista para crear la sala
     @FXML
     private void openRoomCreator() throws IOException {
         closeCurrentChat();
@@ -213,6 +214,7 @@ public class HomeController {
         homeView.setCenter(root);
     }
 
+    // Abre la vista para ingresar nombres de usuarios y agregar a amistades.
     @FXML
     private void openFriendsView() throws IOException {
         closeCurrentChat();
@@ -242,6 +244,7 @@ public class HomeController {
     }
 
 
+    // Actualiza la lista de amistades en el Home
     public void updateFriendships() {
         Set<Friendship> friends = friendshipRepository.getFriendships(user);
         if (friends != null && !friends.isEmpty()) {

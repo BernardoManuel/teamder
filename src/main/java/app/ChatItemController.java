@@ -19,6 +19,7 @@ public class ChatItemController extends HBox {
 
     public void initialize() {
 
+        // Item que permite que se vea la sala en la lista de salas.
         Platform.runLater(() -> {
             roomTitle.setText(title + " - " + game.getName());
             Image icono = new Image("file:src/main/resources/icons/room_icon.png", 45.0, 45.0, true, true);

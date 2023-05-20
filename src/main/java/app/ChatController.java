@@ -150,6 +150,7 @@ public class ChatController extends BorderPane {
         });
     }
 
+    // Botón para enviar el mensaje y que luego limpie el input.
     @FXML
     private void onButtonClick() {
         inputMessageText = inputMessage.getText();
@@ -158,6 +159,7 @@ public class ChatController extends BorderPane {
         inputMessage.setText("");
     }
 
+    // Carga los mensajes de la sala que estan almacenados en la BBDD
     public void loadMessages() {
         try {
             List<Message> messages = messageRepository.findRoomMessages(room);
@@ -183,6 +185,7 @@ public class ChatController extends BorderPane {
         }
     }
 
+    // Mensaje que se ve impreso en la pantalla del chat cuando se envía.
     public void sendMessage(String msg) {
         try {
             if (textChatSocket.isConnected()) {
@@ -196,6 +199,7 @@ public class ChatController extends BorderPane {
         }
     }
 
+    // Guarda los mensajes.
     private void saveMessage(String msg) {
         Message message = new Message();
 

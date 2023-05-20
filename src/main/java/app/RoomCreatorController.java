@@ -26,6 +26,7 @@ public class RoomCreatorController {
     @FXML
     private TextField inputMaxPlayers;
 
+    // Interfaz para crear la sala a tu gusto.
     public void initialize() {
         gamesRepository = new GamesRepository();
         roomRepository = new RoomRepository();
@@ -35,6 +36,7 @@ public class RoomCreatorController {
         });
     }
 
+    // Escoger juego preferido.
     public void createGamesList() {
         List<Game> games = gamesRepository.findAllGames();
         if (games != null) {
@@ -45,6 +47,7 @@ public class RoomCreatorController {
         }
     }
 
+    // Máximo de jugadores permitidos en la sala.
     @FXML
     private void createRoom() {
         try {

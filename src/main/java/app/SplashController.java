@@ -17,6 +17,7 @@ public class SplashController {
     @FXML
     private ProgressBar progressBar;
 
+    // Controla el splash y la barra de progreso al iniciarse la aplicación.
     @FXML
     private void initialize() {
 

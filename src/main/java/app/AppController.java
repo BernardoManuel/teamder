@@ -24,7 +24,7 @@ public class AppController extends Application {
 
     private void showSplashScreen() {
         try {
-            // Crea un nuevo Stage para el splash
+            // Crea un nuevo Stage para la pantalla de carga.
             Stage splashStage = new Stage();
 
             FXMLLoader splashLoader = new FXMLLoader(getClass().getResource("splash-vista.fxml"));
@@ -47,6 +47,7 @@ public class AppController extends Application {
         }
     }
 
+    // Vista de login que parece luego de terminar los 3 segundos de la pantalla de carga.
     private void showLoginScreen() {
         try {
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));

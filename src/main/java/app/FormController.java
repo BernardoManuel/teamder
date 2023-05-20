@@ -81,6 +81,7 @@ public class FormController {
         session.close();
     }
 
+    // Accede a la vista del registro de usuarios.
     private void formRegistro() {
         try {
             //Cargamos la vista home
