@@ -16,10 +16,13 @@ public class FriendsController {
     @FXML
     private TextField usernameTextField;
 
+
+    private UserRepository userRepository;
     private User currentUser;
 
     @FXML
     public void initialize() {
+        userRepository = new UserRepository();
 
         Platform.runLater(() -> {
         });
@@ -51,14 +54,14 @@ public class FriendsController {
             for (Friendship f : friendshipSet) {
 
                 if (friendUsername.equals(f.getAmigo2().getNombreUsuario().toString())) {
-                    if (!f.getSolicitud().equals("eliminado")) {
-                        alreadyFriends = true;
-                        showError("Error", friendUsername + " ya está en su lista de amistades.");
-                    }
-
                     if (f.getSolicitud().equals("pendiente")) {
                         pendingRequest = true;
                         showError("Error", "Ya has enviado una solicitud de amistad a " + friendUsername + ". Por favor, espera su respuesta.");
+                    }
+
+                    if (!f.getSolicitud().equals("eliminado") && !pendingRequest) {
+                        alreadyFriends = true;
+                        showError("Error", friendUsername + " ya está en su lista de amistades.");
                     }
                 }
             }
@@ -83,6 +86,7 @@ public class FriendsController {
                     }
                 }
             }
+            updateUser();
         } else {
             showError("Error", "Por favor, introduce un nombre de usuario");
         }
@@ -111,6 +115,10 @@ public class FriendsController {
         // Establecer la ventana actual como propietario de la alerta
         alert.initOwner(currentWindow);
         alert.showAndWait();
+    }
+
+    private void updateUser() {
+        this.currentUser = userRepository.updateUser(currentUser);
     }
 
 }

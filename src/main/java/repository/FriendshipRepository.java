@@ -3,6 +3,7 @@ package repository;
 import database.HibernateUtil;
 import jakarta.persistence.Query;
 import model.Friendship;
+import model.Request;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import model.User;
@@ -120,5 +121,11 @@ public class FriendshipRepository {
         } finally {
             session.close();
         }
+    }
+
+    public boolean checkIfPendingRequest(Request request) {
+        boolean result = false;
+
+        return result;
     }
 }
