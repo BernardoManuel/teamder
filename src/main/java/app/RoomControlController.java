@@ -87,15 +87,11 @@ public class RoomControlController {
                     showAlert("Éxito", "Se envió la solicitud a " + solicitado.getNombreUsuario());
                     inputUsername.clear();
                 } else {
-                    if (alreadyRequested) {
-                        showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
-                    } else {
-                        showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
-                    }
+                    showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
                 }
             }
         } else {
-            showError("Error", "No se encontró ningun usuario.");
+            showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
         }
     }
 
