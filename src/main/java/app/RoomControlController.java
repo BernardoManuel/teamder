@@ -63,13 +63,12 @@ public class RoomControlController {
             for (Request r : requestSet) {
                 if (solicitado.getNombreUsuario().equals(r.getSolicitado().getNombreUsuario())) {
                     alreadyRequested = true;
-                    showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
                 }
             }
             updateUser();
 
             // Comprobamos que no se envia una solicitud al mismo usuario que la solicita.
-            if (solicitado.getNombreUsuario().equals(user.getNombreUsuario().toString())) {
+            if (solicitado.getNombreUsuario().equals(user.getNombreUsuario())) {
                 showError("Error", "No puede enviar una solicitud a usted mismo.");
 
             } else {
@@ -88,7 +87,9 @@ public class RoomControlController {
                     showAlert("Éxito", "Se envió la solicitud a " + solicitado.getNombreUsuario());
                     inputUsername.clear();
                 } else {
-                    if (!alreadyRequested) {
+                    if (alreadyRequested) {
+                        showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
+                    } else {
                         showError("Error", "No se encontró el usuario con el nombre de usuario " + solicitado.getNombreUsuario());
                     }
                 }
