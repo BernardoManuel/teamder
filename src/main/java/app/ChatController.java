@@ -240,7 +240,6 @@ public class ChatController extends BorderPane {
                     // Verificar si la línea de entrada de audio está inicializada
                     if (lineaEntradaAudio != null) {
                         // Bucle para el envío de datos de audio al servidor
-                        while (true) {
                             // Buffer para los datos de audio
                             byte[] buffer = new byte[1024];
                             int numBytesLeidos = lineaEntradaAudio.read(buffer, 0, buffer.length);
@@ -249,7 +248,6 @@ public class ChatController extends BorderPane {
                             dataOutputStream.write(buffer, 0, numBytesLeidos);
                             dataOutputStream.flush();
                             System.out.println("Datos de audio enviados al servidor");
-                        }
                     }
                 } catch (IOException e) {
                     lineaEntradaAudio.close();
@@ -467,7 +465,7 @@ public class ChatController extends BorderPane {
         stopAllThreads();
 
         if (bufferedReader != null) {
-            bufferedReader.close();
+            // bufferedReader.close();
             bufferedReader = null;
         }
         if (bufferedWriter != null) {

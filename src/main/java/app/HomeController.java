@@ -174,6 +174,7 @@ public class HomeController {
                         try {
                             FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
                             HBox item = loader.load();
+                            ((ChatItemController) loader.getController()).setGame(room.getGame());
                             ((ChatItemController) loader.getController()).setTitle(room.getNombre());
 
                             Node view = item.getChildren().get(0).getParent();
@@ -286,6 +287,7 @@ public class HomeController {
             List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
             // Mostrar las solicitudes no mostradas
             for (Friendship friendRequest : pendingFriendRequests) {
+                System.out.println("test friendship");
                 Platform.runLater(() -> onFriendRequestReceived(usuario, friendRequest));
             }
         }, 0, 1, TimeUnit.SECONDS);
@@ -358,6 +360,7 @@ public class HomeController {
             List<Request> pendingRequests = requestRepository.getPendingRequests(usuario);
             // Mostrar las solicitudes no mostradas
             for (Request request : pendingRequests) {
+                System.out.println("test request");
                 Platform.runLater(() -> onRequestReceived(usuario, request));
             }
         }, 0, 1, TimeUnit.SECONDS);
