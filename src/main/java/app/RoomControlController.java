@@ -87,7 +87,7 @@ public class RoomControlController {
                     showAlert("Éxito", "Se envió la solicitud a " + solicitado.getNombreUsuario());
                     inputUsername.clear();
                 } else {
-                    showError("Error", solicitado.getNombreUsuario() + " ya ha enviado una solicitud a este usuario.");
+                    showError("Error"," Ya se ha enviado una solicitud al usuario " + solicitado.getNombreUsuario() + ", por favor espera a responda.");
                 }
             }
         } else {
