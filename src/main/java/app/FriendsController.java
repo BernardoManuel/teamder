@@ -15,8 +15,6 @@ import java.util.Set;
 public class FriendsController {
     @FXML
     private TextField usernameTextField;
-
-
     private UserRepository userRepository;
     private User currentUser;
 
@@ -30,13 +28,17 @@ public class FriendsController {
     }
 
     public FriendsController() {
-
     }
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
+    /**
+     * Metodo que maneja el evento del click del boton "Añadir" de la vista friend-view.fxml
+     * Recupera los datos introducidos y maneja una serie de validaciones antes de enviar la solicitud de amistad.
+     * Finalmente una vez pasadas las validaciones envia la solicitud de amistad
+     */
     @FXML
     public void handleAddFriendButtonAction() {
         String friendUsername = usernameTextField.getText().trim();
@@ -93,8 +95,11 @@ public class FriendsController {
     }
 
 
-
-
+    /**
+     * Metodo que muestra una alerta de confirmacion al usuario.
+     * @param title titulo de la alerta de confirmacion.
+     * @param content mensaje a mostrar en la alerta
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
@@ -106,6 +111,11 @@ public class FriendsController {
         alert.showAndWait();
     }
 
+    /**
+     * Metodo que muestra una alerta de Error al usuario.
+     * @param title titulo de la alerta de error.
+     * @param content mensaje a mostrar en la alerta
+     */
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

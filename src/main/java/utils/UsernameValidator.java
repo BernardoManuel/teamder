@@ -7,6 +7,11 @@ public class UsernameValidator {
     private static final int MIN_LENGTH = 6; // Longitud mínima del nombre de usuario
     private static final String USERNAME_PATTERN = "^[a-zA-Z0-9._-]+$"; // Patrón de expresión regular para el nombre de usuario
 
+    /**
+     * Metodo que valida contiene al menos 6 caracteres. Y si cumple con el patron de expresion regular.
+     * @param username
+     * @return
+     */
     public static boolean validate(String username) {
         // Verificar la longitud del nombre de usuario
         if (username.length() < MIN_LENGTH) {

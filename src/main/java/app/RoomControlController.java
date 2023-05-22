@@ -48,6 +48,11 @@ public class RoomControlController {
         });
     }
 
+    /**
+     * Metodo que maneja el click del boton "Añadir". Contiene validaciones correspondientes a la invitacion de un
+     * usuario a la sala.
+     * Una vez pasadas las validaciones se envia la solicitud al usuario.
+     */
     @FXML
     public void addUserToRoom() {
 
@@ -95,6 +100,11 @@ public class RoomControlController {
         }
     }
 
+    /**
+     * Metodo que muestra una alerta de confirmacion al usuario.
+     * @param title titulo de la alerta de confirmacion.
+     * @param content mensaje a mostrar en la alerta
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
@@ -106,6 +116,11 @@ public class RoomControlController {
         alert.showAndWait();
     }
 
+    /**
+     * Metodo que muestra una alerta de Error al usuario.
+     * @param title titulo de la alerta de error.
+     * @param content mensaje a mostrar en la alerta
+     */
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -137,6 +152,9 @@ public class RoomControlController {
         this.user = user;
     }
 
+    /**
+     * Metodo que crea la lista de usuarios que pertenecen a la sala actual.
+     */
     public void createUsersList() {
         updateRoom();
         if (room != null) {
@@ -153,6 +171,10 @@ public class RoomControlController {
         }
     }
 
+    /**
+     * Metodo que crea el item de usuario para mostrar en la lista de usuarios de la sala.
+     * @param u usuario al que se le creara su cuadro.
+     */
     public void createUserItem(User u) {
         HBox userItem = new HBox();
         userItem.setAlignment(Pos.CENTER);
@@ -219,15 +241,26 @@ public class RoomControlController {
     }
 
 
+    /**
+     * Metodo que elimina un usuario de la sala
+     * @param user usuario a eliminar de la sala.
+     */
     public void removeUserFromRoom(User user) {
         roomRepository.removeUser(room.getId(), user.getId());
         createUsersList();
     }
 
+    /**
+     * Metodo que actualiza la sala en el controlador.
+     */
     public void updateRoom() {
         this.room = roomRepository.updateRoom(room);
     }
 
+    /**
+     * Metodo que elimina al usuario que puse el boton "Abandonar Sala" de la propia sala.
+     * @throws IOException
+     */
     public void leaveRoom() throws IOException {
         updateRoom();
         roomRepository.removeUser(room.getId(), user.getId());

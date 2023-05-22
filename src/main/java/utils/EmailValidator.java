@@ -16,6 +16,11 @@ public class EmailValidator {
         pattern = Pattern.compile(EMAIL_PATTERN);
     }
 
+    /**
+     * Metodo que valida si el email es valido segun el patron de expresion regular.
+     * @param email
+     * @return
+     */
     public boolean validate(final String email) {
         matcher = pattern.matcher(email);
         return matcher.matches();

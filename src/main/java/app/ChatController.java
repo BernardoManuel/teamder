@@ -102,6 +102,10 @@ public class ChatController extends BorderPane {
         this.room = room;
     }
 
+    /**
+     * Metodo que crea el item del mensaje y lo añade al contenedor de mensajes.
+     * @param message
+     */
     private void printMessage(String message) {
         Platform.runLater(() -> {
             VBox msgPane = new VBox();
@@ -124,6 +128,11 @@ public class ChatController extends BorderPane {
         });
     }
 
+    /**
+     * Metodo que crea el item del mensaje y lo añade al contenedor de mensajes.
+     * @param username nombre del usuario del mensaje
+     * @param message mensaje a mostrar en el item
+     */
     private void printMessage(String username, String message) {
         Platform.runLater(() -> {
             VBox msgPane = new VBox();
@@ -150,7 +159,10 @@ public class ChatController extends BorderPane {
         });
     }
 
-    // Botón para enviar el mensaje y que luego limpie el input.
+    /**
+     * Metodo que maneja el evento del boton "Enviar".
+     * Envia el mensaje y limpia el campo.
+     */
     @FXML
     private void onButtonClick() {
         inputMessageText = inputMessage.getText();
@@ -159,7 +171,10 @@ public class ChatController extends BorderPane {
         inputMessage.setText("");
     }
 
-    // Carga los mensajes de la sala que estan almacenados en la BBDD
+    /**
+     * Metodo que carga los mensajes de la sala que estan almacenados en la BBDD y los
+     * muestra en el contenedor de mensajes
+     */
     public void loadMessages() {
         try {
             List<Message> messages = messageRepository.findRoomMessages(room);
@@ -174,7 +189,9 @@ public class ChatController extends BorderPane {
         }
     }
 
-    // Mensaje de conexión al servidor.
+    /**
+     * Metodo que envia primer mensaje de conexión al servidor que contiene el nombre de usuario y el id de la sala.
+     */
     public void sendMessage() {
         try {
             bufferedWriter.write(user.getNombreUsuario() + "-" + room.getId());
@@ -185,7 +202,10 @@ public class ChatController extends BorderPane {
         }
     }
 
-    // Mensaje que se ve impreso en la pantalla del chat cuando se envía.
+    /**
+     * Metodo que envia al servidor el mensaje escrito y luego lo guarda en la base de datos.
+     * @param msg
+     */
     public void sendMessage(String msg) {
         try {
             if (textChatSocket.isConnected()) {
@@ -199,7 +219,10 @@ public class ChatController extends BorderPane {
         }
     }
 
-    // Guarda los mensajes.
+    /**
+     * Metodo que guarda el mensaje en la base de datos
+     * @param msg mensaje a guardar en la base de datos.
+     */
     private void saveMessage(String msg) {
         Message message = new Message();
 
@@ -211,6 +234,11 @@ public class ChatController extends BorderPane {
         messageRepository.save(message);
     }
 
+    /**
+     * Metodo que majena el evento de pulsacion de la tecla ENTER,
+     * y llama al metodo handleLogin.
+     * @param event
+     */
     private void handleEnterKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             onButtonClick();
@@ -218,6 +246,9 @@ public class ChatController extends BorderPane {
         }
     }
 
+    /**
+     * Metodo que inicia un hilo para la recepcion de paquetes de texto y los imprime en el chat.
+     */
     public void listenForMessage() {
         listenForMessageThread = new Thread(new Runnable() {
             @Override
@@ -236,7 +267,10 @@ public class ChatController extends BorderPane {
         listenForMessageThread.start();
     }
 
-    // Bucle para el envío de datos de audio al servidor
+    /**
+     * Metodo que inicia un hilo para la captura de datos de voz a travez de la linea de entrada de audio y
+     * envia los paquetes de voz al servidor.
+     */
     public void sendVoz() {
         sendVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
@@ -263,7 +297,9 @@ public class ChatController extends BorderPane {
         sendVozThread.start();
     }
 
-    // Bucle para recibir datos de audio del servidor
+    /**
+     * Metodo que inicia un hilo para la recepcion de paquetes de voz y los reproduce en linea de salida de audio.
+     */
     public void receiveVoz() {
         receiveVozThread = new Thread(() -> {
             while (voiceChatSocket != null && voiceChatSocket.isConnected()) {
@@ -296,6 +332,10 @@ public class ChatController extends BorderPane {
     }
 
 
+    /**
+     * Metodo que detiene los flujos de datos e hilos correspondientes a la comunicacion por texto
+     * y a la comunicacion por voz
+     */
     public void closeEverything() {
         try {
             // Cerrar conexiones de texto
@@ -345,6 +385,10 @@ public class ChatController extends BorderPane {
     }
 
 
+    /**
+     * Maneja el evento de click del boton "Opciones".
+     * Carga y muestra la vista de room-control-view
+     */
     @FXML
     public void openRoomControls() {
         try {
@@ -361,6 +405,10 @@ public class ChatController extends BorderPane {
         }
     }
 
+    /**
+     * Metodo que maneja el evento de click en el boton de "Llamar" y "Colgar"
+     * Inicia y detiene la comunicacion por voz (dependiendo del caso).
+     */
     @FXML
     public void startCall() {
         if (!calling) {
@@ -407,7 +455,9 @@ public class ChatController extends BorderPane {
         }
     }
 
-
+    /**
+     * Metodo que detiene los hilos relacionados con la comunicacion por voz
+     */
     private void stopAudioThreads() {
         if (sendVozThread != null) {
             sendVozThread.interrupt();
@@ -419,6 +469,10 @@ public class ChatController extends BorderPane {
         }
     }
 
+    /**
+     * Metodo que cierra las lineas de entrada y salida de audio y los flujos de datos correspondientes a la trasmision
+     * de voz.
+     */
     private void closeAudioConnections() {
         try {
             if (lineaEntradaAudio != null && lineaEntradaAudio.isOpen()) {
@@ -448,6 +502,9 @@ public class ChatController extends BorderPane {
         }
     }
 
+    /**
+     * Metodo que detiene todos los hilos del chatController
+     */
     public void stopAllThreads() {
         // Detener hilos relacionados con audio
         if (sendVozThread != null) {
@@ -464,6 +521,10 @@ public class ChatController extends BorderPane {
         }
     }
 
+    /**
+     * Metodo que cierra todos los flujos de datos, detiene los hilos y cierra las entradas y salidas de audio.
+     * @throws IOException
+     */
     public void closeApplication() throws IOException {
         // Detener todos los hilos
         stopAllThreads();

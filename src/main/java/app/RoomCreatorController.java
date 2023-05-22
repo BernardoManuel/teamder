@@ -36,7 +36,9 @@ public class RoomCreatorController {
         });
     }
 
-    // Escoger juego preferido.
+    /**
+     * Metodo que itera y crea la lista de juegos segun los registros de juegos en la base de datos.
+     */
     public void createGamesList() {
         List<Game> games = gamesRepository.findAllGames();
         if (games != null) {
@@ -47,7 +49,9 @@ public class RoomCreatorController {
         }
     }
 
-    // Máximo de jugadores permitidos en la sala.
+    /**
+     * Metodo que recoge los datos introducidos y crea la sala correspondiente.
+     */
     @FXML
     private void createRoom() {
         try {
@@ -56,7 +60,9 @@ public class RoomCreatorController {
             room.setMax_jugadores(Integer.parseInt(inputMaxPlayers.getText().trim()));
             room.setCreador(user);
             room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
+            //guarda la sala en la base de datos.
             roomRepository.save(room, user);
+            //Actualiza la lista de salas del homeController
             homeController.updateChatsList();
             cleanInputs();
         } catch (IOException e) {
@@ -73,6 +79,9 @@ public class RoomCreatorController {
         this.homeController = homeController;
     }
 
+    /**
+     * Metodo que limpia los campos del formulario de creacion de sala.
+     */
     private void cleanInputs() {
         inputRoomName.setText("");
         inputMaxPlayers.setText("");

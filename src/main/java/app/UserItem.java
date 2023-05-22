@@ -36,6 +36,9 @@ public class UserItem {
     }
 
 
+    /**
+     * Metodo que genera un item de amistad (cuadro de amistad).
+     */
     public void generateUserItem() {
         userItem = new HBox();
         userItem.setAlignment(Pos.CENTER);
@@ -69,21 +72,26 @@ public class UserItem {
         userItem.getChildren().add(stackPane);
         userItem.getChildren().add(labelUserContainer);
 
+        // crea el boton de borrar
         Button btnRemove = new Button("Borrar");
         btnRemove.setStyle("-fx-background-color: #e75334");
         btnRemove.setFont(Font.font("System", FontWeight.BOLD, 13));
         btnRemove.setTextFill(Color.WHITE);
 
+        //evento de pulsacion del boton "Borrar"
         btnRemove.setOnMouseClicked(event -> {
             removeUserFromFriendship(friendship);
             // Eliminar el VBox del padre
         });
-
         userItem.getChildren().add(btnRemove);
     }
 
 
-    // Cuadro de dialogo cuando se presiona el boton de borrar amistad.
+    /**
+     * Metodo void que muestra un cuadro de dialogo cuando se presiona el boton de borrar amistad.
+     * se podra aceptar o cancelar la eliminacion de la amistad.
+     * @param f Objeto de amistad a eliminar.
+     */
     public void removeUserFromFriendship(Friendship f) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Eliminar Amistad");

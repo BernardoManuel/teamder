@@ -96,7 +96,9 @@ public class RegistroController {
 
     }
 
-    //Metodo que envia al inicio de sesion
+    /**
+     * Metodo que envia a la vista de iniciar sesion.
+     */
     private void formIniciarSesion() {
         try {
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));
@@ -112,8 +114,11 @@ public class RegistroController {
     }
 
 
-    //Metodo que manejara los datos del registro, comprueba en la base de datos por coincidencias.
-    //Y almacenara el usuario nuevo.
+    /**
+     * Metodo que manejara los datos del registro, comprueba en la base de datos por coincidencias. Valida la dureza de
+     * la contraseña. Y almacenara el usuario nuevo.
+     * @throws NoSuchAlgorithmException
+     */
     private void handleRegister() throws NoSuchAlgorithmException {
 
         User nuevoUsuario = new User();
@@ -206,7 +211,10 @@ public class RegistroController {
 
     }
 
-    // Método para mostrar el mensaje de error en el Pane
+    /**
+     * Método para mostrar el mensaje de error en el Pane
+     * @param mensaje mensaje a mostrar en el panel de error.
+     */
     private void mostrarMensajeError(String mensaje) {
         // Configura el mensaje de error en el Label
         errorMessage.setText(mensaje);
@@ -226,11 +234,18 @@ public class RegistroController {
         timeline.play();
     }
 
+    /**
+     * Metodo que oculta el mensaje de error (Pane)
+     */
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
 
-    // Método para mostrar el mensaje de error en el Pane
+    /**
+     * Metodo que muestra mensaje de error mas grande que el normal.
+     * @param mensaje1 primera parte del mensaje de error.
+     * @param mensaje2 segunda parte del mensaje de error.
+     */
     private void mostrarMensajeErrorGrande(String mensaje1, String mensaje2) {
         // Configura el mensaje de error en el Label
         errorMessage.setText(mensaje1);
@@ -252,8 +267,10 @@ public class RegistroController {
         timeline.play();
     }
 
+    /**
+     * Metodo que oculta el mensaje de error grande. (Pane).
+     */
     private void ocultarMensajeErrorGrande() {
-
         errorPane.setVisible(false);
         errorPane2.setVisible(false);
     }

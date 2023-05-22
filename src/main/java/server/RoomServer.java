@@ -26,6 +26,10 @@ public class RoomServer {
 
     }
 
+    /**
+     * Metodo que inicia un hilo para la aceptacion de clientes al socket de chat de voz en el servidor.
+     * Y lanza un hilo voiceChatHandler por cada cliente.
+     */
     public void voiceChatSocketsAccept() {
         new Thread(new Runnable() {
             @Override

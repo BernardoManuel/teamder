@@ -81,7 +81,9 @@ public class FormController {
         session.close();
     }
 
-    // Accede a la vista del registro de usuarios.
+    /**
+     * Metodo que carga y muestra la vista de registro de nuevo usuario.
+     */
     private void formRegistro() {
         try {
             //Cargamos la vista home
@@ -119,6 +121,11 @@ public class FormController {
     }
 
 
+    /**
+     * Metodo que maneja el evento de click al boton de iniciar sesion.
+     * Comprueba una serie de validaciones de seguridad antes de permitir al usuario iniciar sesion.
+     * @throws NoSuchAlgorithmException
+     */
     @FXML
     private void handleLogin() throws NoSuchAlgorithmException {
         String username = usernameField.getText();
@@ -158,6 +165,10 @@ public class FormController {
     }
 
 
+    /**
+     * Método para mostrar el mensaje de error en el Pane
+     * @param mensaje mensaje a mostrar en el panel de error.
+     */
     private void mostrarMensajeError(String mensaje) {
         // Configura el mensaje de error en el Label
         errorMessage.setText(mensaje);
@@ -177,11 +188,19 @@ public class FormController {
         timeline.play();
     }
 
+    /**
+     * Metodo que oculta el mensaje de error (Pane)
+     */
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
 
 
+    /**
+     * Metodo que majena el evento de pulsacion de la tecla ENTER,
+     * y llama al metodo handleLogin.
+     * @param event
+     */
     private void handleEnterKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             try {

@@ -133,12 +133,20 @@ public class HomeController {
 
     }
 
+    /**
+     * Metodo que carga y muestra la vista "Place Holder"
+     * @throws IOException
+     */
     private void generateHome() throws IOException {
         userLogged.setText(user.getNombreUsuario());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
     }
 
+    /**
+     * Metodo que cierra el chat actual, carga y muestra el placeholder y actualiza la lista de salas.
+     * @throws IOException
+     */
     public void placePlaceholder() throws IOException {
         closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
@@ -146,6 +154,12 @@ public class HomeController {
         updateChatsList();
     }
 
+    /**
+     * Metodo que cierra el chat actual y carga un nuevo chatview.
+     * @param room
+     * @return devuelve la vista cargada.
+     * @throws IOException
+     */
     public Parent getChatView(Room room) throws IOException {
         closeCurrentChat();
 
@@ -161,6 +175,10 @@ public class HomeController {
 
     }
 
+    /**
+     * Metodo que actualiza la lista de salas.
+     * @throws IOException
+     */
     public void updateChatsList() throws IOException {
         updateUser();
         updateFriendshipsList();
@@ -203,7 +221,10 @@ public class HomeController {
     }
 
 
-    // Abre la vista para crear la sala
+    /**
+     * Metodo que carga y muestra la vista para crear una nueva sala. (room-creator-view).
+     * @throws IOException
+     */
     @FXML
     private void openRoomCreator() throws IOException {
         closeCurrentChat();
@@ -214,7 +235,10 @@ public class HomeController {
         homeView.setCenter(root);
     }
 
-    // Abre la vista para ingresar nombres de usuarios y agregar a amistades.
+    /**
+     * Metodo que abre la vista para ingresar nombres de usuarios y agregar a amistades.
+     * @throws IOException
+     */
     @FXML
     private void openFriendsView() throws IOException {
         closeCurrentChat();
@@ -244,7 +268,9 @@ public class HomeController {
     }
 
 
-    // Actualiza la lista de amistades en el Home
+    /**
+     * Metodo que actualiza la lista de amistades del la vista home.
+     */
     public void updateFriendships() {
         Set<Friendship> friends = friendshipRepository.getFriendships(user);
         if (friends != null && !friends.isEmpty()) {
@@ -262,6 +288,9 @@ public class HomeController {
     }
 
 
+    /**
+     * Metodo que detiene el executorService para la lista de amistades.
+     */
     public void stopUpdateFriendshipsList() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
@@ -269,6 +298,9 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que imprime la lista de amistades
+     */
     public void mostrarAmigos() {
         // Ordenar la lista alfabéticamente por el nombre de usuario
         List<UserItem> sortedUserItemList = userItemList.stream()
@@ -284,6 +316,10 @@ public class HomeController {
         this.user = userRepository.updateUser(user);
     }
 
+    /**
+     * Metodo que inicia el executorService para actualizar periodicamente las solicitudes de amistades recibidas.
+     * @param usuario
+     */
     public void startListenForFriendships(User usuario) {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
@@ -296,6 +332,9 @@ public class HomeController {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Metodo que detiene el executorService para las solicitudes de amistad
+     */
     public void stopListeningForFriendships() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
@@ -303,6 +342,12 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que maneja la solicitud de amistad recibida, Muestra alerta de tipo confirmacion y maneja opciones como:
+     * Aceptar, Rechazar y Cancelar.
+     * @param usuario usuario actual
+     * @param friendRequest solicitud de amistad recibida
+     */
     public void onFriendRequestReceived(User usuario, Friendship friendRequest) {
         User requester = friendRequest.getAmigo1();
         // Verificar si requester no es nulo antes de usarlo
@@ -357,6 +402,10 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que inicia el executorService para actualizar periodicamente las peticiones de union a una sala.
+     * @param usuario usuario actual
+     */
     public void startListenForRequests(User usuario) {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
@@ -369,6 +418,9 @@ public class HomeController {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Metodo que detiene el executorService para las peticiones de union a salas.
+     */
     public void stopListeningForRequests() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
@@ -376,6 +428,12 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que maneja la peticion de union a sala recibida, Muestra alerta de tipo confirmacion y maneja opciones como:
+     * Aceptar, Rechazar y Cancelar.
+     * @param usuario usuario actual
+     * @param request peticion de union a sala recibida
+     */
     public void onRequestReceived(User usuario, Request request) {
         User solicitante = request.getSolicitante();
         // Verificar si requester no es nulo antes de usarlo
@@ -430,6 +488,11 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que maneja el evento de click en el boton de "Cerrar Sesion",
+     * detiene las ejecuciones actuales y carga la vista de iniciar sesion.
+     * @throws IOException
+     */
     private void handleLogoutButtonAction() throws IOException {
         // Cerrar la sesión actual y volver a la pantalla de inicio de sesión
 
@@ -454,6 +517,9 @@ public class HomeController {
         }
     }
 
+    /**
+     * Metodo que detiene todos los executorServices
+     */
     public void stopAll() {
         stopUpdateFriendshipsList();
         stopListeningForFriendships();

@@ -22,6 +22,9 @@ public class AppController extends Application {
         showSplashScreen();
     }
 
+    /**
+     * Metodo que carga y muestra el panel de carga de la aplicacion.
+     */
     private void showSplashScreen() {
         try {
             // Crea un nuevo Stage para la pantalla de carga.
@@ -47,7 +50,9 @@ public class AppController extends Application {
         }
     }
 
-    // Vista de login que parece luego de terminar los 3 segundos de la pantalla de carga.
+    /**
+     * Metodo que carga y muestra la vista de iniciar sesion.
+     */
     private void showLoginScreen() {
         try {
             FXMLLoader formLoader = new FXMLLoader(getClass().getResource("login-view.fxml"));

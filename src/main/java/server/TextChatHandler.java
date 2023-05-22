@@ -29,6 +29,11 @@ public class TextChatHandler implements Runnable {
         }
     }
 
+    /**
+     * Metodo que envia el mensaje a todos los clientes conectados que se encuentren el la misma sala. Pero no al
+     * cliente que envio el mensaje.
+     * @param msg mensaje a enviar.
+     */
     public void broadcastMessage(String msg) {
         debugMsg("TEXT CHAT HANDLER: reenviando mensaje a clientes conectados.");
         for (TextChatHandler textChatHandler : textChatHandlers) {
@@ -49,6 +54,12 @@ public class TextChatHandler implements Runnable {
         RoomServer.socketsTexto.remove(this);
     }
 
+    /**
+     * Metodo que cierra los flujos de datos y conexiones.
+     * @param socket
+     * @param bufferedReader
+     * @param bufferedWriter
+     */
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
         try {
@@ -66,6 +77,9 @@ public class TextChatHandler implements Runnable {
         }
     }
 
+    /**
+     * Hilo de chat de texto que reenvia los mensajes recibidos a los clientes.
+     */
     @Override
     public void run() {
         String msgFromClient;

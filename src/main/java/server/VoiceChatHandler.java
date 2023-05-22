@@ -23,6 +23,12 @@ public class VoiceChatHandler implements Runnable {
         }
     }
 
+    /**
+     * Metodo que cierra las conexiones y flujos de datos relacionados con el chat de voz.
+     * @param socket
+     * @param dataInputStream
+     * @param dataOutputStream
+     */
     public void closeEverything(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         RoomServer.socketsVoz.remove(socket);
         try {
@@ -40,6 +46,10 @@ public class VoiceChatHandler implements Runnable {
         }
     }
 
+    /**
+     * Hilo de chat de voz que recibe los paquetes de voz y los reenvia a los clientes conectados excepto al mismo
+     * cliente que lo ha enviado.
+     */
     @Override
     public void run() {
         try {
