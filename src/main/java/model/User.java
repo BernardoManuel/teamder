@@ -9,37 +9,63 @@ import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
-public class User {
+public class User{
     @Id
     @Column(name = "cod_user")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "nom_user")
     private String nombreUsuario;
-    @Column(name = "contraseña")
-    private String contraseña;
+    @Column(name = "password")
+    private String password;
     @Column
     private String salt;
+    @Column
     private String correo;
+    @Column
     private String descripcion;
+
+    @OneToMany(mappedBy = "solicitante", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Request> requests = new HashSet<>();
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "users")
     public Set<Room> rooms = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> messages = new HashSet<>();
 
+    // Relación bidireccional entre User y Amistad
+    @OneToMany(mappedBy = "amigo1", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Friendship> amistades = new HashSet<>();
+
     public User() {
     }
 
-    public User(Integer id, String nombreUsuario, String contraseña, String salt, String correo, String descripcion, Set<Room> rooms, Set<Message> messages) {
+
+    public User(Integer id, String nombreUsuario, String password, String salt, String correo, String descripcion, Set<Request> requests, Set<Room> rooms, Set<Message> messages, Set<Friendship> amistades) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
-        this.contraseña = contraseña;
+        this.password = password;
         this.salt = salt;
         this.correo = correo;
         this.descripcion = descripcion;
+        this.requests = requests;
         this.rooms = rooms;
         this.messages = messages;
+        this.amistades = amistades;
+    }
+
+    @Transient
+    public List<User> getAmigos() {
+        List<User> amigos = new ArrayList<>();
+        for (Friendship amistad : amistades) {
+            if (amistad.getAmigo1().equals(this)) {
+                amigos.add(amistad.getAmigo2());
+            } else {
+                amigos.add(amistad.getAmigo1());
+            }
+        }
+        return amigos;
     }
 
     public Integer getId() {
@@ -58,12 +84,12 @@ public class User {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getSalt() {
@@ -90,6 +116,14 @@ public class User {
         this.descripcion = descripcion;
     }
 
+    public Set<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<Request> requests) {
+        this.requests = requests;
+    }
+
     public Set<Room> getRooms() {
         return rooms;
     }
@@ -104,5 +138,13 @@ public class User {
 
     public void setMessages(Set<Message> messages) {
         this.messages = messages;
+    }
+
+    public Set<Friendship> getAmistades() {
+        return amistades;
+    }
+
+    public void setAmistades(Set<Friendship> amistades) {
+        this.amistades = amistades;
     }
 }

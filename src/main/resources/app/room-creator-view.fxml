@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RoomCreatorController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.RoomCreatorController">
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
          <children>
@@ -14,7 +14,13 @@
                   <Label prefHeight="17.0" prefWidth="102.0" text="Nombre de la sala:" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="13.0" />
-                     </font></Label>
+                     </font>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets right="-30.0" />
+                     </padding></Label>
                   <TextField fx:id="inputRoomName" />
                </children>
             </HBox>
@@ -23,15 +29,30 @@
                   <Label prefHeight="17.0" prefWidth="108.0" text="Seleccionar juego:" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="13.0" />
-                     </font></Label>
-                  <ChoiceBox fx:id="gameSelector" prefWidth="150.0" />
+                     </font>
+                     <padding>
+                        <Insets right="-20.0" />
+                     </padding></Label>
+                  <ChoiceBox fx:id="gameSelector" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin></ChoiceBox>
                </children>
             </HBox>
 
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <Label prefHeight="17.0" prefWidth="127.0" text="Máximo de jugadores:" textFill="WHITE" />
-                  <TextField fx:id="inputMaxPlayers" prefHeight="25.0" prefWidth="122.0" />
+                  <Label prefHeight="17.0" prefWidth="127.0" text="Máximo de jugadores:" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <padding>
+                        <Insets right="-20.0" />
+                     </padding></Label>
+                  <TextField fx:id="inputMaxPlayers" prefHeight="25.0" prefWidth="122.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin></TextField>
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0">

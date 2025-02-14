@@ -1,5 +1,6 @@
 package app;
 
+
 import database.HibernateUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,6 +12,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -21,25 +25,37 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.User;
 import org.hibernate.Session;
-import repository.UsuariosRepository;
+import repository.UserRepository;
 import utils.PasswordUtil;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class FormController {
-    @FXML private ImageView imageViewLogo;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private ImageView imageViewLeftPane;
-    @FXML private Button buttonLogin;
-    @FXML private Hyperlink hyperlinkCrearCuenta;
-    @FXML private Pane errorPane;
-    @FXML private Label errorMessage;
-    private UsuariosRepository usuariosRepository;
+    @FXML
+    private Button buttonGoogleLogin;
+    @FXML
+    private ImageView imageViewLogo;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private ImageView imageViewLeftPane;
+    @FXML
+    private Button buttonLogin;
+    @FXML
+    private Hyperlink hyperlinkCrearCuenta;
+    @FXML
+    private Pane errorPane;
+    @FXML
+    private Label errorMessage;
+    private UserRepository userRepository;
+
+    public static User currentUser;
 
     public void initialize() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        usuariosRepository = new UsuariosRepository();
+        userRepository = new UserRepository();
 
         passwordField.addEventHandler(KeyEvent.KEY_PRESSED, this::handleEnterKeyPressed);
 
@@ -54,24 +70,29 @@ public class FormController {
         //Colocamos el focus en el boton
         Platform.runLater(() -> buttonLogin.requestFocus());
         buttonLogin.setOnAction(actionEvent -> {
-                    try {
-                        handleLogin();
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
+            try {
+                handleLogin();
+
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         });
         hyperlinkCrearCuenta.setOnMouseClicked(mouseEvent -> formRegistro());
         session.close();
     }
 
+    /**
+     * Metodo que carga y muestra la vista de registro de nuevo usuario.
+     */
     private void formRegistro() {
         try {
             //Cargamos la vista home
-            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("registro.fxml"));
+            FXMLLoader formLoader = new FXMLLoader(getClass().getResource("register-view.fxml"));
             AnchorPane registro = formLoader.load();
             Scene registroScene = new Scene(registro);
             //Recuperamos y mostramos la vista registro
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
+            stage.setResizable(false);
             stage.setScene(registroScene);
 
         } catch (Exception e) {
@@ -83,13 +104,13 @@ public class FormController {
      * Metodo que carga la vista home y la muestra.
      * Establece la propiedad de redimensionar a verdadero.
      */
-    private void iniciarSesion(User usuario) {
+    private void cargarVistaHome(User usuario) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("home-view.fxml"));
             Parent root = fxmlLoader.load();
-            ((HomeController)fxmlLoader.getController()).setUsername(usuario);
+            ((HomeController) fxmlLoader.getController()).setUsername(usuario);
 
-            Scene scene = new Scene(root, 905, 621);
+            Scene scene = new Scene(root, 950, 600);
             Stage stage = (Stage) buttonLogin.getScene().getWindow();
             stage.setScene(scene);
             stage.setResizable(true);
@@ -99,15 +120,21 @@ public class FormController {
         }
     }
 
+
+    /**
+     * Metodo que maneja el evento de click al boton de iniciar sesion.
+     * Comprueba una serie de validaciones de seguridad antes de permitir al usuario iniciar sesion.
+     * @throws NoSuchAlgorithmException
+     */
     @FXML
     private void handleLogin() throws NoSuchAlgorithmException {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
         // Validar usuario
-        User usuario = usuariosRepository.findUserByUsername(username);
+        User usuario = userRepository.findUserByUsername(username);
 
-        if(usuario!=null) {
+        if (usuario != null) {
             // Obtener el salt del usuario encontrado
             String saltStr = usuario.getSalt();
             // Convertir el salt de hexadecimal a bytes
@@ -118,14 +145,15 @@ public class FormController {
             String passwordGenerada = PasswordUtil.bytesToHex(bytePassword);
 
             // Obtener la contraseña almacenada en la BBDD
-            String passwordBbdd = usuario.getContraseña();
+            String passwordBbdd = usuario.getPassword();
 
             // Comparar las contraseñas de manera segura
             boolean passwordsIguales = MessageDigest.isEqual(passwordGenerada.getBytes(), passwordBbdd.getBytes());
 
             if (passwordsIguales) {
                 // Si es correcto cambiar scene
-                iniciarSesion(usuario);
+                currentUser = usuario;  // Guarda el usuario en la variable estática
+                cargarVistaHome(usuario);
             } else {
                 //Lanzar error de inicio de sesión.
                 mostrarMensajeError("Usuario o contraseña no coinciden");
@@ -136,7 +164,11 @@ public class FormController {
         }
     }
 
-    // Método para mostrar el mensaje de error en el Pane
+
+    /**
+     * Método para mostrar el mensaje de error en el Pane
+     * @param mensaje mensaje a mostrar en el panel de error.
+     */
     private void mostrarMensajeError(String mensaje) {
         // Configura el mensaje de error en el Label
         errorMessage.setText(mensaje);
@@ -156,11 +188,19 @@ public class FormController {
         timeline.play();
     }
 
+    /**
+     * Metodo que oculta el mensaje de error (Pane)
+     */
     private void ocultarMensajeError() {
         errorPane.setVisible(false);
     }
 
 
+    /**
+     * Metodo que majena el evento de pulsacion de la tecla ENTER,
+     * y llama al metodo handleLogin.
+     * @param event
+     */
     private void handleEnterKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             try {

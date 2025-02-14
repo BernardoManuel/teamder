@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Root;
 import model.Game;
 import model.Message;
 import org.hibernate.Session;
+
 import java.util.List;
 
 public class GamesRepository {

@@ -2,7 +2,6 @@ package app;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import model.Game;
@@ -10,8 +9,6 @@ import model.Room;
 import model.User;
 import repository.GamesRepository;
 import repository.RoomRepository;
-import repository.UsuariosRepository;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -25,12 +22,11 @@ public class RoomCreatorController {
     @FXML
     private ChoiceBox gameSelector;
     @FXML
-    private Button btnCreate;
-    @FXML
     private TextField inputRoomName;
     @FXML
     private TextField inputMaxPlayers;
 
+    // Interfaz para crear la sala a tu gusto.
     public void initialize() {
         gamesRepository = new GamesRepository();
         roomRepository = new RoomRepository();
@@ -40,6 +36,9 @@ public class RoomCreatorController {
         });
     }
 
+    /**
+     * Metodo que itera y crea la lista de juegos segun los registros de juegos en la base de datos.
+     */
     public void createGamesList() {
         List<Game> games = gamesRepository.findAllGames();
         if (games != null) {
@@ -50,15 +49,20 @@ public class RoomCreatorController {
         }
     }
 
+    /**
+     * Metodo que recoge los datos introducidos y crea la sala correspondiente.
+     */
     @FXML
     private void createRoom() {
         try {
             Room room = new Room();
             room.setNombre(inputRoomName.getText());
             room.setMax_jugadores(Integer.parseInt(inputMaxPlayers.getText().trim()));
-            room.setId_creador(user.getId());
+            room.setCreador(user);
             room.setGame(gamesRepository.getGameByName((String) gameSelector.getValue()));
+            //guarda la sala en la base de datos.
             roomRepository.save(room, user);
+            //Actualiza la lista de salas del homeController
             homeController.updateChatsList();
             cleanInputs();
         } catch (IOException e) {
@@ -70,10 +74,14 @@ public class RoomCreatorController {
     public void setUser(User user) {
         this.user = user;
     }
+
     public void setHomeController(HomeController homeController) {
         this.homeController = homeController;
     }
 
+    /**
+     * Metodo que limpia los campos del formulario de creacion de sala.
+     */
     private void cleanInputs() {
         inputRoomName.setText("");
         inputMaxPlayers.setText("");

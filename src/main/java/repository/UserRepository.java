@@ -8,8 +8,8 @@ import model.User;
 import org.hibernate.Session;
 import java.util.List;
 
-public class UsuariosRepository {
-    public UsuariosRepository() {}
+public class UserRepository {
+    public UserRepository() {}
 
     public User findUserByUsername(String username) {
         User result = null;

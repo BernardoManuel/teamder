@@ -1,46 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="homeView" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.HomeController">
+<BorderPane fx:id="homeView" prefHeight="400.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.HomeController">
    <left>
-      <BorderPane fx:id="sideMenu" prefHeight="200.0" prefWidth="240.0" style="-fx-background-color: #125665; -fx-faint-focus-color: transparent;" BorderPane.alignment="CENTER">
+      <BorderPane fx:id="sideMenu" prefWidth="300.0" style="-fx-background-color: #125665; -fx-faint-focus-color: transparent;" BorderPane.alignment="CENTER">
          <top>
-            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" style="-fx-spacing: 5;" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER" prefHeight="40.0" style="-fx-spacing: 5;" BorderPane.alignment="CENTER_LEFT">
                <children>
-                  <Pane onMouseClicked="#placePlaceholder" prefHeight="40.0" prefWidth="80.0">
+                  <Pane onMouseClicked="#placePlaceholder" prefHeight="40.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Text fx:id="userLogged" fill="WHITE" layoutY="26.0" text="User">
                            <font>
                               <Font name="System Bold Italic" size="16.0" />
                            </font>
                         </Text>
+                        <Button layoutX="117.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#openRoomCreator" style="-fx-background-color: #e75334;" text="+ Sala" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="logoutButton" alignment="CENTER_RIGHT" layoutX="183.0" layoutY="6.0" mnemonicParsing="false" style="-fx-background-color: #e75334;" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
                      </children>
-                  </Pane>
-                  <Button layoutX="14.0" layoutY="5.0" mnemonicParsing="false" onMouseClicked="#openRoomCreator" style="-fx-background-color: #e75334;" text="+ Sala" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets left="10.0" />
                      </HBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" onMouseClicked="#openFriendsView" style="-fx-background-color: #e75334;" text="+ Amigos" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Button>
+                  </Pane>
                </children></HBox>
          </top>
          <center>
-            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-              <content>
-                <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
-              </content>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox fx:id="chatsList" minHeight="0.0" minWidth="0.0" style="-fx-spacing: 5px;" />
+               </content>
             </ScrollPane>
          </center>
          <BorderPane.margin>
@@ -48,4 +47,33 @@
          </BorderPane.margin>
       </BorderPane>
    </left>
+   <right>
+      <BorderPane prefWidth="300.0" BorderPane.alignment="CENTER">
+         <center>
+            <ScrollPane fx:id="friendshipsListContainer" hbarPolicy="NEVER" style="-fx-background-color: #f8efad;" BorderPane.alignment="CENTER" />
+         </center>
+         <top>
+            <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Lista de Amigos" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold Italic" size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <HBox alignment="BOTTOM_RIGHT" BorderPane.alignment="CENTER">
+               <children>
+                  <Button mnemonicParsing="false" onMouseClicked="#openFriendsView" style="-fx-background-color: #e75334;" styleClass="bi bi-person-plus-fill" text="+ Amigos" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </bottom>
+      </BorderPane>
+   </right>
 </BorderPane>

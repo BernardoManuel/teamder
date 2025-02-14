@@ -5,17 +5,33 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
+<BorderPane fx:id="chatView" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ChatController">
    <top>
-       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-background-color: #125665;" BorderPane.alignment="CENTER_LEFT">
            <children>
-               <Text fx:id="chatTitle" fill="WHITE" layoutX="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER">
-               <HBox.margin>
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0" HBox.hgrow="ALWAYS">
+               <children>
+                     <Text fx:id="chatTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+               </children>
+               <padding>
                   <Insets left="10.0" />
+               </padding>
+            </HBox>
+            <Button fx:id="callBtn" mnemonicParsing="false" onMouseClicked="#startCall" style="-fx-background-color: #e75334;" text="Llamar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
+            <Button mnemonicParsing="false" onMouseClicked="#openRoomControls" style="-fx-background-color: #e75334;" text="Opciones" textFill="WHITE">
+               <HBox.margin>
+                  <Insets right="10.0" />
                </HBox.margin>
                <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Text>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
            </children>
          <opaqueInsets>
             <Insets />
@@ -31,7 +47,7 @@
                <TextField fx:id="inputMessage" accessibleRole="DECREMENT_BUTTON" cache="true" prefHeight="45.0" prefWidth="260.0" />
                <Button mnemonicParsing="false" onMouseClicked="#onButtonClick" style="-fx-background-color: #e75334;" text="Enviar" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="13.0" />
                </font></Button>
            </children>
        </HBox>

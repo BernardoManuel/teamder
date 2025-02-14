@@ -5,124 +5,226 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import model.Friendship;
+import model.Request;
 import model.Room;
 import model.User;
+import repository.FriendshipRepository;
+import repository.RequestRepository;
 import repository.RoomRepository;
-import repository.UsuariosRepository;
+import repository.UserRepository;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class HomeController {
 
-    @FXML private BorderPane homeView;
-    @FXML private VBox chatsList;
-    @FXML private Text userLogged;
-
+    @FXML
+    public ScrollPane friendshipsListContainer;
+    @FXML
+    private BorderPane homeView;
+    @FXML
+    private VBox chatsList;
+    @FXML
+    private Text userLogged;
+    @FXML
+    private Button logoutButton;
+    private VBox friendshipsList;
     private User user;
     private ChatController currentChatController;
     private RoomRepository roomRepository;
-    private UsuariosRepository userRepository;
+    private UserRepository userRepository;
+    private FriendshipRepository friendshipRepository;
+    private RequestRepository requestRepository;
+    private ScheduledExecutorService executorService;
+
+    private List<UserItem> userItemList;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         roomRepository = new RoomRepository();
-        userRepository = new UsuariosRepository();
+        userRepository = new UserRepository();
+        friendshipRepository = new FriendshipRepository();
+        requestRepository = new RequestRepository();
+
+        userItemList = new ArrayList<>();
+        friendshipsList = new VBox();
 
         Platform.runLater(() -> {
             homeView.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
             try {
+                // Cargar la imagen desde el archivo
+                Image logoutImage = new Image("file:src/main/resources/icons/logout_icon.png");
+
+                // Crear un ImageView con la imagen cargada
+                ImageView logoutImageView = new ImageView(logoutImage);
+                logoutImageView.setFitWidth(20);
+                logoutImageView.setFitHeight(20);
+
+                // Establecer el ImageView como gráfico del botón
+                logoutButton.setGraphic(logoutImageView);
+
                 generateHome();
-                generateChatsList();
+                updateChatsList();
+                updateFriendshipsList();
+                startListenForFriendships(user);
+                startListenForRequests(user);
+
+                // Obtener el Stage principal
+                Stage primaryStage = (Stage) homeView.getScene().getWindow();
+
+                // Agregar controlador de eventos para cerrar la aplicación
+                primaryStage.setOnCloseRequest(event -> {
+                    // Detener los hilos y cerrar la aplicación
+                    stopAll();
+                    // Detenemos todos los hilos y flujos de datos en el controller del chat.
+                    if (currentChatController != null) {
+                        try {
+                            currentChatController.closeApplication();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    Platform.exit();
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
+        logoutButton.setOnAction(actionEvent -> {
+            // Crear el diálogo de confirmación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            // Configurar el título y el mensaje del diálogo
+            alert.setTitle("Cerrar sesión");
+            alert.setHeaderText("¿Seguro que quieres cerrar la sesión?");
+
+            // Mostrar el diálogo y esperar la respuesta del usuario
+            Optional<ButtonType> result = alert.showAndWait();
+
+            // Si el usuario presiona "Aceptar", cerrar la sesión
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    handleLogoutButtonAction();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+
     }
 
+    /**
+     * Metodo que carga y muestra la vista "Place Holder"
+     * @throws IOException
+     */
     private void generateHome() throws IOException {
         userLogged.setText(user.getNombreUsuario());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
     }
 
-    public void generateChatsList() throws IOException {
-        Set<Room> rooms = roomRepository.findUserRooms(user);
-        if (rooms != null) {
-            for (Room room : rooms) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-                HBox item = loader.load();
-
-                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
-
-                chatsList.getChildren().add(item);
-                Node view = item.getChildren().get(0).getParent();
-                view.setOnMouseClicked(event -> {
-                    try {
-                        homeView.setCenter(getChatView(room));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }
-    }
-
+    /**
+     * Metodo que cierra el chat actual, carga y muestra el placeholder y actualiza la lista de salas.
+     * @throws IOException
+     */
     public void placePlaceholder() throws IOException {
         closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("placeholder-view.fxml"));
         homeView.setCenter(loader.load());
+        updateChatsList();
     }
 
-    private Parent getChatView(Room room) throws IOException {
+    /**
+     * Metodo que cierra el chat actual y carga un nuevo chatview.
+     * @param room
+     * @return devuelve la vista cargada.
+     * @throws IOException
+     */
+    public Parent getChatView(Room room) throws IOException {
         closeCurrentChat();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-view.fxml"));
         Parent root = loader.load();
         ((ChatController) loader.getController()).setUser(user);
         ((ChatController) loader.getController()).setRoom(room);
+        ((ChatController) loader.getController()).setHomeView(homeView);
+        ((ChatController) loader.getController()).setHomeController(this);
         currentChatController = loader.getController();
 
         return root;
+
     }
 
+    /**
+     * Metodo que actualiza la lista de salas.
+     * @throws IOException
+     */
     public void updateChatsList() throws IOException {
         updateUser();
+        updateFriendshipsList();
         Set<Room> rooms = user.getRooms();
 
+        List<HBox> roomsItems = new ArrayList<>();
         if (rooms != null && !rooms.isEmpty()) {
-            System.out.println(rooms.size());
-            List<HBox> roomsItems = new ArrayList<>();
-            for (Room room: rooms) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
-                HBox item = loader.load();
-                ((ChatItemController) loader.getController()).setTitle(room.getNombre());
+            roomsItems = rooms.stream()
+                    .sorted(Comparator.comparing(Room::getNombre))
+                    .map(room -> {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("chat-item-view.fxml"));
+                            HBox item = loader.load();
+                            ((ChatItemController) loader.getController()).setGame(room.getGame());
+                            ((ChatItemController) loader.getController()).setTitle(room.getNombre());
 
-                roomsItems.add(item);
-                Node view = item.getChildren().get(0).getParent();
-                view.setOnMouseClicked(event -> {
-                    try {
-                        homeView.setCenter(getChatView(room));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-            chatsList.getChildren().setAll(roomsItems);
+                            Node view = item.getChildren().get(0).getParent();
+                            view.setOnMouseClicked(event -> {
+                                try {
+                                    homeView.setCenter(getChatView(room));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+
+                            return item;
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
         }
+
+        chatsList.getChildren().setAll(roomsItems);
     }
+
 
     public void setUsername(User user) {
         this.user = user;
     }
 
 
+    /**
+     * Metodo que carga y muestra la vista para crear una nueva sala. (room-creator-view).
+     * @throws IOException
+     */
     @FXML
     private void openRoomCreator() throws IOException {
         closeCurrentChat();
@@ -133,26 +235,296 @@ public class HomeController {
         homeView.setCenter(root);
     }
 
+    /**
+     * Metodo que abre la vista para ingresar nombres de usuarios y agregar a amistades.
+     * @throws IOException
+     */
     @FXML
     private void openFriendsView() throws IOException {
         closeCurrentChat();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("friend-view.fxml"));
-        homeView.setCenter(loader.load());
+        Parent root = loader.load();
+        ((FriendsController) loader.getController()).setCurrentUser(user);
+        homeView.setCenter(root);
     }
 
     private void closeWindowEvent(WindowEvent event) {
-        closeCurrentChat();
+        try {
+            closeCurrentChat();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void closeCurrentChat() {
+    private void closeCurrentChat() throws IOException {
         if (currentChatController != null) {
-            currentChatController.closeEverything();
+            currentChatController.closeApplication();
             currentChatController = null;
         }
     }
 
+    public void updateFriendshipsList() {
+        updateFriendships();
+    }
+
+
+    /**
+     * Metodo que actualiza la lista de amistades del la vista home.
+     */
+    public void updateFriendships() {
+        Set<Friendship> friends = friendshipRepository.getFriendships(user);
+        if (friends != null && !friends.isEmpty()) {
+            userItemList.clear();
+            for (Friendship friendship : friends) {
+                if (friendship.getSolicitud().equals("aceptado")) {
+                    UserItem userItem = new UserItem(user, friendship, friendshipsList);
+                    userItem.generateUserItem();
+                    userItemList.add(userItem);
+                }
+            }
+        }
+        Collections.sort(userItemList, Comparator.comparing(userItem -> userItem.getUser().getNombreUsuario()));
+        mostrarAmigos();
+    }
+
+
+    /**
+     * Metodo que detiene el executorService para la lista de amistades.
+     */
+    public void stopUpdateFriendshipsList() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+            executorService = null;
+        }
+    }
+
+    /**
+     * Metodo que imprime la lista de amistades
+     */
+    public void mostrarAmigos() {
+        // Ordenar la lista alfabéticamente por el nombre de usuario
+        List<UserItem> sortedUserItemList = userItemList.stream()
+                .sorted(Comparator.comparing(userItem -> userItem.getUser().getNombreUsuario()))
+                .collect(Collectors.toList());
+
+        friendshipsList.getChildren().setAll(sortedUserItemList.stream().map(UserItem::getUserItem).collect(Collectors.toList()));
+        friendshipsListContainer.setContent(friendshipsList);
+    }
+
+
     public void updateUser() {
         this.user = userRepository.updateUser(user);
     }
+
+    /**
+     * Metodo que inicia el executorService para actualizar periodicamente las solicitudes de amistades recibidas.
+     * @param usuario
+     */
+    public void startListenForFriendships(User usuario) {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            List<Friendship> pendingFriendRequests = friendshipRepository.getPendingFriendRequests(usuario);
+            // Mostrar las solicitudes no mostradas
+            for (Friendship friendRequest : pendingFriendRequests) {
+                System.out.println("test friendship");
+                Platform.runLater(() -> onFriendRequestReceived(usuario, friendRequest));
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Metodo que detiene el executorService para las solicitudes de amistad
+     */
+    public void stopListeningForFriendships() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+            executorService = null;
+        }
+    }
+
+    /**
+     * Metodo que maneja la solicitud de amistad recibida, Muestra alerta de tipo confirmacion y maneja opciones como:
+     * Aceptar, Rechazar y Cancelar.
+     * @param usuario usuario actual
+     * @param friendRequest solicitud de amistad recibida
+     */
+    public void onFriendRequestReceived(User usuario, Friendship friendRequest) {
+        User requester = friendRequest.getAmigo1();
+        // Verificar si requester no es nulo antes de usarlo
+        if (requester != null) {
+            System.out.println("Solicitud de amistad encontrada de " + requester.getNombreUsuario());
+            // Mostrar el diálogo Alert en el hilo principal de JavaFX
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Solicitud de amistad");
+                alert.setHeaderText(requester.getNombreUsuario() + " quiere ser tu amigo.");
+                alert.setContentText("¿Aceptas la solicitud de amistad?");
+
+                ButtonType acceptButton = new ButtonType("Aceptar");
+                ButtonType rejectButton = new ButtonType("Rechazar");
+                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(acceptButton, rejectButton, cancelButton);
+
+                friendRequest.setShown(true);
+                friendshipRepository.updateFriendshipStatus(friendRequest);
+
+                // Obtener la ventana actual
+                Window currentWindow = homeView.getScene().getWindow();
+                // Establecer la ventana actual como propietario de la alerta
+                alert.initOwner(currentWindow);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == acceptButton) {
+                    // Aceptar la solicitud y guardar en la base de datos
+                    friendRequest.setSolicitud("aceptado");
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+
+                    // Creamos la amistad aceptada para el cliente que recibe la solicitud.
+                    Friendship friendship = new Friendship();
+                    friendship.setAmigo1(usuario);
+                    friendship.setAmigo2(friendRequest.getAmigo1());
+                    friendship.setSolicitud("aceptado");
+                    friendship.setShown(true);
+
+                    friendshipRepository.saveFriendship(friendship);
+                    //Actualizamos la lista de amistades
+                    updateFriendshipsList();
+                } else if (result.isPresent() && result.get() == rejectButton) {
+                    // Rechazar la solicitud y guardar en la base de datos
+                    friendRequest.setSolicitud("rechazado");
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+                } else {
+                    // Cancelar la solicitud
+                    friendshipRepository.updateFriendshipStatus(friendRequest);
+                }
+            });
+        }
+    }
+
+    /**
+     * Metodo que inicia el executorService para actualizar periodicamente las peticiones de union a una sala.
+     * @param usuario usuario actual
+     */
+    public void startListenForRequests(User usuario) {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            List<Request> pendingRequests = requestRepository.getPendingRequests(usuario);
+            // Mostrar las solicitudes no mostradas
+            for (Request request : pendingRequests) {
+                System.out.println("test request");
+                Platform.runLater(() -> onRequestReceived(usuario, request));
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Metodo que detiene el executorService para las peticiones de union a salas.
+     */
+    public void stopListeningForRequests() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+            executorService = null;
+        }
+    }
+
+    /**
+     * Metodo que maneja la peticion de union a sala recibida, Muestra alerta de tipo confirmacion y maneja opciones como:
+     * Aceptar, Rechazar y Cancelar.
+     * @param usuario usuario actual
+     * @param request peticion de union a sala recibida
+     */
+    public void onRequestReceived(User usuario, Request request) {
+        User solicitante = request.getSolicitante();
+        // Verificar si requester no es nulo antes de usarlo
+        if (solicitante != null) {
+            System.out.println(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: " + request.getSala().getNombre());
+            // Mostrar el diálogo Alert en el hilo principal de JavaFX
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Invitación");
+                alert.setHeaderText(solicitante.getNombreUsuario() + " le ha invitado a unirse a su sala: " + request.getSala().getNombre());
+                alert.setContentText("¿Aceptas unirte a la sala?");
+
+                ButtonType acceptButton = new ButtonType("Aceptar");
+                ButtonType rejectButton = new ButtonType("Rechazar");
+                ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(acceptButton, rejectButton, cancelButton);
+
+                request.setShown(true);
+                requestRepository.updateRequestStatus(request);
+
+                // Obtener la ventana actual
+                Window currentWindow = homeView.getScene().getWindow();
+                // Establecer la ventana actual como propietario de la alerta
+                alert.initOwner(currentWindow);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == acceptButton) {
+                    // Aceptar la solicitud y guardar en la base de datos
+                    request.setEstado("aceptado");
+                    requestRepository.updateRequestStatus(request);
+
+                    // Agregamos el usuario a la sala
+                    roomRepository.addUser(request.getSala(), request.getSolicitado().getId());
+
+                    try {
+                        updateChatsList();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else if (result.isPresent() && result.get() == rejectButton) {
+                    // Rechazar la solicitud y guardar en la base de datos
+                    request.setEstado("rechazado");
+                    requestRepository.updateRequestStatus(request);
+                } else {
+                    // Cancelar la solicitud
+                    request.setEstado("cancelado");
+                    requestRepository.updateRequestStatus(request);
+                }
+            });
+        }
+    }
+
+    /**
+     * Metodo que maneja el evento de click en el boton de "Cerrar Sesion",
+     * detiene las ejecuciones actuales y carga la vista de iniciar sesion.
+     * @throws IOException
+     */
+    private void handleLogoutButtonAction() throws IOException {
+        // Cerrar la sesión actual y volver a la pantalla de inicio de sesión
+
+        // Limpia el usuario actual
+        FormController.currentUser = null;
+
+        // Detener los hilos y esperar a que finalicen
+        stopAll();
+        // Detenemos todos los hilos y flujos de datos en el controller del chat.
+        if (currentChatController != null) {
+            currentChatController.closeApplication();
+        }
+
+        // Cambiar a la vista de inicio de sesión
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml")); // Asegúrate de que esta ruta es correcta
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo que detiene todos los executorServices
+     */
+    public void stopAll() {
+        stopUpdateFriendshipsList();
+        stopListeningForFriendships();
+        stopListeningForRequests();
+    }
+
 }
 
